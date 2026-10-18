@@ -1,5 +1,22 @@
 package com.fridgelist.app.feature.lists
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.core.content.ContextCompat
+import com.fridgelist.app.voice.VoiceState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -22,6 +39,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,6 +81,9 @@ fun AddItemsContent(
     onChoose: (Chip, Choice) -> Unit,
     onRemove: (Chip) -> Unit,
     onConfirm: () -> Unit,
+    voice: VoiceState = VoiceState.Idle,
+    onMic: () -> Unit = {},
+    onStopVoice: () -> Unit = {},
     focus: FocusRequester = remember { FocusRequester() },
 ) {
     Column(
@@ -73,7 +94,11 @@ fun AddItemsContent(
             .padding(bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(stringResource(R.string.add_title), style = MaterialTheme.typography.titleLarge)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(stringResource(R.string.add_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
+            VoiceButton(voice, onMic, onStopVoice)
+        }
+        VoicePanel(voice)
         OutlinedTextField(
             value = state.text,
             onValueChange = onText,
@@ -110,18 +135,96 @@ fun AddItemsContent(
     }
 }
 
+/** Mic while idle; Stop while listening or recording. 48 dp touch target. */
 @Composable
-fun AddItemsRoute(onDone: () -> Unit, vm: AddItemsViewModel = hiltViewModel()) {
+private fun VoiceButton(voice: VoiceState, onMic: () -> Unit, onStop: () -> Unit) {
+    val active = voice is VoiceState.Listening || voice is VoiceState.Recording
+    FilledTonalIconButton(
+        onClick = if (active) onStop else onMic,
+        enabled = voice !is VoiceState.Transcribing,
+        modifier = Modifier.size(56.dp),
+    ) {
+        Icon(
+            painterResource(if (active) R.drawable.ic_stop else R.drawable.ic_mic),
+            contentDescription = stringResource(if (active) R.string.voice_stop else R.string.voice_start),
+        )
+    }
+}
+
+/** Live status under the title; announced politely by TalkBack. */
+@Composable
+private fun VoicePanel(voice: VoiceState) {
+    val (text, partial) = when (voice) {
+        VoiceState.Idle -> return
+        is VoiceState.Listening -> stringResource(if (voice.onDevice) R.string.voice_listening_on_device else R.string.voice_listening) to voice.partial
+        VoiceState.Recording -> stringResource(R.string.voice_recording) to ""
+        VoiceState.Transcribing -> stringResource(R.string.voice_transcribing) to ""
+        is VoiceState.Failed -> stringResource(voice.message) to ""
+    }
+    Surface(
+        color = if (voice is VoiceState.Failed) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.secondaryContainer,
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
+    ) {
+        Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                // A static mic while the user speaks; a spinner only while we wait on the server.
+                if (voice is VoiceState.Listening || voice is VoiceState.Recording) {
+                    Icon(painterResource(R.drawable.ic_mic), contentDescription = null, modifier = Modifier.size(18.dp))
+                } else if (voice is VoiceState.Transcribing) {
+                    CircularProgressIndicator(Modifier.size(16.dp), strokeWidth = 2.dp)
+                }
+                Text(text, style = MaterialTheme.typography.bodyMedium)
+            }
+            if (partial.isNotBlank()) Text(partial, style = MaterialTheme.typography.titleMedium)
+        }
+    }
+}
+
+@Composable
+fun AddItemsRoute(onDone: () -> Unit, startWithVoice: Boolean = false, vm: AddItemsViewModel = hiltViewModel()) {
     val state by vm.state.collectAsStateWithLifecycle()
+    val voice by vm.voice.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     val focus = remember { FocusRequester() }
-    LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
+    var askMic by remember { mutableStateOf(false) }
+    val micPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) vm.startVoice()
+    }
+    val onMic = {
+        vm.dismissVoiceError()
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+            vm.startVoice()
+        } else {
+            askMic = true // explain first, then the system prompt
+        }
+    }
+    LaunchedEffect(Unit) {
+        if (startWithVoice) onMic() else runCatching { focus.requestFocus() }
+    }
+    // The ViewModel belongs to the list screen; stop the mic as soon as the sheet goes away.
+    DisposableEffect(Unit) { onDispose { vm.cancelVoice() } }
     LaunchedEffect(state.added) {
         if (state.added) {
             vm.onAddedHandled()
             onDone()
         }
     }
-    AddItemsContent(state, vm::onTextChange, vm::choose, vm::remove, vm::confirm, focus)
+    AddItemsContent(state, vm::onTextChange, vm::choose, vm::remove, vm::confirm, voice, onMic, vm::stopVoice, focus)
+    if (askMic) {
+        AlertDialog(
+            onDismissRequest = { askMic = false },
+            title = { Text(stringResource(R.string.voice_permission_title)) },
+            text = { Text(stringResource(R.string.voice_permission_body)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    askMic = false
+                    micPermission.launch(Manifest.permission.RECORD_AUDIO)
+                }) { Text(stringResource(R.string.action_continue)) }
+            },
+            dismissButton = { TextButton(onClick = { askMic = false }) { Text(stringResource(R.string.notifications_skip)) } },
+        )
+    }
 }
 
 // --- Edit sheet

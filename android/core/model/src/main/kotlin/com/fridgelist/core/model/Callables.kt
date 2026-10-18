@@ -44,6 +44,17 @@ data class ParseItemsResponse(
     val source: String? = null,
 )
 
+@Serializable
+data class TranscribeAudioRequest(
+    val audioBase64: String,
+    /** `audio/ogg` | `audio/mp4` | `audio/wav` */
+    val mimeType: String,
+    val localeHints: List<String>,
+)
+
+@Serializable
+data class TranscribeAudioResponse(val text: String, val locale: String? = null, val confidence: Double = 0.0)
+
 /** Limits from CONTRACT §3 that the UI validates before calling the server. */
 object Limits {
     const val DISPLAY_NAME_MAX = 40
@@ -56,6 +67,10 @@ object Limits {
 
     /** Below this `ParsedItem.confidence` the app asks which meaning was meant (prompt A3). */
     const val AMBIGUOUS_CONFIDENCE = 0.6
+
+    /** CONTRACT §4 `transcribeAudio`: ≤ 15 s audio, `audioBase64` ≤ 1 MB. */
+    const val AUDIO_MAX_SECONDS = 15
+    const val AUDIO_BASE64_MAX_BYTES = 1_000_000
 }
 
 /** Roles an invite may grant (CONTRACT §3.12). */

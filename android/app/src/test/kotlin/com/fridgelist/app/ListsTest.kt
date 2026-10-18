@@ -27,6 +27,8 @@ import com.fridgelist.core.model.MemberDoc
 import com.fridgelist.core.model.ParseItemsResponse
 import com.fridgelist.core.model.ParsedItem
 import com.fridgelist.core.model.Role
+import com.fridgelist.core.model.TranscribeAudioResponse
+import com.fridgelist.app.voice.SpeechEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -180,8 +182,13 @@ class ListsTest {
 
     // --- Add sheet
 
+    private val engine = FakeEngine(onDevice = true)
+
     private fun TestScope.adder(role: Role, items: FakeItems): AddItemsViewModel {
-        val vm = AddItemsViewModel(SavedStateHandle(mapOf("listId" to "l1")), contextSource(role, items), items, items, items)
+        val vm = AddItemsViewModel(
+            SavedStateHandle(mapOf("listId" to "l1")), contextSource(role, items), items, items, items,
+            speechEngines = { listOf(engine) }, recorder = FakeRecorder(), transcriber = FakeTranscriber { TranscribeAudioResponse("") },
+        )
         runCurrent()
         return vm
     }
@@ -240,6 +247,39 @@ class ListsTest {
         vm.onTextChange("chips")
         vm.confirm()
         assertEquals(FieldPatch.Set("pending"), items.added.single()["status"])
+    }
+
+    @Test
+    fun voiceTranscriptBecomesChipsAndItemsAreMarkedVoice() = runTest(main.dispatcher) {
+        val items = FakeItems()
+        val vm = adder(Role.ADULT, items)
+        vm.startVoice()
+        runCurrent()
+        assertEquals(listOf("tr-TR"), engine.languages, "member's item language tr, region default")
+        engine.say(SpeechEvent.Partial("yarım kilo"), SpeechEvent.Final("yarım kilo beyaz peynir ve süt"))
+        runCurrent()
+        assertEquals(listOf("beyaz peynir", "süt"), vm.state.value.chips.map { it.name })
+        assertEquals(0.5, vm.state.value.chips.first().qty)
+        vm.confirm()
+        assertTrue(items.added.all { it["addedVia"] == FieldPatch.Set("app_voice") })
+    }
+
+    @Test
+    fun voiceAppendsToTypedTextWithTheRightComma() = runTest(main.dispatcher) {
+        val vm = adder(Role.ADULT, FakeItems())
+        vm.onTextChange("خبز")
+        vm.onTranscript("حليب وبيض")
+        assertEquals("خبز، حليب وبيض", vm.state.value.text)
+        assertEquals(3, vm.state.value.chips.size)
+    }
+
+    @Test
+    fun typedOnlyStaysAppText() = runTest(main.dispatcher) {
+        val items = FakeItems()
+        val vm = adder(Role.ADULT, items)
+        vm.onTextChange("milk")
+        vm.confirm()
+        assertEquals(FieldPatch.Set("app_text"), items.added.single()["addedVia"])
     }
 
     // --- Lists

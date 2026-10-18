@@ -19,6 +19,8 @@ import com.fridgelist.core.data.session.DataStoreSessionStore
 import com.fridgelist.core.data.session.SessionStore
 import com.fridgelist.core.data.user.FirestoreUserRepository
 import com.fridgelist.core.data.user.UserRepository
+import com.fridgelist.core.data.voice.CallableTranscribeRepository
+import com.fridgelist.core.data.voice.TranscribeRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -48,4 +50,6 @@ interface DataModule {
     @Binds fun aliases(impl: FirestoreItemsData): AliasRepository
 
     @Binds fun parse(impl: FirestoreItemsData): ParseRepository
+
+    @Binds fun transcribe(impl: CallableTranscribeRepository): TranscribeRepository
 }

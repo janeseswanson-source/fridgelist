@@ -16,9 +16,48 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | Android | A1 Scaffold | done | 2026-10-18 | core:i18n passes 28/28 fixture cases (18/18 split required) |
 | Android | A2 Sign-in, onboarding, household | done, E2E pending B3 | 2026-10-18 | two-user join test written; skips until backend B3 callables run on the emulator |
 | Android | A3 Lists and items, offline-first | done, server part pending B4 | 2026-10-19 | offline add/tick/undo/delete → sync verified (instrumented test + device); categories/translations wait for B4 |
+| Android | A4 Voice add | done, real-speech run pending | 2026-10-19 | fallback chain verified on emulator (no mic audio there); `docs/test-voice.md` to run on real phones |
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Android A4 Voice add
+- Shipped:
+  - Mic button in the add sheet. On first use, a one-line explanation comes before the `RECORD_AUDIO` prompt.
+  - A live panel shows "Listening…" with the partial transcript, or recording, transcribing, or a message. Changes are announced by TalkBack.
+  - The transcript is appended to any typed text (Arabic comma for Arabic) and goes through the same chips as typing (local split → `parseItems`). Items confirmed after speaking are written with `addedVia: app_voice`.
+  - Recognition order (ARCHITECTURE §8.6):
+    1. on-device `SpeechRecognizer` (API 31+, when available)
+    2. the phone's online recognizer
+    3. cloud fallback: `MediaRecorder` ≤ 15 s (auto-stop) → `transcribeAudio`
+    - A recognizer moves on to the next one only when it can't do the language or isn't available. Silence, offline and permission each get their own message. Typing always works.
+  - Cloud audio: OGG/Opus on API 29+, AAC `audio/mp4` on API 26–28 (both allowed by CONTRACT §4). Base64 is checked against the 1 MB limit before sending, and the cache file is deleted right after it is read.
+  - Recognition language: the member's item language with the phone's region when it is the same language (ar-EG on an Egyptian phone), otherwise ar-SA / tr-TR / en-US / fil-PH / hi-IN / ur-PK.
+  - Manifest: `RECORD_AUDIO`, and a `<queries>` entry for `android.speech.RecognitionService` (needed on Android 11+ to find the recognizer).
+  - `docs/test-voice.md`: manual script with 11 fixture phrases (ar/tr/en), the fallbacks and a privacy check.
+- Tests: `./gradlew lint testDevDebugUnitTest assembleDevDebug` → BUILD SUCCESSFUL, lint "No issues found".
+  - 272 unit tests, 0 failures (app 163). New tests cover:
+    - partials → final → transcript
+    - on-device language failure → online recognizer
+    - no recognizer → record → `transcribeAudio`
+    - 15 s auto-stop, offline, recorder unavailable, too-long audio, silence, Stop, cancel
+    - recognition language, audio format per API level, recognizer error mapping
+    - transcript → chips → `app_voice`; typed-only stays `app_text`
+  - 114 screenshots: adds "listening" with an Arabic partial transcript, and the offline message.
+  - Device (API 36 emulator), Arabic:
+    - rationale → system prompt → listening started with `ar-SA`
+    - the on-device recognizer had no Arabic pack (error 12) → the app fell through to the online recognizer → "no speech" (error 7), because the emulator mic gets no audio
+    - closing the sheet stopped the mic (`stopping(CLIENT_REQUESTED)`)
+  - Real speech recognition was **not** run; that needs real phones and `docs/test-voice.md`.
+- Fixed along the way:
+  - Closing the add sheet now stops the mic. The sheet's ViewModel belongs to the list screen and outlived the sheet.
+  - The voice panel uses a static mic icon while listening. An endless spinner kept Compose from going idle and stalled screenshot and UI tests for minutes.
+- Notes for the backend session: `transcribeAudio` receives `audio/ogg` (Opus, 16 kHz mono) on most phones and `audio/mp4` (AAC) on Android 8–9. `localeHints` starts with the recognition tag (e.g. `ar-SA`).
+- Next: A5 (Shopping Mode); needs backend `updateTrip` (B6) for "Done" but works offline otherwise.
+- Open questions for the owner:
+  - Please run `docs/test-voice.md` on one Android 12+ phone and one older phone and tell me what fails.
+  - Others unchanged (application ID, `google-services.json` + Web client ID, brand colours).
+- Contract changes: none.
 
 ### 2026-10-19 — Android A3 Lists and items, offline-first
 - Shipped:

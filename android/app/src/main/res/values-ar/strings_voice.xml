@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="voice_start">تحدّث</string>
+    <string name="voice_stop">إيقاف</string>
+    <string name="voice_listening">أستمع إليك…</string>
+    <string name="voice_listening_on_device">أستمع على هذا الهاتف…</string>
+    <string name="voice_recording">جارٍ التسجيل… اضغط «إيقاف» عند الانتهاء.</string>
+    <string name="voice_transcribing">جارٍ كتابة ما قلته…</string>
+    <string name="voice_no_match">لم أفهم ذلك. حاول مرة أخرى.</string>
+    <string name="voice_offline">الإدخال الصوتي يحتاج إلى الإنترنت على هذا الهاتف. يمكنك الكتابة بدلاً من ذلك.</string>
+    <string name="voice_unavailable">الإدخال الصوتي غير متاح على هذا الهاتف. يمكنك الكتابة بدلاً من ذلك.</string>
+    <string name="voice_too_long">كان التسجيل طويلاً. جرّب قائمة أقصر.</string>
+    <string name="voice_permission_title">استخدام الميكروفون؟</string>
+    <string name="voice_permission_body">يستمع FridgeList فقط أثناء تشغيل الميكروفون، ليحوّل ما تقوله إلى أصناف في القائمة.</string>
+    <string name="voice_permission_denied">الوصول إلى الميكروفون متوقف. يمكنك تفعيله من الإعدادات، أو الكتابة بدلاً من ذلك.</string>
+</resources>

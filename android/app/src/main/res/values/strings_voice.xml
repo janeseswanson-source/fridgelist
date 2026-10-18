@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="voice_start">Speak</string>
+    <string name="voice_stop">Stop</string>
+    <string name="voice_listening">Listening…</string>
+    <string name="voice_listening_on_device">Listening on this phone…</string>
+    <string name="voice_recording">Recording… tap Stop when you’re done.</string>
+    <string name="voice_transcribing">Writing down what you said…</string>
+    <string name="voice_no_match">Didn’t catch that. Try again.</string>
+    <string name="voice_offline">Voice needs the internet on this phone. You can type instead.</string>
+    <string name="voice_unavailable">Voice input isn’t available on this phone. You can type instead.</string>
+    <string name="voice_too_long">That was too long. Try a shorter list.</string>
+    <string name="voice_permission_title">Use the microphone?</string>
+    <string name="voice_permission_body">FridgeList listens only while the mic is on, to turn what you say into list items.</string>
+    <string name="voice_permission_denied">Microphone access is off. You can turn it on in Settings, or type instead.</string>
+</resources>

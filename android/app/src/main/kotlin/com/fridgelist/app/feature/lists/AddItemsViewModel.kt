@@ -8,6 +8,12 @@ import com.fridgelist.core.data.firestore.ItemPatches
 import com.fridgelist.core.data.items.AliasRepository
 import com.fridgelist.core.data.items.ItemRepository
 import com.fridgelist.core.data.items.ParseRepository
+import com.fridgelist.core.data.voice.TranscribeRepository
+import com.fridgelist.app.voice.AudioRecorder
+import com.fridgelist.app.voice.SpeechEngines
+import com.fridgelist.app.voice.VoiceInput
+import com.fridgelist.app.voice.VoiceLocales
+import com.fridgelist.app.voice.VoiceState
 import com.fridgelist.core.i18n.AliasId
 import com.fridgelist.core.i18n.Catalog
 import com.fridgelist.core.i18n.LocalSplitter
@@ -33,6 +39,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 /** One parsed item as a chip. [choices] is non-empty while a dialect word needs the user's pick. */
@@ -70,6 +77,9 @@ class AddItemsViewModel @Inject constructor(
     private val items: ItemRepository,
     private val aliasRepo: AliasRepository,
     private val parser: ParseRepository,
+    speechEngines: SpeechEngines,
+    recorder: AudioRecorder,
+    transcriber: TranscribeRepository,
 ) : ViewModel() {
 
     private val listId: String = checkNotNull(savedState.get<String>("listId"))
@@ -86,6 +96,13 @@ class AddItemsViewModel @Inject constructor(
     val state: StateFlow<AddItemsUiState> = _state.asStateFlow()
 
     private var refineJob: Job? = null
+
+    /** Voice add (prompt A4). The transcript goes through the same chips as typing. */
+    private val voiceInput = VoiceInput(speechEngines, recorder, transcriber, viewModelScope)
+    val voice: StateFlow<VoiceState> = voiceInput.state
+
+    /** True once this sheet's text came (partly) from voice: items are written with `app_voice`. */
+    private var usedVoice = false
 
     init {
         viewModelScope.launch {
@@ -164,12 +181,44 @@ class AddItemsViewModel @Inject constructor(
         if (chips.isEmpty()) return
         refineJob?.cancel()
         val status = StatusRules.createStatus(ctx.role)
-        val patches = chips.map { ItemPatches.create(ItemDraft(it.name, it.qty, it.unit), status, ctx.uid, AddedVia.APP_TEXT) }
+        val via = if (usedVoice) AddedVia.APP_VOICE else AddedVia.APP_TEXT
+        val patches = chips.map { ItemPatches.create(ItemDraft(it.name, it.qty, it.unit), status, ctx.uid, via) }
         items.add(ctx.householdId, listId, patches)
+        voiceInput.cancel()
+        usedVoice = false
         _state.value = AddItemsUiState(asRequest = _state.value.asRequest, added = true)
     }
 
     fun onAddedHandled() = _state.update { it.copy(added = false) }
+
+    /** Call after RECORD_AUDIO is granted. */
+    fun startVoice() {
+        val ctx = context.value ?: return
+        val language = VoiceLocales.tagFor(ctx.viewerLang, Locale.getDefault())
+        voiceInput.start(language, ctx.localeHints) { transcript -> onTranscript(transcript) }
+    }
+
+    fun stopVoice() = voiceInput.stop()
+
+    fun dismissVoiceError() = voiceInput.dismissError()
+
+    /** The sheet closed: the mic must not keep listening (this ViewModel outlives the sheet). */
+    fun cancelVoice() = voiceInput.cancel()
+
+    /** A finished transcript is appended to what is already typed, then split like typing. */
+    internal fun onTranscript(transcript: String) {
+        usedVoice = true
+        val existing = _state.value.text.trim()
+        val separator = if (isArabicScript(transcript)) "، " else ", "
+        onTextChange(if (existing.isEmpty()) transcript else existing + separator + transcript)
+    }
+
+    /** Arabic block U+0600–U+06FF: join with the Arabic comma "،". */
+    private fun isArabicScript(text: String) = text.any { it in '؀'..'ۿ' }
+
+    override fun onCleared() {
+        voiceInput.cancel()
+    }
 
     private fun label(canonicalId: String, ctx: HouseholdContext): String =
         catalog.displayName(canonicalId, ctx.viewerLang) ?: canonicalId

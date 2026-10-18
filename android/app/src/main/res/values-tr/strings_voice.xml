@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="voice_start">Konuş</string>
+    <string name="voice_stop">Durdur</string>
+    <string name="voice_listening">Dinliyorum…</string>
+    <string name="voice_listening_on_device">Bu telefonda dinliyorum…</string>
+    <string name="voice_recording">Kaydediliyor… bitince Durdur’a dokunun.</string>
+    <string name="voice_transcribing">Söyledikleriniz yazılıyor…</string>
+    <string name="voice_no_match">Anlayamadım. Tekrar deneyin.</string>
+    <string name="voice_offline">Sesli giriş bu telefonda internet gerektirir. Bunun yerine yazabilirsiniz.</string>
+    <string name="voice_unavailable">Sesli giriş bu telefonda kullanılamıyor. Bunun yerine yazabilirsiniz.</string>
+    <string name="voice_too_long">Kayıt çok uzun. Daha kısa bir liste deneyin.</string>
+    <string name="voice_permission_title">Mikrofon kullanılsın mı?</string>
+    <string name="voice_permission_body">FridgeList yalnızca mikrofon açıkken dinler ve söylediklerinizi listeye ekler.</string>
+    <string name="voice_permission_denied">Mikrofon erişimi kapalı. Ayarlar’dan açabilir ya da yazabilirsiniz.</string>
+</resources>

@@ -9,6 +9,7 @@ import com.fridgelist.app.feature.lists.EditItemContent
 import com.fridgelist.app.feature.lists.ListDetailScreen
 import com.fridgelist.app.feature.lists.ListDetailUiState
 import com.fridgelist.app.ui.theme.FridgeListTheme
+import com.fridgelist.app.voice.VoiceState
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Before
 import org.junit.Test
@@ -43,6 +44,14 @@ class ListScreenshotTest(private val config: String, private val qualifiers: Str
     }
 
     @Test fun add_items() = capture("add_items") { AddItemsContent(Samples.add, {}, { _, _ -> }, {}, {}) }
+
+    @Test fun add_items_listening() = capture("add_items_listening") {
+        AddItemsContent(Samples.add.copy(text = "", chips = emptyList()), {}, { _, _ -> }, {}, {}, voice = VoiceState.Listening("٢ كيلو بندورة وعلبة لبنة", onDevice = true))
+    }
+
+    @Test fun add_items_voice_offline() = capture("add_items_voice_offline") {
+        AddItemsContent(Samples.add, {}, { _, _ -> }, {}, {}, voice = VoiceState.Failed(R.string.voice_offline))
+    }
 
     @Test fun edit_item() = capture("edit_item") { EditItemContent(Samples.editRow, canRename = true, onSave = {}) }
 
