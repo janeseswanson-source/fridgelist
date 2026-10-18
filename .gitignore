@@ -1,0 +1,24 @@
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+
+# Secrets & Firebase config (never commit)
+.env.local
+*.keystore
+*.jks
+google-services.json
+GoogleService-Info.plist
+service-account*.json
+
+# Android / Gradle
+android/.gradle/
+android/**/build/
+android/local.properties
+android/captures/
+.kotlin/
+
+# Node
+node_modules/

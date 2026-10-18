@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "howToUse": "Each case lists the items a parser must return. Match parsed items to expected items by canonicalId. When qty is given it must match within 0.001; when unit is given it must match exactly. Order does not matter. A parsed item with no expected match fails the case. The backend parser must pass at least 90% of cases; the on-device local splitters must at least produce the right number of items for cases tagged 'split'.",
+  "cases": [
+    { "id": "ar-lev-01", "tags": ["split"], "text": "جيب ٢ كيلو بندورة وعلبة لبنة وحليب", "localeHints": ["ar-SY"], "expect": [
+      { "canonicalId": "tomato", "qty": 2, "unit": "kg" },
+      { "canonicalId": "labneh", "qty": 1, "unit": "pack" },
+      { "canonicalId": "milk" } ] },
+    { "id": "ar-gulf-01", "tags": ["split"], "text": "نبي طماطم وخيار و٥ كيلو رز بسمتي", "localeHints": ["ar-SA"], "expect": [
+      { "canonicalId": "tomato" },
+      { "canonicalId": "cucumber" },
+      { "canonicalId": "rice_basmati", "qty": 5, "unit": "kg" } ] },
+    { "id": "ar-lev-02", "tags": ["split"], "text": "كيلو ونص لحمة مفرومة", "localeHints": ["ar-SY"], "expect": [
+      { "canonicalId": "minced_meat", "qty": 1.5, "unit": "kg" } ] },
+    { "id": "ar-01", "tags": ["split"], "text": "خبز، حليب، بيض", "localeHints": ["ar"], "expect": [
+      { "canonicalId": "bread" },
+      { "canonicalId": "milk" },
+      { "canonicalId": "eggs" } ] },
+    { "id": "ar-02", "tags": ["split"], "text": "٣ علب تونة", "localeHints": ["ar"], "expect": [
+      { "canonicalId": "tuna", "qty": 3, "unit": "can" } ] },
+    { "id": "ar-03", "tags": [], "text": "لا تنسوا الخبز", "localeHints": ["ar"], "expect": [
+      { "canonicalId": "bread" } ] },
+    { "id": "ar-04", "tags": ["split"], "text": "مناديل وسائل جلي", "localeHints": ["ar"], "expect": [
+      { "canonicalId": "tissues" },
+      { "canonicalId": "dish_soap" } ] },
+    { "id": "ar-gulf-02", "tags": ["split"], "text": "كرتونة بيض وربطة بقدونس", "localeHints": ["ar-AE"], "expect": [
+      { "canonicalId": "eggs", "qty": 1, "unit": "tray" },
+      { "canonicalId": "parsley", "qty": 1, "unit": "bunch" } ] },
+    { "id": "ar-05", "tags": [], "text": "تمر للإفطار", "localeHints": ["ar-SA"], "expect": [
+      { "canonicalId": "dates" } ] },
+    { "id": "ar-06", "tags": ["split"], "text": "لتر زيت زيتون", "localeHints": ["ar"], "expect": [
+      { "canonicalId": "olive_oil", "qty": 1, "unit": "l" } ] },
+    { "id": "ar-07", "tags": ["split"], "text": "نص كيلو جبنة حلوم", "localeHints": ["ar"], "expect": [
+      { "canonicalId": "halloumi", "qty": 0.5, "unit": "kg" } ] },
+    { "id": "ar-egy-01", "tags": ["dialect"], "text": "عايزين عيش وجبنة بيضا", "localeHints": ["ar-EG"], "expect": [
+      { "canonicalId": "bread" },
+      { "canonicalId": "white_cheese" } ] },
+    { "id": "ar-gulf-03", "tags": ["dialect"], "text": "عيش بسمتي ودياي", "localeHints": ["ar-SA"], "expect": [
+      { "canonicalId": "rice_basmati" },
+      { "canonicalId": "chicken" } ] },
+    { "id": "ar-egy-02", "tags": ["dialect"], "text": "لبن وفراخ", "localeHints": ["ar-EG"], "expect": [
+      { "canonicalId": "milk" },
+      { "canonicalId": "chicken" } ] },
+    { "id": "ar-lev-03", "tags": ["dialect"], "text": "لبن وجاج", "localeHints": ["ar-SY"], "expect": [
+      { "canonicalId": "yogurt" },
+      { "canonicalId": "chicken" } ] },
+    { "id": "ar-gulf-04", "tags": ["dialect"], "text": "لبن ودجاج", "localeHints": ["ar-SA"], "expect": [
+      { "canonicalId": "laban_ayran" },
+      { "canonicalId": "chicken" } ] },
+    { "id": "tr-01", "tags": ["split"], "text": "2 ekmek, yarım kilo beyaz peynir ve süt", "localeHints": ["tr"], "expect": [
+      { "canonicalId": "bread", "qty": 2 },
+      { "canonicalId": "white_cheese", "qty": 0.5, "unit": "kg" },
+      { "canonicalId": "milk" } ] },
+    { "id": "tr-02", "tags": ["split"], "text": "yumurta 30 tane, 1 litre ayran, domates", "localeHints": ["tr"], "expect": [
+      { "canonicalId": "eggs", "qty": 30, "unit": "piece" },
+      { "canonicalId": "laban_ayran", "qty": 1, "unit": "l" },
+      { "canonicalId": "tomato" } ] },
+    { "id": "tr-03", "tags": ["split"], "text": "1,5 kg kıyma", "localeHints": ["tr"], "expect": [
+      { "canonicalId": "minced_meat", "qty": 1.5, "unit": "kg" } ] },
+    { "id": "tr-04", "tags": [], "text": "domates biber patlıcan", "localeHints": ["tr"], "expect": [
+      { "canonicalId": "tomato" },
+      { "canonicalId": "pepper_green" },
+      { "canonicalId": "eggplant" } ] },
+    { "id": "tr-05", "tags": ["split"], "text": "bir buçuk kilo pirinç ve 2 paket makarna", "localeHints": ["tr"], "expect": [
+      { "canonicalId": "rice", "qty": 1.5, "unit": "kg" },
+      { "canonicalId": "pasta", "qty": 2, "unit": "pack" } ] },
+    { "id": "tr-06", "tags": ["split"], "text": "3 kutu ton balığı", "localeHints": ["tr"], "expect": [
+      { "canonicalId": "tuna", "qty": 3, "unit": "can" } ] },
+    { "id": "en-01", "tags": ["split"], "text": "milk, 6 eggs and half a dozen lemons", "localeHints": ["en"], "expect": [
+      { "canonicalId": "milk" },
+      { "canonicalId": "eggs", "qty": 6 },
+      { "canonicalId": "lemon", "qty": 6, "unit": "piece" } ] },
+    { "id": "en-02", "tags": [], "text": "we're out of dish soap", "localeHints": ["en"], "expect": [
+      { "canonicalId": "dish_soap" } ] },
+    { "id": "en-03", "tags": [], "text": "Pampers size 4 x2 and baby wipes", "localeHints": ["en"], "expect": [
+      { "canonicalId": "diapers", "qty": 2 },
+      { "canonicalId": "baby_wipes" } ] },
+    { "id": "mix-01", "tags": ["split"], "text": "milk, 6 eggs and خبز عربي", "localeHints": ["en", "ar"], "expect": [
+      { "canonicalId": "milk" },
+      { "canonicalId": "eggs", "qty": 6 },
+      { "canonicalId": "arabic_bread" } ] },
+    { "id": "mix-02", "tags": ["split"], "text": "sugar 1kg and زيت زيتون", "localeHints": ["en", "ar"], "expect": [
+      { "canonicalId": "sugar", "qty": 1, "unit": "kg" },
+      { "canonicalId": "olive_oil" } ] },
+    { "id": "mix-03", "tags": ["split"], "text": "2 süt ve labne", "localeHints": ["tr"], "expect": [
+      { "canonicalId": "milk", "qty": 2 },
+      { "canonicalId": "labneh" } ] }
+  ]
+}
