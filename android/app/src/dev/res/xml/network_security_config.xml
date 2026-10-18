@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  dev flavor only: the Firebase Emulator Suite speaks plain HTTP on 10.0.2.2, localhost or the
+  dev machine's LAN IP (configurable in Settings), so cleartext is allowed here and nowhere else.
+-->
+<network-security-config xmlns:tools="http://schemas.android.com/tools">
+    <base-config
+        cleartextTrafficPermitted="true"
+        tools:ignore="InsecureBaseConfiguration" />
+</network-security-config>

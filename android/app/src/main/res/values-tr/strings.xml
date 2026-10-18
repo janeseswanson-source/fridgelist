@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_settings">Ayarlar</string>
+    <string name="action_back">Geri</string>
+
+    <string name="home_empty_title">Henüz liste yok</string>
+    <string name="home_empty_body">Hanenizin alışveriş listeleri burada görünecek.</string>
+
+    <string name="settings_title">Ayarlar</string>
+    <string name="settings_language_header">Uygulama dili</string>
+    <string name="settings_language_system">Sistem dili</string>
+
+    <string name="settings_dev_header">Geliştirici</string>
+    <string name="settings_emulator_host_label">Emülatör adresi</string>
+    <string name="settings_emulator_host_help">Firebase Emulator Suite adresi. Uygulama yeniden başlatıldığında geçerli olur.</string>
+    <string name="settings_emulator_host_invalid">Port olmadan bir IP adresi veya ana bilgisayar adı girin</string>
+    <string name="settings_emulator_connected">Emülatörlere bağlı: %1$s</string>
+    <string name="settings_save">Kaydet</string>
+    <string name="settings_saved">Kaydedildi. Uygulamayı yeniden başlatın.</string>
+</resources>

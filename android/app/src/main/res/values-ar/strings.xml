@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_settings">الإعدادات</string>
+    <string name="action_back">رجوع</string>
+
+    <string name="home_empty_title">لا توجد قوائم بعد</string>
+    <string name="home_empty_body">ستظهر قوائم التسوّق الخاصة بأسرتك هنا.</string>
+
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_language_header">لغة التطبيق</string>
+    <string name="settings_language_system">لغة النظام</string>
+
+    <string name="settings_dev_header">للمطوّرين</string>
+    <string name="settings_emulator_host_label">عنوان المحاكي</string>
+    <string name="settings_emulator_host_help">عنوان Firebase Emulator Suite. يسري بعد إعادة تشغيل التطبيق.</string>
+    <string name="settings_emulator_host_invalid">أدخل عنوان IP أو اسم المضيف بدون رقم المنفذ</string>
+    <string name="settings_emulator_connected">متصل بالمحاكيات على %1$s</string>
+    <string name="settings_save">حفظ</string>
+    <string name="settings_saved">تم الحفظ. أعد تشغيل التطبيق لتفعيل التغيير.</string>
+</resources>
