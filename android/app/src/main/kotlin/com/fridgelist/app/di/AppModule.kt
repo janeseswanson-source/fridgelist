@@ -14,5 +14,10 @@ object AppModule {
     /** `dev` flavor → emulators; `prod` → never (CLAUDE.md "Emulator mode"). */
     @Provides
     @Singleton
-    fun environment(): AppEnvironment = AppEnvironment(useEmulators = BuildConfig.USE_EMULATORS)
+    fun environment(): AppEnvironment = AppEnvironment(
+        useEmulators = BuildConfig.USE_EMULATORS,
+        appVersion = BuildConfig.VERSION_NAME,
+        linkDomain = BuildConfig.LINK_DOMAIN,
+        googleWebClientId = BuildConfig.GOOGLE_WEB_CLIENT_ID,
+    )
 }

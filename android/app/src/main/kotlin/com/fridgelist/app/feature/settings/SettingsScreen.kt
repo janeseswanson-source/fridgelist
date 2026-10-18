@@ -20,8 +20,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,8 +38,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fridgelist.app.R
 
 @Composable
-fun SettingsRoute(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewModel()) {
+fun SettingsRoute(onBack: () -> Unit, onSignedOut: () -> Unit, viewModel: SettingsViewModel = hiltViewModel()) {
     val dev by viewModel.dev.collectAsStateWithLifecycle()
+    val signedOut by viewModel.signedOut.collectAsStateWithLifecycle()
+    LaunchedEffect(signedOut) { if (signedOut) onSignedOut() }
     val language = remember { AppLanguage.current() }
     SettingsScreen(
         language = language,
@@ -46,6 +50,7 @@ fun SettingsRoute(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewMod
         onHostChange = viewModel::onHostChange,
         onSaveHost = viewModel::saveHost,
         onBack = onBack,
+        onSignOut = viewModel::signOut,
     )
 }
 
@@ -59,6 +64,7 @@ fun SettingsScreen(
     onHostChange: (String) -> Unit,
     onSaveHost: () -> Unit,
     onBack: () -> Unit,
+    onSignOut: (() -> Unit)? = null,
 ) {
     Scaffold(
         topBar = {
@@ -82,6 +88,13 @@ fun SettingsScreen(
             Column(Modifier.selectableGroup()) {
                 AppLanguage.entries.forEach { option ->
                     LanguageRow(option, selected = option == language, onClick = { onLanguageSelected(option) })
+                }
+            }
+            if (onSignOut != null) {
+                HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                SectionHeader(stringResource(R.string.settings_account_header))
+                TextButton(onClick = onSignOut, modifier = Modifier.padding(horizontal = 8.dp).heightIn(min = 48.dp)) {
+                    Text(stringResource(R.string.settings_sign_out))
                 }
             }
             if (dev != null) {

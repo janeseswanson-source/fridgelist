@@ -16,24 +16,43 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fridgelist.app.R
+import com.fridgelist.app.feature.household.HomeViewModel
 
-/** A1: the empty home screen. Lists arrive in A3. */
+/** Home: the household's lists arrive in A3; for now the household name, members and settings. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(onOpenSettings: () -> Unit, modifier: Modifier = Modifier) {
+fun HomeScreen(
+    householdName: String?,
+    onOpenMembers: () -> Unit,
+    onOpenSettings: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Scaffold(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.app_name)) },
+                title = {
+                    Text(
+                        householdName?.takeIf { it.isNotBlank() } ?: stringResource(R.string.app_name),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                },
                 actions = {
+                    IconButton(onClick = onOpenMembers) {
+                        Icon(painterResource(R.drawable.ic_group), contentDescription = stringResource(R.string.home_members))
+                    }
                     IconButton(onClick = onOpenSettings) {
                         Icon(painterResource(R.drawable.ic_settings), contentDescription = stringResource(R.string.action_settings))
                     }
@@ -43,6 +62,12 @@ fun HomeScreen(onOpenSettings: () -> Unit, modifier: Modifier = Modifier) {
     ) { padding ->
         EmptyState(Modifier.padding(padding).fillMaxSize())
     }
+}
+
+@Composable
+fun HomeRoute(onOpenMembers: () -> Unit, onOpenSettings: () -> Unit, vm: HomeViewModel = hiltViewModel()) {
+    val household by vm.household.collectAsStateWithLifecycle()
+    HomeScreen(household?.name, onOpenMembers, onOpenSettings)
 }
 
 @Composable

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_continue">Devam</string>
+
+    <string name="welcome_title">FridgeList’e hoş geldiniz</string>
+    <string name="welcome_body">Tüm hane için tek bir ortak alışveriş listesi.</string>
+    <string name="welcome_choose_language">Dilinizi seçin</string>
+
+    <string name="signin_title">Giriş yap</string>
+    <string name="signin_body">Hanenizin eklediklerinizi görebilmesi için giriş yapın.</string>
+    <string name="signin_google">Google ile devam et</string>
+    <string name="signin_google_unavailable">Google ile giriş bu sürümde henüz ayarlanmadı.</string>
+    <string name="signin_test_user_header">Emülatör test kullanıcısı</string>
+    <string name="signin_test_user_name">Test kullanıcısı adı</string>
+    <string name="signin_test_user_button">Test kullanıcısı olarak giriş yap</string>
+
+    <string name="profile_title">Hakkınızda</string>
+    <string name="profile_name_label">Adınız</string>
+    <string name="profile_name_help">Hanenize gösterilir.</string>
+    <string name="profile_item_language_header">Ürünleri şu dilde göster</string>
+    <string name="profile_item_language_help">Başkalarının eklediği ürünler bu dile çevrilir.</string>
+
+    <string name="household_choice_title">Haneniz</string>
+    <string name="household_choice_body">Yeni bir hane listesi başlatın ya da birinin oluşturduğuna katılın.</string>
+    <string name="household_create">Hane oluştur</string>
+    <string name="household_join">Kodla katıl</string>
+
+    <string name="create_name_label">Hane adı</string>
+    <string name="create_language_header">Hane dili</string>
+    <string name="create_language_help">İlk listenin adında ve bir ürünün henüz çevirisi yokken kullanılır.</string>
+    <string name="create_button">Oluştur</string>
+
+    <string name="join_title">Haneye katıl</string>
+    <string name="join_code_label">Davet kodu</string>
+    <string name="join_scan">QR kodu tara</string>
+    <string name="join_scan_not_invite">Bu QR kodu bir FridgeList daveti değil.</string>
+    <string name="join_button">Katıl</string>
+
+    <string name="notifications_title">Haberdar olun</string>
+    <string name="notifications_body">Biri markete giderken, ihtiyacınızı zamanında ekleyebilmeniz için ve istediğiniz bir ürün bulunamadığında size haber veririz. Başka bir şey değil.</string>
+    <string name="notifications_allow">Bildirimlere izin ver</string>
+    <string name="notifications_skip">Şimdi değil</string>
+
+    <string name="home_members">Üyeler</string>
+    <string name="members_title">Üyeler</string>
+    <string name="members_you">Siz</string>
+    <string name="members_invite">Davet et</string>
+    <string name="role_owner">Sahip</string>
+    <string name="role_adult">Yetişkin</string>
+    <string name="role_kid">Çocuk</string>
+    <string name="role_helper">Yardımcı</string>
+
+    <string name="invite_title">Hanenize davet edin</string>
+    <string name="invite_role_header">Katılacağı rol</string>
+    <string name="invite_create">Davet oluştur</string>
+    <string name="invite_expires">%1$s tarihine kadar geçerli</string>
+    <string name="invite_share">Paylaş</string>
+    <string name="invite_share_text">FridgeList’te hanemize katıl: %1$s (kod %2$s)</string>
+    <string name="invite_qr_description">Davet için QR kodu</string>
+
+    <string name="settings_account_header">Hesap</string>
+    <string name="settings_sign_out">Çıkış yap</string>
+
+    <string name="error_network">Bağlantı yok. Bu adım internet gerektirir; çevrimiçi olunca tekrar deneyin.</string>
+    <string name="error_invite_not_found">Bu kod çalışmıyor. Yeni bir davet isteyin.</string>
+    <string name="error_invite_expired">Bu davetin süresi dolmuş ya da kullanım hakkı bitmiş. Yeni bir davet isteyin.</string>
+    <string name="error_permission">Bunu yapma izniniz yok.</string>
+    <string name="error_rate_limited">Çok fazla deneme. Biraz bekleyip tekrar deneyin.</string>
+    <string name="error_signin_cancelled">Giriş iptal edildi.</string>
+    <string name="error_signin_no_account">Bu cihazda Google hesabı bulunamadı.</string>
+    <string name="error_generic">Bir şeyler ters gitti. Lütfen tekrar deneyin.</string>
+    <plurals name="name_error">
+        <item quantity="one">En fazla %1$d karakterlik bir ad girin.</item>
+        <item quantity="other">En fazla %1$d karakterlik bir ad girin.</item>
+    </plurals>
+    <plurals name="join_code_help">
+        <item quantity="one">Sizi davet eden kişiden %1$d harf ve rakam.</item>
+        <item quantity="other">Sizi davet eden kişiden %1$d harf ve rakam.</item>
+    </plurals>
+    <plurals name="join_code_error">
+        <item quantity="one">Kodu kontrol edin: %1$d harf ve rakamdan oluşur.</item>
+        <item quantity="other">Kodu kontrol edin: %1$d harf ve rakamdan oluşur.</item>
+    </plurals>
+</resources>

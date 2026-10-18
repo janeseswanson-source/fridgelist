@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_continue">متابعة</string>
+
+    <string name="welcome_title">أهلاً بك في FridgeList</string>
+    <string name="welcome_body">قائمة تسوّق واحدة مشتركة لكل أفراد الأسرة.</string>
+    <string name="welcome_choose_language">اختر لغتك</string>
+
+    <string name="signin_title">تسجيل الدخول</string>
+    <string name="signin_body">سجّل الدخول ليرى أفراد أسرتك ما تضيفه.</string>
+    <string name="signin_google">المتابعة باستخدام Google</string>
+    <string name="signin_google_unavailable">تسجيل الدخول عبر Google غير مُعدّ في هذا الإصدار بعد.</string>
+    <string name="signin_test_user_header">مستخدم تجريبي (المحاكي)</string>
+    <string name="signin_test_user_name">اسم المستخدم التجريبي</string>
+    <string name="signin_test_user_button">الدخول كمستخدم تجريبي</string>
+
+    <string name="profile_title">عنك</string>
+    <string name="profile_name_label">اسمك</string>
+    <string name="profile_name_help">يظهر لأفراد أسرتك.</string>
+    <string name="profile_item_language_header">اعرض الأصناف بـ</string>
+    <string name="profile_item_language_help">تُترجم الأصناف التي يضيفها الآخرون إلى هذه اللغة.</string>
+
+    <string name="household_choice_title">أسرتك</string>
+    <string name="household_choice_body">ابدأ قائمة جديدة لأسرتك، أو انضم إلى قائمة أنشأها أحد أفرادها.</string>
+    <string name="household_create">إنشاء أسرة</string>
+    <string name="household_join">الانضمام برمز</string>
+
+    <string name="create_name_label">اسم الأسرة</string>
+    <string name="create_language_header">لغة الأسرة</string>
+    <string name="create_language_help">تُستخدم لاسم القائمة الأولى، وعندما لا تتوفر ترجمة لصنف بعد.</string>
+    <string name="create_button">إنشاء</string>
+
+    <string name="join_title">الانضمام إلى أسرة</string>
+    <string name="join_code_label">رمز الدعوة</string>
+    <string name="join_scan">مسح رمز QR</string>
+    <string name="join_scan_not_invite">رمز QR هذا ليس دعوة من FridgeList.</string>
+    <string name="join_button">انضمام</string>
+
+    <string name="notifications_title">ابقَ على اطلاع</string>
+    <string name="notifications_body">سنُعلمك عندما يتجه أحدهم إلى المتجر لتضيف ما تحتاجه في الوقت المناسب، وعندما لا يُعثر على صنف طلبته. لا شيء غير ذلك.</string>
+    <string name="notifications_allow">السماح بالإشعارات</string>
+    <string name="notifications_skip">ليس الآن</string>
+
+    <string name="home_members">الأفراد</string>
+    <string name="members_title">الأفراد</string>
+    <string name="members_you">أنت</string>
+    <string name="members_invite">دعوة</string>
+    <string name="role_owner">المالك</string>
+    <string name="role_adult">بالغ</string>
+    <string name="role_kid">طفل</string>
+    <string name="role_helper">مساعد</string>
+
+    <string name="invite_title">دعوة إلى أسرتك</string>
+    <string name="invite_role_header">ينضمّ بصفة</string>
+    <string name="invite_create">إنشاء دعوة</string>
+    <string name="invite_expires">صالحة حتى %1$s</string>
+    <string name="invite_share">مشاركة</string>
+    <string name="invite_share_text">انضم إلى أسرتنا على FridgeList: ‏%1$s (الرمز %2$s)</string>
+    <string name="invite_qr_description">رمز QR للدعوة</string>
+
+    <string name="settings_account_header">الحساب</string>
+    <string name="settings_sign_out">تسجيل الخروج</string>
+
+    <string name="error_network">لا يوجد اتصال. هذه الخطوة تحتاج إلى الإنترنت، فحاول مجدداً عند الاتصال.</string>
+    <string name="error_invite_not_found">هذا الرمز لا يعمل. اطلب دعوة جديدة.</string>
+    <string name="error_invite_expired">انتهت صلاحية هذه الدعوة أو استُنفدت. اطلب دعوة جديدة.</string>
+    <string name="error_permission">ليس لديك إذن للقيام بذلك.</string>
+    <string name="error_rate_limited">محاولات كثيرة. انتظر قليلاً ثم حاول مجدداً.</string>
+    <string name="error_signin_cancelled">أُلغي تسجيل الدخول.</string>
+    <string name="error_signin_no_account">لا يوجد حساب Google على هذا الجهاز.</string>
+    <string name="error_generic">حدث خطأ ما. حاول مرة أخرى.</string>
+    <plurals name="name_error">
+        <item quantity="zero">أدخل اسماً لا يتجاوز %1$d حرف.</item>
+        <item quantity="one">أدخل اسماً لا يتجاوز حرفاً واحداً.</item>
+        <item quantity="two">أدخل اسماً لا يتجاوز حرفين.</item>
+        <item quantity="few">أدخل اسماً لا يتجاوز %1$d أحرف.</item>
+        <item quantity="many">أدخل اسماً لا يتجاوز %1$d حرفاً.</item>
+        <item quantity="other">أدخل اسماً لا يتجاوز %1$d حرف.</item>
+    </plurals>
+    <plurals name="join_code_help">
+        <item quantity="zero">%1$d حرف ورقم من الشخص الذي دعاك.</item>
+        <item quantity="one">حرف أو رقم واحد من الشخص الذي دعاك.</item>
+        <item quantity="two">حرفان أو رقمان من الشخص الذي دعاك.</item>
+        <item quantity="few">%1$d أحرف وأرقام من الشخص الذي دعاك.</item>
+        <item quantity="many">%1$d حرفاً ورقماً من الشخص الذي دعاك.</item>
+        <item quantity="other">%1$d حرف ورقم من الشخص الذي دعاك.</item>
+    </plurals>
+    <plurals name="join_code_error">
+        <item quantity="zero">تحقّق من الرمز: يتكوّن من %1$d حرف ورقم.</item>
+        <item quantity="one">تحقّق من الرمز: يتكوّن من حرف أو رقم واحد.</item>
+        <item quantity="two">تحقّق من الرمز: يتكوّن من حرفين أو رقمين.</item>
+        <item quantity="few">تحقّق من الرمز: يتكوّن من %1$d أحرف وأرقام.</item>
+        <item quantity="many">تحقّق من الرمز: يتكوّن من %1$d حرفاً ورقماً.</item>
+        <item quantity="other">تحقّق من الرمز: يتكوّن من %1$d حرف ورقم.</item>
+    </plurals>
+</resources>

@@ -14,9 +14,48 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | --- | --- | --- | --- | --- |
 | Backend | B1 Scaffold | not started | | |
 | Android | A1 Scaffold | done | 2026-10-18 | core:i18n passes 28/28 fixture cases (18/18 split required) |
+| Android | A2 Sign-in, onboarding, household | done, E2E pending B3 | 2026-10-18 | two-user join test written; skips until backend B3 callables run on the emulator |
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-18 — Android A2 Sign-in, onboarding, household
+- Shipped:
+  - Onboarding flow, resumable after restart (`OnboardingStep` from the stored session): UI language → sign in → display name + item language (ar, tr, en, fil, hi, ur) → create or join a household → notification rationale → home.
+  - Sign in with Google via Credential Manager. It turns on when `google.webClientId=…` is set in `android/local.properties`.
+  - dev only: an "emulator test user" that signs in to the Auth emulator with an unsigned Google credential.
+  - Callables `createHousehold`, `createInvite`, `joinHousehold` with typed CONTRACT §4 shapes and CONTRACT §8 error mapping. "Offline / connection refused" shows a clear message, never a crash.
+  - Join by typed code (normalized, validated against the §3.12 alphabet), Google code scanner QR, or the `https://LINK_DOMAIN/join/{code}` App Link (filter in place; verification in A9).
+  - Members screen (live, owner first) with role labels. Owner and adults can invite: role → code, QR (ZXing), expiry in the user's locale, Share.
+  - `users/{uid}` profile fields written offline-first.
+  - `deviceId` UUID created once in DataStore. `users/{uid}/devices/{deviceId}` is written after sign-in, on every start and from `onNewToken` (needs a real FCM project; skipped quietly on the demo project).
+  - Settings: sign out (clears the session, keeps the device ID).
+  - New dependencies (approved): Credential Manager + googleid, Firebase Messaging, Google code scanner, ZXing core, kotlinx-coroutines-play-services.
+- Tests: `./gradlew lint testDevDebugUnitTest assembleDevDebug` → BUILD SUCCESSFUL, lint "No issues found".
+  - 172 unit tests, 0 failures: core:model 12, core:i18n 61, core:data 13, app 86.
+    - app: 66 Roborazzi screenshots (11 screens × ar/tr/en × light/dark, RTL reviewed) plus ViewModel tests for sign-in, profile, create, join, notifications, members and invites.
+  - Count strings use `<plurals>` (Arabic zero/one/two/few/many/other).
+  - Device run against the Auth + Firestore emulators (Functions not available yet):
+    - Arabic onboarding works end to end up to the callables.
+    - `users/{uid}` written with exactly `displayName`, `language`, `uiLanguage`.
+    - `createHousehold`/`joinHousehold` without a Functions emulator show the no-connection message.
+    - The `/join/abcd2345` link opens Join with `ABCD2345` filled in.
+  - `connectedDevDebugAndroidTest` → `TwoUsersJoinHouseholdTest` skips with "Functions emulator not running (needs backend B3)". AGP's XML lists the skipped assumption as a failure; the build passes.
+- Acceptance still open: "two emulator users create and join one household and see each other with the right roles". Run once B3 exists:
+  - `firebase emulators:start --project demo-fridgelist`
+  - then `./gradlew connectedDevDebugAndroidTest`
+- Fixed along the way:
+  - The demo API key must look like a real one (`AIza` + 35 characters), or Firebase Installations throws before any call.
+  - The Functions SDK reports connection failures as `INTERNAL` wrapping an `IOException`; these now map to NETWORK.
+- Notes for the backend session (B2/B3):
+  - Clients write `users/{uid}` with merge `{displayName, language, uiLanguage}` right after the profile step, possibly before any callable has created the doc. B2 rules must allow the owner to **create** `users/{uid}` with only those self-owned fields.
+  - `joinHousehold` carries no `uiLanguage` (CONTRACT §4); the joiner's `uiLanguage` arrives only through that self-write.
+  - After sign-in on a new phone, the app reads `users/{uid}.householdIds` from the server to skip create/join.
+  - Emulator project ID `demo-fridgelist`; Functions region assumed `me-central2`.
+- Next: A3 (lists and items, offline-first); needs backend B4.
+- Open questions for the owner: unchanged from A1 (real application ID, `google-services.json` + Web client ID, brand colours).
+  - Also: the emulator image's Google Play services (25.26) is older than the latest libraries want (26.12). The code scanner may ask to update Play services on that AVD; real phones are fine.
+- Contract changes: none.
 
 ### 2026-10-18 — Android A1 Scaffold
 - Shipped:

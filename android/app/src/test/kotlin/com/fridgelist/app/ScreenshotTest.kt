@@ -1,38 +1,73 @@
 package com.fridgelist.app
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.test.junit4.v2.createComposeRule
-import androidx.compose.ui.test.onRoot
+import com.fridgelist.app.feature.household.InviteContent
+import com.fridgelist.app.feature.household.InviteUiState
+import com.fridgelist.app.feature.household.MembersScreen
+import com.fridgelist.app.feature.household.MembersUiState
 import com.fridgelist.app.feature.home.HomeScreen
+import com.fridgelist.app.feature.onboarding.CreateHouseholdScreen
+import com.fridgelist.app.feature.onboarding.CreateHouseholdUiState
+import com.fridgelist.app.feature.onboarding.HouseholdChoiceScreen
+import com.fridgelist.app.feature.onboarding.JoinHouseholdScreen
+import com.fridgelist.app.feature.onboarding.JoinHouseholdUiState
+import com.fridgelist.app.feature.onboarding.NotificationsScreen
+import com.fridgelist.app.feature.onboarding.ProfileScreen
+import com.fridgelist.app.feature.onboarding.ProfileUiState
+import com.fridgelist.app.feature.onboarding.SignInScreen
+import com.fridgelist.app.feature.onboarding.SignInUiState
+import com.fridgelist.app.feature.onboarding.WelcomeScreen
 import com.fridgelist.app.feature.settings.AppLanguage
 import com.fridgelist.app.feature.settings.DevUiState
 import com.fridgelist.app.feature.settings.SettingsScreen
 import com.fridgelist.app.ui.theme.FridgeListTheme
+import com.fridgelist.core.model.CreateInviteResponse
+import com.fridgelist.core.model.MemberDoc
+import com.fridgelist.core.model.Role
 import com.github.takahirom.roborazzi.captureRoboImage
-import org.junit.Rule
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
+import org.robolectric.ParameterizedRobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * Screenshots of every A1 screen in Arabic (RTL, checked first), Turkish and English, light and dark.
+ * Screenshots of every screen in Arabic (RTL, reviewed first), Turkish and English, light and dark.
  * Record with `./gradlew recordRoborazziDevDebug`; images land in `app/src/test/screenshots/`.
  */
-@RunWith(RobolectricTestRunner::class)
+@RunWith(ParameterizedRobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-class ScreenshotTest {
-    @get:Rule val compose = createComposeRule()
+class ScreenshotTest(private val config: String, private val qualifiers: String) {
 
-    private fun capture(name: String, content: @Composable () -> Unit) {
-        compose.setContent { FridgeListTheme { content() } }
-        compose.onRoot().captureRoboImage("src/test/screenshots/$name.png")
+    companion object {
+        private const val PHONE = "w411dp-h891dp"
+
+        @JvmStatic
+        @ParameterizedRobolectricTestRunner.Parameters(name = "{0}")
+        fun configs(): List<Array<String>> = listOf(
+            arrayOf("ar_light", "ar-ldrtl-$PHONE-notnight-xxhdpi"),
+            arrayOf("ar_dark", "ar-ldrtl-$PHONE-night-xxhdpi"),
+            arrayOf("tr_light", "tr-ldltr-$PHONE-notnight-xxhdpi"),
+            arrayOf("tr_dark", "tr-ldltr-$PHONE-night-xxhdpi"),
+            arrayOf("en_light", "en-ldltr-$PHONE-notnight-xxhdpi"),
+            arrayOf("en_dark", "en-ldltr-$PHONE-night-xxhdpi"),
+        )
     }
 
-    private val home: @Composable () -> Unit = { HomeScreen(onOpenSettings = {}) }
+    @Before
+    fun setUp() {
+        RuntimeEnvironment.setQualifiers(qualifiers)
+        // Invite expiry is shown in local time; pin the zone so images are the same on every machine.
+        java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("Asia/Riyadh"))
+    }
 
-    private val settings: @Composable () -> Unit = {
+    private fun capture(screen: String, content: @Composable () -> Unit) =
+        captureRoboImage("src/test/screenshots/${screen}_$config.png") { FridgeListTheme { content() } }
+
+    @Test fun home() = capture("home") { HomeScreen("بيت العائلة", {}, {}) }
+
+    @Test fun settings() = capture("settings") {
         SettingsScreen(
             language = AppLanguage.ARABIC,
             onLanguageSelected = {},
@@ -40,30 +75,55 @@ class ScreenshotTest {
             onHostChange = {},
             onSaveHost = {},
             onBack = {},
+            onSignOut = {},
         )
     }
 
-    @Test @Config(qualifiers = AR_LIGHT) fun home_ar_light() = capture("home_ar_light", home)
-    @Test @Config(qualifiers = AR_DARK) fun home_ar_dark() = capture("home_ar_dark", home)
-    @Test @Config(qualifiers = TR_LIGHT) fun home_tr_light() = capture("home_tr_light", home)
-    @Test @Config(qualifiers = TR_DARK) fun home_tr_dark() = capture("home_tr_dark", home)
-    @Test @Config(qualifiers = EN_LIGHT) fun home_en_light() = capture("home_en_light", home)
-    @Test @Config(qualifiers = EN_DARK) fun home_en_dark() = capture("home_en_dark", home)
+    @Test fun welcome() = capture("welcome") { WelcomeScreen(selected = "ar", onSelect = {}, onContinue = {}) }
 
-    @Test @Config(qualifiers = AR_LIGHT) fun settings_ar_light() = capture("settings_ar_light", settings)
-    @Test @Config(qualifiers = AR_DARK) fun settings_ar_dark() = capture("settings_ar_dark", settings)
-    @Test @Config(qualifiers = TR_LIGHT) fun settings_tr_light() = capture("settings_tr_light", settings)
-    @Test @Config(qualifiers = TR_DARK) fun settings_tr_dark() = capture("settings_tr_dark", settings)
-    @Test @Config(qualifiers = EN_LIGHT) fun settings_en_light() = capture("settings_en_light", settings)
-    @Test @Config(qualifiers = EN_DARK) fun settings_en_dark() = capture("settings_en_dark", settings)
+    @Test fun signin() = capture("signin") {
+        SignInScreen(SignInUiState(googleAvailable = false, testUserAvailable = true, testUserName = "Mama"), {}, {}, {}, {})
+    }
 
-    private companion object {
-        const val PHONE = "w411dp-h891dp"
-        const val AR_LIGHT = "ar-ldrtl-$PHONE-notnight-xxhdpi"
-        const val AR_DARK = "ar-ldrtl-$PHONE-night-xxhdpi"
-        const val TR_LIGHT = "tr-ldltr-$PHONE-notnight-xxhdpi"
-        const val TR_DARK = "tr-ldltr-$PHONE-night-xxhdpi"
-        const val EN_LIGHT = "en-ldltr-$PHONE-notnight-xxhdpi"
-        const val EN_DARK = "en-ldltr-$PHONE-night-xxhdpi"
+    @Test fun profile() = capture("profile") { ProfileScreen(ProfileUiState(name = "Yasser", itemLanguage = "ar"), {}, {}, {}) }
+
+    @Test fun household_choice() = capture("household_choice") { HouseholdChoiceScreen({}, {}) }
+
+    @Test fun create_household() = capture("create_household") {
+        CreateHouseholdScreen(CreateHouseholdUiState(name = "", defaultLanguage = "ar", nameInvalid = true), {}, {}, {}, {})
+    }
+
+    @Test fun join_household() = capture("join_household") {
+        JoinHouseholdScreen(JoinHouseholdUiState(code = "ABCD2345", error = R.string.error_invite_expired), {}, {}, {}, {})
+    }
+
+    @Test fun notifications() = capture("notifications") { NotificationsScreen({}, {}) }
+
+    @Test fun members() = capture("members") {
+        MembersScreen(
+            MembersUiState(
+                members = listOf(
+                    MemberDoc("u1", Role.OWNER, "Yasser", "ar"),
+                    MemberDoc("u2", Role.ADULT, "Ayşe", "tr"),
+                    MemberDoc("u3", Role.HELPER, "Maria", "fil"),
+                    MemberDoc("u4", Role.KID, "Lina", "ar"),
+                ),
+                myUid = "u1",
+            ),
+            onInvite = {},
+            onBack = {},
+        )
+    }
+
+    @Test fun invite() = capture("invite") {
+        InviteContent(
+            InviteUiState(
+                role = Role.HELPER,
+                invite = CreateInviteResponse("ABCD2345", "https://links.example.com/join/ABCD2345", 1761384800),
+            ),
+            onRole = {},
+            onCreate = {},
+            onShare = {},
+        )
     }
 }
