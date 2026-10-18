@@ -8,7 +8,6 @@ import com.fridgelist.core.data.auth.AuthRepository
 import com.fridgelist.core.data.household.HouseholdRepository
 import com.fridgelist.core.data.session.SessionStore
 import com.fridgelist.core.model.CreateInviteResponse
-import com.fridgelist.core.model.HouseholdDoc
 import com.fridgelist.core.model.MemberDoc
 import com.fridgelist.core.model.Role
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,20 +28,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 private val WHILE_SUBSCRIBED = SharingStarted.WhileSubscribed(5_000)
-
-@OptIn(ExperimentalCoroutinesApi::class)
-@HiltViewModel
-class HomeViewModel @Inject constructor(
-    session: SessionStore,
-    households: HouseholdRepository,
-) : ViewModel() {
-    /** The current household (from the offline cache when offline). */
-    val household: StateFlow<HouseholdDoc?> = session.session
-        .map { it.householdId }
-        .distinctUntilChanged()
-        .flatMapLatest { id -> if (id == null) flowOf(null) else households.household(id).catch { emit(null) } }
-        .stateIn(viewModelScope, WHILE_SUBSCRIBED, null)
-}
 
 data class MembersUiState(
     val members: List<MemberDoc> = emptyList(),

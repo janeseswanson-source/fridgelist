@@ -33,11 +33,29 @@ data class JoinHouseholdResponse(val householdId: String, val role: String) {
     val roleEnum: Role get() = Role.fromWire(role)
 }
 
+@Serializable
+data class ParseItemsRequest(val householdId: String, val text: String, val localeHints: List<String>)
+
+@Serializable
+data class ParseItemsResponse(
+    val items: List<ParsedItem> = emptyList(),
+    val detectedLang: String? = null,
+    /** `catalog` | `llm` | `mixed` */
+    val source: String? = null,
+)
+
 /** Limits from CONTRACT §3 that the UI validates before calling the server. */
 object Limits {
     const val DISPLAY_NAME_MAX = 40
     const val HOUSEHOLD_NAME_MAX = 40
     const val LIST_NAME_MAX = 40
+    const val ITEM_NAME_MAX = 80
+    const val ITEM_NOTES_MAX = 120
+    const val QTY_MAX = 999.0
+    const val PARSE_TEXT_MAX = 500
+
+    /** Below this `ParsedItem.confidence` the app asks which meaning was meant (prompt A3). */
+    const val AMBIGUOUS_CONFIDENCE = 0.6
 }
 
 /** Roles an invite may grant (CONTRACT §3.12). */

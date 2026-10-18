@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated for A3 from one table so en/ar/tr stay aligned. -->
+<resources>
+    <string name="cat_produce">Meyve ve sebze</string>
+    <string name="cat_bakery">Fırın</string>
+    <string name="cat_dairy_eggs">Süt ürünleri ve yumurta</string>
+    <string name="cat_meat_poultry">Et ve tavuk</string>
+    <string name="cat_seafood">Balık ve deniz ürünleri</string>
+    <string name="cat_breakfast">Kahvaltılık</string>
+    <string name="cat_pantry">Temel gıda</string>
+    <string name="cat_spices_condiments">Baharat ve soslar</string>
+    <string name="cat_snacks_sweets">Atıştırmalık ve tatlı</string>
+    <string name="cat_beverages">İçecekler</string>
+    <string name="cat_frozen">Dondurulmuş</string>
+    <string name="cat_baby">Bebek</string>
+    <string name="cat_household_cleaning">Temizlik ve ev</string>
+    <string name="cat_personal_care">Kişisel bakım</string>
+    <string name="cat_pharmacy">Eczane</string>
+    <string name="cat_pets">Evcil hayvan</string>
+    <string name="cat_other">Diğer</string>
+    <string name="list_type_grocery">Market</string>
+    <string name="list_type_pharmacy">Eczane</string>
+    <string name="list_type_household">Ev</string>
+    <string name="list_type_other">Diğer</string>
+    <string name="unit_name_piece">Adet</string>
+    <string name="unit_name_kg">Kilogram</string>
+    <string name="unit_name_g">Gram</string>
+    <string name="unit_name_l">Litre</string>
+    <string name="unit_name_ml">Mililitre</string>
+    <string name="unit_name_pack">Paket</string>
+    <string name="unit_name_can">Konserve</string>
+    <string name="unit_name_bottle">Şişe</string>
+    <string name="unit_name_bag">Poşet</string>
+    <string name="unit_name_box">Kutu</string>
+    <string name="unit_name_bunch">Demet</string>
+    <string name="unit_name_tray">Viyol</string>
+    <string name="unit_kg">%1$s kg</string>
+    <string name="unit_g">%1$s g</string>
+    <string name="unit_l">%1$s L</string>
+    <string name="unit_ml">%1$s ml</string>
+    <string name="unit_none">×%1$s</string>
+    <string name="lists_new">Yeni liste</string>
+    <string name="new_list_name">Liste adı</string>
+    <string name="new_list_type">Tür</string>
+    <string name="new_list_emoji">Emoji (isteğe bağlı)</string>
+    <string name="list_empty_title">Alınacak bir şey yok</string>
+    <string name="list_empty_body">Ürün eklemek için + simgesine dokunun. Birden fazlasını tek seferde yazabilirsiniz.</string>
+    <string name="section_requests">İstekler</string>
+    <string name="section_missing">Bulunamadı</string>
+    <string name="section_done">Alındı</string>
+    <string name="item_not_synced">Henüz eşitlenmedi</string>
+    <string name="item_urgent">Acil</string>
+    <string name="item_asked_by">İsteyen: %1$s</string>
+    <string name="item_claimed_by">%1$s alıyor</string>
+    <string name="item_claimed_by_you">Siz alıyorsunuz</string>
+    <string name="guest_name">Misafir</string>
+    <string name="action_add">Ekle</string>
+    <string name="action_more">Diğer işlemler</string>
+    <string name="action_claim">Ben alırım</string>
+    <string name="action_unclaim">Almayacağım</string>
+    <string name="action_done">Alındı</string>
+    <string name="action_missing">Bulamadım</string>
+    <string name="action_reopen">Listeye geri al</string>
+    <string name="action_edit">Düzenle</string>
+    <string name="action_delete">Sil</string>
+    <string name="action_approve">Onayla</string>
+    <string name="action_reject">Reddet</string>
+    <string name="action_undo">Geri al</string>
+    <string name="undo_done">Alındı olarak işaretlendi</string>
+    <string name="undo_missing">“Bulunamadı” bölümüne taşındı</string>
+    <string name="undo_deleted">Ürün silindi</string>
+    <string name="undo_reopened">Listeye geri alındı</string>
+    <string name="undo_declined">İstek reddedildi</string>
+    <string name="undo_unclaimed">Artık almıyorsunuz</string>
+    <string name="add_title">Ürün ekle</string>
+    <string name="add_hint">ör. 2 kg domates, ekmek ve süt</string>
+    <string name="add_which_meaning">Hangisini kastettiniz? Bir dahaki sefere hatırlayacağız.</string>
+    <string name="add_remove_chip">%1$s öğesini kaldır</string>
+    <string name="add_as_request">Ürünleriniz bir yetişkinin onayını bekleyecek.</string>
+    <string name="add_checking">Kontrol ediliyor…</string>
+    <string name="edit_title">Ürünü düzenle</string>
+    <string name="edit_name">Ad</string>
+    <string name="edit_qty">Miktar</string>
+    <string name="edit_unit">Birim</string>
+    <string name="edit_unit_none">Birimsiz</string>
+    <string name="edit_notes">Notlar</string>
+    <string name="edit_category">Kategori</string>
+    <string name="edit_qty_error">0’dan büyük ve en fazla %1$s olan bir miktar girin.</string>
+    <plurals name="unit_piece">
+        <item quantity="one">%1$s adet</item>
+        <item quantity="other">%1$s adet</item>
+    </plurals>
+    <plurals name="unit_pack">
+        <item quantity="one">%1$s paket</item>
+        <item quantity="other">%1$s paket</item>
+    </plurals>
+    <plurals name="unit_can">
+        <item quantity="one">%1$s konserve</item>
+        <item quantity="other">%1$s konserve</item>
+    </plurals>
+    <plurals name="unit_bottle">
+        <item quantity="one">%1$s şişe</item>
+        <item quantity="other">%1$s şişe</item>
+    </plurals>
+    <plurals name="unit_bag">
+        <item quantity="one">%1$s poşet</item>
+        <item quantity="other">%1$s poşet</item>
+    </plurals>
+    <plurals name="unit_box">
+        <item quantity="one">%1$s kutu</item>
+        <item quantity="other">%1$s kutu</item>
+    </plurals>
+    <plurals name="unit_bunch">
+        <item quantity="one">%1$s demet</item>
+        <item quantity="other">%1$s demet</item>
+    </plurals>
+    <plurals name="unit_tray">
+        <item quantity="one">%1$s viyol</item>
+        <item quantity="other">%1$s viyol</item>
+    </plurals>
+    <plurals name="list_open_count">
+        <item quantity="one">%1$d ürün</item>
+        <item quantity="other">%1$d ürün</item>
+    </plurals>
+    <plurals name="add_confirm">
+        <item quantity="one">%1$d ürün ekle</item>
+        <item quantity="other">%1$d ürün ekle</item>
+    </plurals>
+</resources>

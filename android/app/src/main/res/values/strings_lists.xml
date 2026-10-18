@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated for A3 from one table so en/ar/tr stay aligned. -->
+<resources>
+    <string name="cat_produce">Fruit &amp; vegetables</string>
+    <string name="cat_bakery">Bakery</string>
+    <string name="cat_dairy_eggs">Dairy &amp; eggs</string>
+    <string name="cat_meat_poultry">Meat &amp; poultry</string>
+    <string name="cat_seafood">Fish &amp; seafood</string>
+    <string name="cat_breakfast">Breakfast</string>
+    <string name="cat_pantry">Pantry</string>
+    <string name="cat_spices_condiments">Spices &amp; sauces</string>
+    <string name="cat_snacks_sweets">Snacks &amp; sweets</string>
+    <string name="cat_beverages">Drinks</string>
+    <string name="cat_frozen">Frozen</string>
+    <string name="cat_baby">Baby</string>
+    <string name="cat_household_cleaning">Cleaning &amp; household</string>
+    <string name="cat_personal_care">Personal care</string>
+    <string name="cat_pharmacy">Pharmacy</string>
+    <string name="cat_pets">Pets</string>
+    <string name="cat_other">Other</string>
+    <string name="list_type_grocery">Groceries</string>
+    <string name="list_type_pharmacy">Pharmacy</string>
+    <string name="list_type_household">Household</string>
+    <string name="list_type_other">Other</string>
+    <string name="unit_name_piece">Piece</string>
+    <string name="unit_name_kg">Kilogram</string>
+    <string name="unit_name_g">Gram</string>
+    <string name="unit_name_l">Litre</string>
+    <string name="unit_name_ml">Millilitre</string>
+    <string name="unit_name_pack">Pack</string>
+    <string name="unit_name_can">Can</string>
+    <string name="unit_name_bottle">Bottle</string>
+    <string name="unit_name_bag">Bag</string>
+    <string name="unit_name_box">Box</string>
+    <string name="unit_name_bunch">Bunch</string>
+    <string name="unit_name_tray">Tray</string>
+    <string name="unit_kg">%1$s kg</string>
+    <string name="unit_g">%1$s g</string>
+    <string name="unit_l">%1$s L</string>
+    <string name="unit_ml">%1$s ml</string>
+    <string name="unit_none">×%1$s</string>
+    <string name="lists_new">New list</string>
+    <string name="new_list_name">List name</string>
+    <string name="new_list_type">Type</string>
+    <string name="new_list_emoji">Emoji (optional)</string>
+    <string name="list_empty_title">Nothing to buy</string>
+    <string name="list_empty_body">Tap + to add items. You can type several at once.</string>
+    <string name="section_requests">Requests</string>
+    <string name="section_missing">Couldn’t find</string>
+    <string name="section_done">Bought</string>
+    <string name="item_not_synced">Not synced yet</string>
+    <string name="item_urgent">Urgent</string>
+    <string name="item_asked_by">Asked by %1$s</string>
+    <string name="item_claimed_by">%1$s is getting it</string>
+    <string name="item_claimed_by_you">You’re getting it</string>
+    <string name="guest_name">Guest</string>
+    <string name="action_add">Add</string>
+    <string name="action_more">More actions</string>
+    <string name="action_claim">I’ll get it</string>
+    <string name="action_unclaim">I won’t get it</string>
+    <string name="action_done">Got it</string>
+    <string name="action_missing">Couldn’t find</string>
+    <string name="action_reopen">Back to list</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_approve">Approve</string>
+    <string name="action_reject">Decline</string>
+    <string name="action_undo">Undo</string>
+    <string name="undo_done">Marked as bought</string>
+    <string name="undo_missing">Moved to “Couldn’t find”</string>
+    <string name="undo_deleted">Item deleted</string>
+    <string name="undo_reopened">Back on the list</string>
+    <string name="undo_declined">Request declined</string>
+    <string name="undo_unclaimed">No longer getting it</string>
+    <string name="add_title">Add items</string>
+    <string name="add_hint">e.g. 2 kg tomatoes, bread and milk</string>
+    <string name="add_which_meaning">Which one did you mean? We’ll remember for next time.</string>
+    <string name="add_remove_chip">Remove %1$s</string>
+    <string name="add_as_request">Your items will wait for an adult to approve them.</string>
+    <string name="add_checking">Checking…</string>
+    <string name="edit_title">Edit item</string>
+    <string name="edit_name">Name</string>
+    <string name="edit_qty">Quantity</string>
+    <string name="edit_unit">Unit</string>
+    <string name="edit_unit_none">No unit</string>
+    <string name="edit_notes">Notes</string>
+    <string name="edit_category">Category</string>
+    <string name="edit_qty_error">Enter a quantity above 0 and up to %1$s.</string>
+    <plurals name="unit_piece">
+        <item quantity="one">%1$s piece</item>
+        <item quantity="other">%1$s pieces</item>
+    </plurals>
+    <plurals name="unit_pack">
+        <item quantity="one">%1$s pack</item>
+        <item quantity="other">%1$s packs</item>
+    </plurals>
+    <plurals name="unit_can">
+        <item quantity="one">%1$s can</item>
+        <item quantity="other">%1$s cans</item>
+    </plurals>
+    <plurals name="unit_bottle">
+        <item quantity="one">%1$s bottle</item>
+        <item quantity="other">%1$s bottles</item>
+    </plurals>
+    <plurals name="unit_bag">
+        <item quantity="one">%1$s bag</item>
+        <item quantity="other">%1$s bags</item>
+    </plurals>
+    <plurals name="unit_box">
+        <item quantity="one">%1$s box</item>
+        <item quantity="other">%1$s boxes</item>
+    </plurals>
+    <plurals name="unit_bunch">
+        <item quantity="one">%1$s bunch</item>
+        <item quantity="other">%1$s bunches</item>
+    </plurals>
+    <plurals name="unit_tray">
+        <item quantity="one">%1$s tray</item>
+        <item quantity="other">%1$s trays</item>
+    </plurals>
+    <plurals name="list_open_count">
+        <item quantity="one">%1$d to buy</item>
+        <item quantity="other">%1$d to buy</item>
+    </plurals>
+    <plurals name="add_confirm">
+        <item quantity="one">Add %1$d item</item>
+        <item quantity="other">Add %1$d items</item>
+    </plurals>
+</resources>

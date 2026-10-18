@@ -62,7 +62,14 @@ class Catalog(seed: CatalogSeed) {
      * "Always prefer the longest synonym match"); else a dialect word resolved by locale hint.
      * Returns null when nothing matches or a dialect word stays ambiguous.
      */
-    fun guessCanonical(nameKeys: List<String>, localeHints: List<String>): String? {
+    fun guessCanonical(
+        nameKeys: List<String>,
+        localeHints: List<String>,
+        aliases: Map<String, String> = emptyMap(),
+    ): String? {
+        // 1. Household alias for the whole name (CONTRACT §3.16), then for any single word.
+        aliases[nameKeys.joinToString(" ")]?.let { return it }
+        nameKeys.firstNotNullOfOrNull { aliases[it] ?: aliases[stripArticle(it)] }?.let { return it }
         for (len in minOf(longestSynonymWords, nameKeys.size) downTo 1) {
             for (start in 0..nameKeys.size - len) {
                 val phrase = nameKeys.subList(start, start + len).joinToString(" ")
@@ -76,6 +83,23 @@ class Catalog(seed: CatalogSeed) {
         }
         return null
     }
+
+    /**
+     * When a name is only a dialect word that the locale hints can't settle (e.g. "عيش" without
+     * ar-EG), returns the word's match key and its candidate canonicalIds so the app can ask once.
+     * Null when the name is not ambiguous (an alias or a longer synonym decides it).
+     */
+    fun ambiguity(nameKeys: List<String>, localeHints: List<String>, aliases: Map<String, String> = emptyMap()): Ambiguity? {
+        if (guessCanonical(nameKeys, localeHints, aliases) != null) return null
+        val key = nameKeys.firstOrNull { dialectRule(it) != null } ?: return null
+        return Ambiguity(stripArticle(key), dialectRule(key)!!.candidates)
+    }
+
+    data class Ambiguity(val wordKey: String, val candidates: List<String>)
+
+    /** A catalog item's name for display, in [lang] or English. */
+    fun displayName(canonicalId: String, lang: String): String? =
+        item(canonicalId)?.names?.let { it[lang] ?: it["en"] }
 
     companion object {
         const val EGGS_ID = "eggs"

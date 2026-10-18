@@ -35,6 +35,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.os.ConfigurationCompat
@@ -78,8 +80,11 @@ fun MembersScreen(state: MembersUiState, onInvite: () -> Unit, onBack: () -> Uni
         },
         floatingActionButton = {
             if (state.canInvite) {
-                ExtendedFloatingActionButton(
+                val label = stringResource(R.string.members_invite)
+            ExtendedFloatingActionButton(
                     onClick = onInvite,
+                // This Material version does not expose the FAB text to TalkBack; label it explicitly.
+                modifier = Modifier.semantics { contentDescription = label },
                     icon = { Icon(painterResource(R.drawable.ic_share), contentDescription = null) },
                     text = { Text(stringResource(R.string.members_invite)) },
                 )

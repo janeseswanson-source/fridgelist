@@ -10,6 +10,11 @@ import com.fridgelist.core.data.device.FirebasePushTokenProvider
 import com.fridgelist.core.data.device.PushTokenProvider
 import com.fridgelist.core.data.household.FirebaseHouseholdRepository
 import com.fridgelist.core.data.household.HouseholdRepository
+import com.fridgelist.core.data.items.AliasRepository
+import com.fridgelist.core.data.items.FirestoreItemsData
+import com.fridgelist.core.data.items.ItemRepository
+import com.fridgelist.core.data.items.ListRepository
+import com.fridgelist.core.data.items.ParseRepository
 import com.fridgelist.core.data.session.DataStoreSessionStore
 import com.fridgelist.core.data.session.SessionStore
 import com.fridgelist.core.data.user.FirestoreUserRepository
@@ -35,4 +40,12 @@ interface DataModule {
     @Binds fun pushTokens(impl: FirebasePushTokenProvider): PushTokenProvider
 
     @Binds fun devices(impl: DeviceRegistrar): DeviceRegistry
+
+    @Binds fun lists(impl: FirestoreItemsData): ListRepository
+
+    @Binds fun items(impl: FirestoreItemsData): ItemRepository
+
+    @Binds fun aliases(impl: FirestoreItemsData): AliasRepository
+
+    @Binds fun parse(impl: FirestoreItemsData): ParseRepository
 }

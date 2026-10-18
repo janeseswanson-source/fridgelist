@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.fridgelist.app.AppViewModel
 import com.fridgelist.app.feature.home.HomeRoute
 import com.fridgelist.app.feature.household.MembersRoute
+import com.fridgelist.app.feature.lists.ListDetailRoute
 import com.fridgelist.app.feature.onboarding.CreateHouseholdRoute
 import com.fridgelist.app.feature.onboarding.HouseholdChoiceScreen
 import com.fridgelist.app.feature.onboarding.JoinHouseholdRoute
@@ -22,7 +23,7 @@ import com.fridgelist.app.feature.settings.SettingsRoute
 import com.fridgelist.core.data.session.OnboardingStep
 import kotlinx.serialization.Serializable
 
-// Type-safe routes. Later milestones add lists, list detail, shopping.
+// Type-safe routes. Later milestones add shopping, trips, planner.
 @Serializable data object Welcome
 @Serializable data object SignIn
 @Serializable data object Profile
@@ -31,6 +32,7 @@ import kotlinx.serialization.Serializable
 @Serializable data class JoinHousehold(val code: String? = null)
 @Serializable data object Notifications
 @Serializable data object Home
+@Serializable data class ListDetail(val listId: String)
 @Serializable data object Members
 @Serializable data object Settings
 
@@ -40,6 +42,14 @@ private fun OnboardingStep.route(): Any = when (this) {
     OnboardingStep.HOUSEHOLD -> HouseholdChoice
     OnboardingStep.NOTIFICATIONS -> Notifications
     OnboardingStep.DONE -> Home
+}
+
+/**
+ * In-app Back. Pops only when there is a screen underneath: a fast double tap (or a keyboard
+ * Space/Enter repeat) used to pop the last screen too and leave the app blank.
+ */
+private fun NavController.popIfCan() {
+    if (previousBackStackEntry != null) popBackStack()
 }
 
 /** Moves to an onboarding step and clears the back stack, so Back never returns to a finished step. */
@@ -69,7 +79,7 @@ fun FridgeListNavHost(start: OnboardingStep, app: AppViewModel) {
 
     NavHost(navController = nav, startDestination = start.route()) {
         composable<Welcome> { WelcomeRoute(onContinue = { nav.navigate(SignIn) }) }
-        composable<SignIn> { SignInRoute(onNext = onNext, onBack = { nav.popBackStack() }) }
+        composable<SignIn> { SignInRoute(onNext = onNext, onBack = { nav.popIfCan() }) }
         composable<Profile> { ProfileRoute(onNext = onNext) }
         composable<HouseholdChoice> {
             HouseholdChoiceScreen(
@@ -77,16 +87,21 @@ fun FridgeListNavHost(start: OnboardingStep, app: AppViewModel) {
                 onJoin = { nav.navigate(JoinHousehold()) },
             )
         }
-        composable<CreateHousehold> { CreateHouseholdRoute(onNext = onNext, onBack = { nav.popBackStack() }) }
-        composable<JoinHousehold> { JoinHouseholdRoute(onNext = onNext, onBack = { nav.popBackStack() }) }
+        composable<CreateHousehold> { CreateHouseholdRoute(onNext = onNext, onBack = { nav.popIfCan() }) }
+        composable<JoinHousehold> { JoinHouseholdRoute(onNext = onNext, onBack = { nav.popIfCan() }) }
         composable<Notifications> { NotificationsRoute(onNext = onNext) }
         composable<Home> {
-            HomeRoute(onOpenMembers = { nav.navigate(Members) }, onOpenSettings = { nav.navigate(Settings) })
+            HomeRoute(
+                onOpenList = { nav.navigate(ListDetail(it)) },
+                onOpenMembers = { nav.navigate(Members) },
+                onOpenSettings = { nav.navigate(Settings) },
+            )
         }
-        composable<Members> { MembersRoute(onBack = { nav.popBackStack() }) }
+        composable<ListDetail> { ListDetailRoute(onBack = { nav.popIfCan() }) }
+        composable<Members> { MembersRoute(onBack = { nav.popIfCan() }) }
         composable<Settings> {
             SettingsRoute(
-                onBack = { nav.popBackStack() },
+                onBack = { nav.popIfCan() },
                 onSignedOut = { nav.goTo(OnboardingStep.WELCOME, null) },
             )
         }

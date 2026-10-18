@@ -15,9 +15,55 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | Backend | B1 Scaffold | not started | | |
 | Android | A1 Scaffold | done | 2026-10-18 | core:i18n passes 28/28 fixture cases (18/18 split required) |
 | Android | A2 Sign-in, onboarding, household | done, E2E pending B3 | 2026-10-18 | two-user join test written; skips until backend B3 callables run on the emulator |
+| Android | A3 Lists and items, offline-first | done, server part pending B4 | 2026-10-19 | offline add/tick/undo/delete → sync verified (instrumented test + device); categories/translations wait for B4 |
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Android A3 Lists and items, offline-first
+- Shipped:
+  - Home = the household's lists with open counts (Arabic plurals). Owner and adults can create lists offline: name, type, one-grapheme emoji.
+  - List detail, sections in this order:
+    - Requests (kids' `pending`, approve/decline for owner/adult)
+    - to-buy grouped in the CONTRACT §2 category order
+    - Couldn't find
+    - Bought (collapsed)
+  - Rows use the display rule (§4.3) with the original underneath, localized quantity/unit (counted units use plurals), urgent, "asked by" (members, or "Guest" for `guest:` adds), "X is getting it", and a "not synced yet" marker from Firestore pending writes.
+  - Actions:
+    - checkbox / swipe toward the end = bought
+    - swipe toward the start = couldn't find
+    - menu: claim/release, reopen, edit, delete
+    - only moves the §3.6 table allows are offered (`StatusRules` in core:model, one test per table row)
+    - Undo for every status change, decline and delete. Deletes are hidden at once and written when the snackbar closes, because re-creating someone else's item would break the create rule.
+  - Edit sheet: qty (accepts ١٫٥ / 1,5), unit, category (written with `categorySource: user`), notes, urgent. The name is editable by the creator only.
+  - Add sheet:
+    - local split chips at once, then `parseItems` refines after a 700 ms pause when online; any failure keeps the local chips
+    - confirm writes `addedVia: app_text`, `status` open (or pending for kids), server timestamps, and no server-owned fields (no `category`/`lang`/`names`/`canonicalId`)
+  - Ambiguous dialect words: chips offer the catalog's candidates (works offline). The pick is saved as a household alias (§3.16 ID = first 32 hex of SHA-256 of the normalized text). The local splitter reads aliases first (ARCHITECTURE §4.1 order).
+  - Until the server classifies an item, it is grouped by the local catalog's category guess (display only, never written).
+- Tests: `./gradlew lint testDevDebugUnitTest assembleDevDebug` → BUILD SUCCESSFUL, lint "No issues found".
+  - 245 unit tests, 0 failures: core:model 19, core:i18n 68 (fixtures still 28/28), core:data 22, app 136. 102 Roborazzi screenshots (17 screens × ar/tr/en × light/dark).
+  - `connectedDevDebugAndroidTest` against the Firestore emulator: `OfflineItemsTest` passes (network off → add 2, tick, undo, delete → network on → server state checked). The two-user join test still skips (needs B3).
+  - Device, Arabic, airplane mode on the API 36 emulator:
+    - added "milk, 6 eggs and bread" → rows appeared at once, grouped, marked not synced
+    - ticked and undid offline
+    - airplane mode off → synced with no pending markers
+    - server shows milk/eggs `done`, bread `open` with the done fields cleared
+  - The household was seeded straight into the emulator in place of `createHousehold`. Sign-in then restored it from `users/{uid}.householdIds`, which also exercises the new-phone path.
+- Fixed along the way:
+  - **Double Back emptied the back stack**, leaving a blank screen (fast double tap, or keyboard Space/Enter). In-app Back now only pops when a screen is underneath.
+  - Extended FABs (Add, New list, Invite) didn't expose their label to TalkBack in this Material version; they now have explicit labels. Row checkboxes are labelled with the item title.
+  - The Undo snackbar now uses the long duration (it was gone in ~4 s).
+  - The household context now waits for the first members snapshot (from cache when offline). A provisional least-privileged role could otherwise have turned an adult's adds into kid requests.
+  - The notification step's `finish()` is idempotent.
+- Notes for the backend session (B2/B4):
+  - Items are created **without** `category`, `categorySource`, `lang`, `names` or `canonicalId`; `onItemCreated` must fill them. Undo/Release send `FieldValue.delete()` for `claimedBy`, `doneBy`, `doneAt` and `doneTripId`.
+  - Deletes come from any member for non-pending items, and from owner/adult for `pending` ones (`StatusRules.canDelete`). B2 rules should match, or tell me the intended rule.
+  - Aliases are written as `{text, canonicalId, createdBy, createdAt}` with the §3.16 ID; `text` = normalized text as in `Normalize.matchKey` (Kotlin), so the TypeScript normalization must produce the same key.
+  - For ambiguous words the app uses the catalog's `dialectRules` candidates. It does not parse `ParsedItem.notes`, so the B4 "alternatives in notes" format is free.
+- Next: A4 (voice add).
+- Open questions for the owner: unchanged (application ID, `google-services.json` + Web client ID, brand colours).
+- Contract changes: none.
 
 ### 2026-10-18 — Android A2 Sign-in, onboarding, household
 - Shipped:

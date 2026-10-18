@@ -17,17 +17,23 @@ class LocalSplitter(private val catalog: Catalog = Catalog.bundled) {
         val unit: ItemUnit? = null,
         /** Local best guess; the server's `canonicalId` wins. */
         val canonicalId: String? = null,
+        /** Set when a dialect word stays ambiguous: the app asks once and saves an alias. */
+        val ambiguity: Catalog.Ambiguity? = null,
     )
 
     /** One word as typed ([raw]) plus its comparison key. */
     private data class Token(val raw: String, val key: String)
 
-    fun split(text: String, localeHints: List<String> = emptyList()): List<Item> {
+    /**
+     * @param aliases household aliases (CONTRACT §3.16) as normalized text → canonicalId; they win
+     *   over dialect rules and the catalog (ARCHITECTURE §4.1 resolution order).
+     */
+    fun split(text: String, localeHints: List<String> = emptyList(), aliases: Map<String, String> = emptyMap()): List<Item> {
         val turkish = Normalize.isTurkish(localeHints)
         return chunks(text)
             .flatMap { chunk -> segments(tokens(chunk, turkish)) }
             .flatMap { coverSplit(it) }
-            .mapNotNull { toItem(it, localeHints, turkish) }
+            .mapNotNull { toItem(it, localeHints, turkish, aliases) }
     }
 
     // --- 1. Hard separators: commas (not decimal commas), Arabic comma, semicolons, &, +, new lines.
@@ -110,7 +116,7 @@ class LocalSplitter(private val catalog: Catalog = Catalog.bundled) {
     }
 
     // --- 4. Filler, quantity and unit, name.
-    private fun toItem(segment: List<Token>, localeHints: List<String>, turkish: Boolean): Item? {
+    private fun toItem(segment: List<Token>, localeHints: List<String>, turkish: Boolean, aliases: Map<String, String>): Item? {
         val tokens = stripFiller(segment)
         if (tokens.isEmpty()) return null
 
@@ -134,13 +140,15 @@ class LocalSplitter(private val catalog: Catalog = Catalog.bundled) {
         if (nameTokens.isEmpty()) return null
 
         val name = nameTokens.joinToString(" ") { it.raw }
-        val canonicalId = catalog.guessCanonical(nameTokens.map { it.key }, localeHints)
+        val nameKeys = nameTokens.map { it.key }
+        val canonicalId = catalog.guessCanonical(nameKeys, localeHints, aliases)
         val unit = when {
             unitWord != null -> Units.resolve(unitWord, canonicalId, catalog)
             scale12 -> ItemUnit.PIECE
             else -> null
         }
-        return Item(name = name, qty = qty, unit = unit, canonicalId = canonicalId)
+        val ambiguity = if (canonicalId == null) catalog.ambiguity(nameKeys, localeHints, aliases) else null
+        return Item(name = name, qty = qty, unit = unit, canonicalId = canonicalId, ambiguity = ambiguity)
     }
 
     private fun stripFiller(tokens: List<Token>): List<Token> {

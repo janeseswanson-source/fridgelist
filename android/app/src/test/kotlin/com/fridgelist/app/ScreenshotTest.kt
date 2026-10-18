@@ -65,7 +65,9 @@ class ScreenshotTest(private val config: String, private val qualifiers: String)
     private fun capture(screen: String, content: @Composable () -> Unit) =
         captureRoboImage("src/test/screenshots/${screen}_$config.png") { FridgeListTheme { content() } }
 
-    @Test fun home() = capture("home") { HomeScreen("بيت العائلة", {}, {}) }
+    @Test fun home() = capture("home") { HomeScreen(Samples.lists, {}, {}, {}, {}) }
+
+    @Test fun home_empty() = capture("home_empty") { HomeScreen(Samples.lists.copy(lists = emptyList()), {}, {}, {}, {}) }
 
     @Test fun settings() = capture("settings") {
         SettingsScreen(

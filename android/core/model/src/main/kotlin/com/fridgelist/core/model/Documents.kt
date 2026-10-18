@@ -75,7 +75,8 @@ data class ItemDoc(
     val lang: String? = null,
     val names: Map<String, String>? = null,
     val canonicalId: String? = null,
-    val category: Category = Category.OTHER,
+    /** Null until the server classifies the item (onItemCreated) or a member sets it. */
+    val category: Category? = null,
     val categorySource: CategorySource = CategorySource.AUTO,
     val qty: Double? = null,
     val unit: ItemUnit? = null,

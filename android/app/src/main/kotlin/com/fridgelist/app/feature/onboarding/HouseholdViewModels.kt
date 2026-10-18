@@ -148,7 +148,12 @@ class NotificationsViewModel @Inject constructor(
     private val _next = MutableStateFlow<OnboardingStep?>(null)
     val next: StateFlow<OnboardingStep?> = _next.asStateFlow()
 
+    private var finishing = false
+
+    /** Idempotent: the permission result and the "already granted" check may both call it. */
     fun finish() {
+        if (finishing) return
+        finishing = true
         viewModelScope.launch {
             session.markNotificationsAsked()
             _next.value = steps.next()
