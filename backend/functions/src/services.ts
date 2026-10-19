@@ -3,6 +3,7 @@ import { defineSecret, defineString } from "firebase-functions/params";
 import { AnthropicTransport } from "./llm/anthropic.js";
 import { ClassifyingLlm, NO_LLM, type LlmProvider } from "./llm/provider.js";
 import { Catalog } from "./lib/catalog.js";
+import { LlmMealPlanner, NO_MEALS, type MealPlanner } from "./meals/planner.js";
 import type { CachedCandidate, CandidateCache } from "./lib/resolve.js";
 import { createHash } from "node:crypto";
 
@@ -18,6 +19,17 @@ export function fastLlm(): LlmProvider {
   return new ClassifyingLlm(
     new AnthropicTransport(key),
     LLM_MODEL_FAST.value(),
+    Catalog.bundled.items.map((item) => item.id),
+  );
+}
+
+/** The smart model for meal plans (prompt B8); no key → every plan is `unavailable`. */
+export function smartMealPlanner(): MealPlanner {
+  const key = ANTHROPIC_API_KEY.value();
+  if (!key) return NO_MEALS;
+  return new LlmMealPlanner(
+    new AnthropicTransport(key),
+    LLM_MODEL_SMART.value(),
     Catalog.bundled.items.map((item) => item.id),
   );
 }

@@ -17,6 +17,7 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | Backend | B1 Scaffold | done | 2026-10-19 | `npm run emulators` builds, starts Auth/Firestore/Functions/Hosting/Storage/Pub/Sub and seeds |
 | Backend | B2 Security rules | done | 2026-10-19 | 144 rules tests (full §3.6 matrix); Android offline flow passes the real rules |
 | Backend | B3 Households, invites, devices | done | 2026-10-19 | callables + `onMemberWritten`; Android two-user join passes against it |
+| Backend | B8 Meals and the Ramadan planner | done, real recordings and dish review pending | 2026-10-19 | 43 seed dishes for owner review; LLM behind an interface, replay-tested |
 | Backend | B7 Share links, guest page, link hosting | done, placeholders for domain/fingerprints/team ID/App Check key | 2026-10-19 | guest E2E through the Hosting emulator; Lighthouse mobile 99/100/100 |
 | Backend | B6 Trips, notifications, live surfaces | done, real delivery needs the dev project | 2026-10-19 | every push type snapshot-tested in ar/tr/en; throttle, stale job; Android trip E2E |
 | Backend | B5 Stores | done, real import awaits owner OK | 2026-10-19 | UAE and Saudi dry runs on live OSM data; `nearbyStores`/`addStore` |
@@ -30,6 +31,37 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Backend B8 Meals and the Ramadan planner
+- Built without an API key (as with B4): the smart-model planner sits behind `MealPlanner` and is tested with fakes and a record/replay round trip. **No real model output has been produced or reviewed yet.**
+- Shipped:
+  - **`functions/src/meals/seed_dishes.json`, flagged for owner review:** 43 regional dishes.
+    - By cuisine: Levantine 11, Gulf 11, Turkish 11, Egyptian 7, international 3.
+    - Occasion coverage: iftar 28, everyday 25, guests 17, suhoor 10, eid 9.
+    - Each has names in ar/tr/en, a cuisine, occasions and ingredients per 4 servings.
+    - Ingredients use catalog `canonicalId`s where one exists (all verified by a test); the rest (cumin, jameed, freekeh, güllaç sheets…) carry ar/tr/en names.
+    - Examples: lentil soup, fattoush, mansaf, maqluba, qatayef, kabsa, mandi, harees, luqaimat, balaleet, Mercimek çorbası, Ramazan pidesi, güllaç, menemen, koshari, molokhia, fatta, kunafa, kahk.
+  - `suggestMeals`:
+    - members; **10 calls per hour per household**;
+    - candidates from the seed by occasion and cuisine, minus `exclude` (dish ids or names in any language);
+    - **6–10 meals** (PRODUCT_SPEC F11; more with more days), planned by `LLM_MODEL_SMART` with titles and descriptions in the requested language and the household's;
+    - zod validation (exact count, every language present, units, catalog ids checked), one retry, then **`unavailable`**, because ARCHITECTURE §3.5 gives meals no offline fallback;
+    - each meal is cached in `mealSuggestions` (CONTRACT §3.10 fields, `expireAt` + 7 days); the response is `{mealId, title, description, servings, cuisine, tags}`.
+  - `mealToItems`:
+    - scales each meal from its servings to `people`; merges the same ingredient across meals (canonicalId, else normalized name, same unit);
+    - rounds for shopping: kg/l up to 0.25, g/ml up to 50, counted units up to whole ones, capped at 999;
+    - skips what's on the list (open, claimed or requested, matched by canonicalId or any of the item's names in any language) → `on_list`, and anything bought in the last 7 days → `recently_bought`;
+    - returns `ParsedItem`s named in `lang` (catalog names, else the LLM translation via the B4 resolver, else English); no writes, since the apps confirm and write with `addedVia: meal_plan`.
+  - Prompt: `llm/prompts/meals.md` (occasion guidance, prefer candidates, no pork or alcohol, shopping-only ingredients).
+  - `RECORD=1` recorder: one real plan per occasion → `test/recordings/` plus a readable `meals-review.json` for the owner.
+- Tests: **260 unit** (8 new for seed integrity, candidates and exclusion, suggestion counts, shopping rounding, scale-and-merge, planner validation/retry/unknown-ID dropping and record → replay) + **221 emulator** (5 new for `suggestMeals` caching/languages/servings, `unavailable`, members, validation, 10/hour, and `mealToItems` scaling 4 → 8, merging, `on_list` in another language, `recently_bought` vs a 9-day-old purchase, expired/unknown meals and lists).
+- On the dev emulators, `suggestMeals` without a key answers `UNAVAILABLE` ("Meal ideas are unavailable right now.").
+- The Remote Config flags `meal_planner_enabled` and `ramadan_planner_enabled` are app-side gates (defaults in B9).
+- Contract changes: none.
+- Owner actions:
+  - review `seed_dishes.json` (names, dialect spellings, amounts, occasions);
+  - with a key: `RECORD=1 ANTHROPIC_API_KEY=… npx vitest run test/meals.test.ts`, then review `test/recordings/meals-review.json`.
+- Next: B9 (accounts and operations: `exportMyData`, `deleteMyAccount`, `cleanupLinks`, TTL policies, Remote Config defaults, RUNBOOK).
 
 ### 2026-10-19 — Backend B7 Share links, guest page, link hosting
 - Built with placeholders (owner's choice): `LINK_DOMAIN`, the Android SHA-256 fingerprints, `APPLE_TEAM_ID`, the web App Check site key and the store URLs. `hosting/build.ts` lists every placeholder still in use on each build.

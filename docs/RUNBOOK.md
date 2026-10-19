@@ -140,6 +140,17 @@ curl -s -X POST -H "Content-Type: application/json" -d '{"data":{}}' \
   Then verify with Google's Statement List Tester and Apple's AASA validator.
 - **App Check (owner):** register the web app with reCAPTCHA Enterprise in Firebase Console > App Check, put the site key in `hosting/signing.json`, then enforce App Check for Cloud Functions. Android (Play Integrity) and iOS (App Attest) come with A11/I13.
 
+### Meals (B8)
+
+- `suggestMeals` (members, 10/hour/household; needs the API key, else `unavailable`) and `mealToItems` (no writes).
+- Seed dishes: `functions/src/meals/seed_dishes.json`. A test checks every `canonicalId` against the catalog and every unit; edit it there and run the tests.
+- Record one real plan per occasion for review (a few cents):
+  ```sh
+  cd backend/functions
+  RECORD=1 ANTHROPIC_API_KEY=sk-ant-... npx vitest run test/meals.test.ts
+  ```
+  This writes `test/recordings/*.json` (replayable) and `test/recordings/meals-review.json` (readable). Commit both after review.
+
 ## 3. Projects and regions
 
 - `.firebaserc` aliases: `dev` → `fridgelist-dev-TODO`, `prod` → `fridgelist-prod-TODO`. These are placeholders until the owner creates the projects.

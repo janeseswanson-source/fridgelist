@@ -1,0 +1,688 @@
+{
+  "version": 1,
+  "reviewNote": "FOR OWNER REVIEW (prompt B8): regional dishes that ground meal suggestions. Quantities are per `servings` (4) and approximate. Ingredients use catalog canonicalIds where one exists; others carry names in ar/tr/en. Please check names, dialect spellings, occasions and amounts before launch.",
+  "dishes": [
+    {
+      "id": "lentil_soup",
+      "names": { "ar": "شوربة عدس", "tr": "Mercimek çorbası (Arap usulü)", "en": "Red lentil soup" },
+      "cuisine": "levantine",
+      "occasions": ["iftar", "everyday"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "lentils_red", "qty": 0.3, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "lemon", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "olive_oil", "qty": 0.05, "unit": "l" },
+        { "names": { "ar": "كمون", "tr": "Kimyon", "en": "Cumin" }, "qty": 1, "unit": "pack" }
+      ]
+    },
+    {
+      "id": "fattoush",
+      "names": { "ar": "فتوش", "tr": "Fattuş salatası", "en": "Fattoush" },
+      "cuisine": "levantine",
+      "occasions": ["iftar", "everyday", "guests"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "lettuce", "qty": 1, "unit": "piece" },
+        { "canonicalId": "tomato", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "cucumber", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "parsley", "qty": 1, "unit": "bunch" },
+        { "canonicalId": "mint", "qty": 1, "unit": "bunch" },
+        { "canonicalId": "arabic_bread", "qty": 1, "unit": "bag" },
+        { "canonicalId": "lemon", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "olive_oil", "qty": 0.06, "unit": "l" },
+        { "names": { "ar": "سماق", "tr": "Sumak", "en": "Sumac" }, "qty": 1, "unit": "pack" }
+      ]
+    },
+    {
+      "id": "tabbouleh",
+      "names": { "ar": "تبولة", "tr": "Tabule", "en": "Tabbouleh" },
+      "cuisine": "levantine",
+      "occasions": ["iftar", "everyday", "guests"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "parsley", "qty": 3, "unit": "bunch" },
+        { "canonicalId": "mint", "qty": 1, "unit": "bunch" },
+        { "canonicalId": "bulgur", "qty": 0.1, "unit": "kg" },
+        { "canonicalId": "tomato", "qty": 0.4, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 0.1, "unit": "kg" },
+        { "canonicalId": "lemon", "qty": 0.3, "unit": "kg" },
+        { "canonicalId": "olive_oil", "qty": 0.06, "unit": "l" }
+      ]
+    },
+    {
+      "id": "hummus",
+      "names": { "ar": "حمص بطحينة", "tr": "Humus", "en": "Hummus" },
+      "cuisine": "levantine",
+      "occasions": ["iftar", "suhoor", "everyday", "guests"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "chickpeas", "qty": 0.4, "unit": "kg" },
+        { "canonicalId": "tahini", "qty": 1, "unit": "pack" },
+        { "canonicalId": "lemon", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "garlic", "qty": 1, "unit": "piece" },
+        { "canonicalId": "olive_oil", "qty": 0.03, "unit": "l" }
+      ]
+    },
+    {
+      "id": "mansaf",
+      "names": { "ar": "منسف", "tr": "Mansaf", "en": "Mansaf" },
+      "cuisine": "levantine",
+      "occasions": ["eid", "guests", "iftar"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "lamb", "qty": 1.5, "unit": "kg" },
+        { "canonicalId": "rice", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "arabic_bread", "qty": 1, "unit": "bag" },
+        {
+          "names": { "ar": "جميد", "tr": "Kurutulmuş yoğurt (cemid)", "en": "Jameed (dried yogurt)" },
+          "qty": 1,
+          "unit": "pack"
+        },
+        { "names": { "ar": "سمن", "tr": "Sade yağ", "en": "Ghee" }, "qty": 1, "unit": "pack" },
+        { "names": { "ar": "لوز", "tr": "Badem", "en": "Almonds" }, "qty": 0.1, "unit": "kg" }
+      ]
+    },
+    {
+      "id": "maqluba",
+      "names": { "ar": "مقلوبة", "tr": "Maklube", "en": "Maqluba" },
+      "cuisine": "levantine",
+      "occasions": ["iftar", "guests", "everyday"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "chicken", "qty": 1.2, "unit": "kg" },
+        { "canonicalId": "rice", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "eggplant", "qty": 0.8, "unit": "kg" },
+        { "canonicalId": "potato", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "cooking_oil", "qty": 0.3, "unit": "l" }
+      ]
+    },
+    {
+      "id": "musakhan",
+      "names": { "ar": "مسخن", "tr": "Musahhan", "en": "Musakhan" },
+      "cuisine": "levantine",
+      "occasions": ["guests", "iftar"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "chicken", "qty": 1.5, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 1, "unit": "kg" },
+        { "canonicalId": "olive_oil", "qty": 0.2, "unit": "l" },
+        { "canonicalId": "arabic_bread", "qty": 1, "unit": "bag" },
+        { "names": { "ar": "سماق", "tr": "Sumak", "en": "Sumac" }, "qty": 1, "unit": "pack" }
+      ]
+    },
+    {
+      "id": "kafta_tray",
+      "names": { "ar": "كفتة بالصينية", "tr": "Fırında köfte patates", "en": "Baked kofta with potatoes" },
+      "cuisine": "levantine",
+      "occasions": ["everyday", "iftar"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "minced_meat", "qty": 0.8, "unit": "kg" },
+        { "canonicalId": "potato", "qty": 0.8, "unit": "kg" },
+        { "canonicalId": "tomato", "qty": 0.6, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "parsley", "qty": 1, "unit": "bunch" }
+      ]
+    },
+    {
+      "id": "qatayef",
+      "names": { "ar": "قطايف", "tr": "Katayef", "en": "Qatayef" },
+      "cuisine": "levantine",
+      "occasions": ["iftar"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "flour", "qty": 0.4, "unit": "kg" },
+        { "canonicalId": "sugar", "qty": 0.3, "unit": "kg" },
+        { "canonicalId": "milk", "qty": 0.5, "unit": "l" },
+        { "names": { "ar": "جوز", "tr": "Ceviz", "en": "Walnuts" }, "qty": 0.2, "unit": "kg" },
+        { "names": { "ar": "خميرة", "tr": "Maya", "en": "Yeast" }, "qty": 1, "unit": "pack" }
+      ]
+    },
+    {
+      "id": "manakish_zaatar",
+      "names": { "ar": "مناقيش زعتر", "tr": "Zahterli pide", "en": "Zaatar manakish" },
+      "cuisine": "levantine",
+      "occasions": ["suhoor", "everyday"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "flour", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "zaatar", "qty": 1, "unit": "pack" },
+        { "canonicalId": "olive_oil", "qty": 0.1, "unit": "l" },
+        { "names": { "ar": "خميرة", "tr": "Maya", "en": "Yeast" }, "qty": 1, "unit": "pack" }
+      ]
+    },
+    {
+      "id": "maamoul",
+      "names": { "ar": "معمول", "tr": "Mamul kurabiyesi", "en": "Maamoul" },
+      "cuisine": "levantine",
+      "occasions": ["eid"],
+      "servings": 4,
+      "ingredients": [
+        { "names": { "ar": "سميد", "tr": "İrmik", "en": "Semolina" }, "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "butter", "qty": 2, "unit": "pack" },
+        { "names": { "ar": "عجوة", "tr": "Hurma ezmesi", "en": "Date paste" }, "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "sugar", "qty": 0.1, "unit": "kg" }
+      ]
+    },
+    {
+      "id": "chicken_kabsa",
+      "names": { "ar": "كبسة دجاج", "tr": "Tavuklu kabsa", "en": "Chicken kabsa" },
+      "cuisine": "gulf",
+      "occasions": ["iftar", "guests", "everyday"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "chicken", "qty": 1.5, "unit": "kg" },
+        { "canonicalId": "rice_basmati", "qty": 0.75, "unit": "kg" },
+        { "canonicalId": "tomato", "qty": 0.3, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "tomato_paste", "qty": 1, "unit": "can" },
+        { "canonicalId": "cardamom", "qty": 1, "unit": "pack" },
+        {
+          "names": { "ar": "بهارات كبسة", "tr": "Kabsa baharatı", "en": "Kabsa spice mix" },
+          "qty": 1,
+          "unit": "pack"
+        }
+      ]
+    },
+    {
+      "id": "lamb_mandi",
+      "names": { "ar": "مندي لحم", "tr": "Kuzu mandi", "en": "Lamb mandi" },
+      "cuisine": "gulf",
+      "occasions": ["guests", "eid"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "lamb", "qty": 1.5, "unit": "kg" },
+        { "canonicalId": "rice_basmati", "qty": 0.75, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 0.2, "unit": "kg" },
+        {
+          "names": { "ar": "بهارات مندي", "tr": "Mandi baharatı", "en": "Mandi spice mix" },
+          "qty": 1,
+          "unit": "pack"
+        }
+      ]
+    },
+    {
+      "id": "chicken_machboos",
+      "names": { "ar": "مجبوس دجاج", "tr": "Tavuklu machboos", "en": "Chicken machboos" },
+      "cuisine": "gulf",
+      "occasions": ["iftar", "everyday", "guests"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "chicken", "qty": 1.4, "unit": "kg" },
+        { "canonicalId": "rice_basmati", "qty": 0.6, "unit": "kg" },
+        { "canonicalId": "tomato", "qty": 0.4, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 0.3, "unit": "kg" },
+        {
+          "names": { "ar": "لومي", "tr": "Kuru limon (loomi)", "en": "Dried lime (loomi)" },
+          "qty": 1,
+          "unit": "pack"
+        }
+      ]
+    },
+    {
+      "id": "harees",
+      "names": { "ar": "هريس", "tr": "Harees (dövme buğday)", "en": "Harees" },
+      "cuisine": "gulf",
+      "occasions": ["iftar", "eid"],
+      "servings": 4,
+      "ingredients": [
+        {
+          "names": { "ar": "قمح مقشور", "tr": "Dövme buğday", "en": "Peeled wheat" },
+          "qty": 0.5,
+          "unit": "kg"
+        },
+        { "canonicalId": "lamb", "qty": 0.8, "unit": "kg" },
+        { "names": { "ar": "سمن", "tr": "Sade yağ", "en": "Ghee" }, "qty": 1, "unit": "pack" }
+      ]
+    },
+    {
+      "id": "thareed",
+      "names": { "ar": "ثريد", "tr": "Tirit", "en": "Thareed" },
+      "cuisine": "gulf",
+      "occasions": ["iftar"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "lamb", "qty": 1, "unit": "kg" },
+        { "canonicalId": "potato", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "tomato", "qty": 0.4, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "tomato_paste", "qty": 1, "unit": "can" },
+        {
+          "names": { "ar": "خبز رقاق", "tr": "Yufka ekmeği (regag)", "en": "Regag bread" },
+          "qty": 1,
+          "unit": "pack"
+        }
+      ]
+    },
+    {
+      "id": "jareesh",
+      "names": { "ar": "جريش", "tr": "Ceriş (kırma buğday yemeği)", "en": "Jareesh" },
+      "cuisine": "gulf",
+      "occasions": ["iftar", "everyday"],
+      "servings": 4,
+      "ingredients": [
+        { "names": { "ar": "جريش", "tr": "Kırma buğday", "en": "Crushed wheat" }, "qty": 0.4, "unit": "kg" },
+        { "canonicalId": "chicken", "qty": 0.6, "unit": "kg" },
+        { "canonicalId": "laban_ayran", "qty": 0.5, "unit": "l" },
+        { "canonicalId": "onion", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "butter", "qty": 1, "unit": "pack" }
+      ]
+    },
+    {
+      "id": "luqaimat",
+      "names": { "ar": "لقيمات", "tr": "Lokma (Körfez usulü)", "en": "Luqaimat" },
+      "cuisine": "gulf",
+      "occasions": ["iftar", "eid"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "flour", "qty": 0.4, "unit": "kg" },
+        { "canonicalId": "cooking_oil", "qty": 1, "unit": "l" },
+        { "canonicalId": "cardamom", "qty": 1, "unit": "pack" },
+        {
+          "names": { "ar": "دبس تمر", "tr": "Hurma pekmezi", "en": "Date syrup" },
+          "qty": 1,
+          "unit": "bottle"
+        },
+        { "names": { "ar": "خميرة", "tr": "Maya", "en": "Yeast" }, "qty": 1, "unit": "pack" }
+      ]
+    },
+    {
+      "id": "balaleet",
+      "names": { "ar": "بلاليط", "tr": "Balaleet (şekerli şehriye ve yumurta)", "en": "Balaleet" },
+      "cuisine": "gulf",
+      "occasions": ["suhoor", "eid"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "vermicelli", "qty": 1, "unit": "pack" },
+        { "canonicalId": "eggs", "qty": 4, "unit": "piece" },
+        { "canonicalId": "sugar", "qty": 0.1, "unit": "kg" },
+        { "canonicalId": "cardamom", "qty": 1, "unit": "pack" },
+        { "names": { "ar": "زعفران", "tr": "Safran", "en": "Saffron" }, "qty": 1, "unit": "pack" }
+      ]
+    },
+    {
+      "id": "sambusa",
+      "names": { "ar": "سمبوسة لحم", "tr": "Kıymalı sambusa", "en": "Meat sambusa" },
+      "cuisine": "gulf",
+      "occasions": ["iftar", "guests"],
+      "servings": 4,
+      "ingredients": [
+        {
+          "names": { "ar": "رقائق سمبوسة", "tr": "Sambusa yaprağı", "en": "Sambusa pastry sheets" },
+          "qty": 1,
+          "unit": "pack"
+        },
+        { "canonicalId": "minced_meat", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "parsley", "qty": 1, "unit": "bunch" },
+        { "canonicalId": "cooking_oil", "qty": 1, "unit": "l" }
+      ]
+    },
+    {
+      "id": "chicken_saloona",
+      "names": { "ar": "صالونة دجاج", "tr": "Tavuklu saloona", "en": "Chicken saloona" },
+      "cuisine": "gulf",
+      "occasions": ["everyday", "iftar"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "chicken", "qty": 1, "unit": "kg" },
+        { "canonicalId": "potato", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "tomato", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "garlic", "qty": 1, "unit": "piece" },
+        { "canonicalId": "tomato_paste", "qty": 1, "unit": "can" },
+        { "canonicalId": "rice_basmati", "qty": 0.5, "unit": "kg" }
+      ]
+    },
+    {
+      "id": "dates_laban",
+      "names": { "ar": "تمر ولبن", "tr": "Hurma ve ayran", "en": "Dates and laban" },
+      "cuisine": "gulf",
+      "occasions": ["iftar", "suhoor"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "dates", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "laban_ayran", "qty": 1, "unit": "l" }
+      ]
+    },
+    {
+      "id": "mercimek_corbasi",
+      "names": { "ar": "شوربة عدس تركية", "tr": "Mercimek çorbası", "en": "Turkish lentil soup" },
+      "cuisine": "turkish",
+      "occasions": ["iftar", "everyday", "suhoor"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "lentils_red", "qty": 0.25, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 0.15, "unit": "kg" },
+        { "canonicalId": "butter", "qty": 1, "unit": "pack" },
+        { "canonicalId": "flour", "qty": 0.05, "unit": "kg" },
+        { "canonicalId": "lemon", "qty": 0.2, "unit": "kg" },
+        { "names": { "ar": "جزر", "tr": "Havuç", "en": "Carrots" }, "qty": 0.2, "unit": "kg" }
+      ]
+    },
+    {
+      "id": "karniyarik",
+      "names": {
+        "ar": "باذنجان محشي باللحم (كارنيارك)",
+        "tr": "Karnıyarık",
+        "en": "Karnıyarık (stuffed eggplant)"
+      },
+      "cuisine": "turkish",
+      "occasions": ["everyday", "guests", "iftar"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "eggplant", "qty": 1, "unit": "kg" },
+        { "canonicalId": "minced_meat", "qty": 0.4, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "tomato", "qty": 0.4, "unit": "kg" },
+        { "canonicalId": "pepper_green", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "garlic", "qty": 1, "unit": "piece" }
+      ]
+    },
+    {
+      "id": "kuru_fasulye_pilav",
+      "names": {
+        "ar": "فاصولياء بيضاء مع رز",
+        "tr": "Kuru fasulye ve pilav",
+        "en": "White bean stew with rice"
+      },
+      "cuisine": "turkish",
+      "occasions": ["everyday"],
+      "servings": 4,
+      "ingredients": [
+        {
+          "names": { "ar": "فاصولياء بيضاء ناشفة", "tr": "Kuru fasulye", "en": "Dried white beans" },
+          "qty": 0.5,
+          "unit": "kg"
+        },
+        { "canonicalId": "onion", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "tomato_paste", "qty": 1, "unit": "can" },
+        { "canonicalId": "butter", "qty": 1, "unit": "pack" },
+        { "canonicalId": "rice", "qty": 0.3, "unit": "kg" }
+      ]
+    },
+    {
+      "id": "ramazan_pidesi",
+      "names": { "ar": "خبز رمضان التركي (بيدا)", "tr": "Ramazan pidesi", "en": "Ramadan pide bread" },
+      "cuisine": "turkish",
+      "occasions": ["iftar", "suhoor"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "flour", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "eggs", "qty": 1, "unit": "piece" },
+        { "names": { "ar": "خميرة", "tr": "Maya", "en": "Yeast" }, "qty": 1, "unit": "pack" },
+        {
+          "names": { "ar": "حبة البركة", "tr": "Çörek otu", "en": "Nigella seeds" },
+          "qty": 1,
+          "unit": "pack"
+        }
+      ]
+    },
+    {
+      "id": "gullac",
+      "names": { "ar": "كلاج (حلى رمضاني تركي)", "tr": "Güllaç", "en": "Güllaç" },
+      "cuisine": "turkish",
+      "occasions": ["iftar"],
+      "servings": 4,
+      "ingredients": [
+        {
+          "names": { "ar": "رقائق كلاج", "tr": "Güllaç yaprağı", "en": "Güllaç sheets" },
+          "qty": 1,
+          "unit": "pack"
+        },
+        { "canonicalId": "milk", "qty": 1.5, "unit": "l" },
+        { "canonicalId": "sugar", "qty": 0.3, "unit": "kg" },
+        { "names": { "ar": "جوز", "tr": "Ceviz", "en": "Walnuts" }, "qty": 0.15, "unit": "kg" },
+        { "names": { "ar": "ماء ورد", "tr": "Gül suyu", "en": "Rose water" }, "qty": 1, "unit": "bottle" }
+      ]
+    },
+    {
+      "id": "menemen",
+      "names": { "ar": "منمن (بيض بالطماطم)", "tr": "Menemen", "en": "Menemen" },
+      "cuisine": "turkish",
+      "occasions": ["suhoor", "everyday"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "eggs", "qty": 6, "unit": "piece" },
+        { "canonicalId": "tomato", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "pepper_green", "qty": 0.3, "unit": "kg" },
+        { "canonicalId": "butter", "qty": 1, "unit": "pack" }
+      ]
+    },
+    {
+      "id": "sucuklu_yumurta",
+      "names": { "ar": "سجق مع بيض", "tr": "Sucuklu yumurta", "en": "Sujuk and eggs" },
+      "cuisine": "turkish",
+      "occasions": ["suhoor"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "sujuk", "qty": 1, "unit": "pack" },
+        { "canonicalId": "eggs", "qty": 6, "unit": "piece" },
+        { "canonicalId": "bread", "qty": 1, "unit": "piece" }
+      ]
+    },
+    {
+      "id": "etli_nohut",
+      "names": { "ar": "حمص باللحم", "tr": "Etli nohut", "en": "Chickpea and lamb stew" },
+      "cuisine": "turkish",
+      "occasions": ["everyday", "iftar"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "chickpeas", "qty": 0.4, "unit": "kg" },
+        { "canonicalId": "lamb", "qty": 0.4, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "tomato_paste", "qty": 1, "unit": "can" },
+        { "canonicalId": "butter", "qty": 1, "unit": "pack" }
+      ]
+    },
+    {
+      "id": "sehriyeli_pilav",
+      "names": { "ar": "رز بالشعيرية", "tr": "Şehriyeli pilav", "en": "Rice with vermicelli" },
+      "cuisine": "turkish",
+      "occasions": ["everyday", "iftar", "guests"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "rice", "qty": 0.4, "unit": "kg" },
+        { "canonicalId": "vermicelli", "qty": 1, "unit": "pack" },
+        { "canonicalId": "butter", "qty": 1, "unit": "pack" }
+      ]
+    },
+    {
+      "id": "kisir",
+      "names": { "ar": "سلطة برغل تركية (كسير)", "tr": "Kısır", "en": "Kısır (bulgur salad)" },
+      "cuisine": "turkish",
+      "occasions": ["guests", "everyday"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "bulgur", "qty": 0.3, "unit": "kg" },
+        { "canonicalId": "tomato_paste", "qty": 1, "unit": "can" },
+        { "canonicalId": "parsley", "qty": 1, "unit": "bunch" },
+        { "canonicalId": "mint", "qty": 1, "unit": "bunch" },
+        { "canonicalId": "lemon", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "olive_oil", "qty": 0.05, "unit": "l" },
+        {
+          "names": { "ar": "دبس فلفل", "tr": "Biber salçası", "en": "Pepper paste" },
+          "qty": 1,
+          "unit": "can"
+        }
+      ]
+    },
+    {
+      "id": "tavuk_sote",
+      "names": { "ar": "دجاج سوتيه بالخضار", "tr": "Tavuk sote", "en": "Chicken sauté with peppers" },
+      "cuisine": "turkish",
+      "occasions": ["everyday"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "chicken", "qty": 0.8, "unit": "kg" },
+        { "canonicalId": "pepper_green", "qty": 0.3, "unit": "kg" },
+        { "canonicalId": "tomato", "qty": 0.3, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "rice", "qty": 0.3, "unit": "kg" }
+      ]
+    },
+    {
+      "id": "koshari",
+      "names": { "ar": "كشري", "tr": "Koşari", "en": "Koshari" },
+      "cuisine": "egyptian",
+      "occasions": ["everyday", "iftar"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "rice", "qty": 0.3, "unit": "kg" },
+        { "canonicalId": "pasta", "qty": 1, "unit": "pack" },
+        { "canonicalId": "chickpeas", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "tomato", "qty": 0.6, "unit": "kg" },
+        { "canonicalId": "garlic", "qty": 1, "unit": "piece" },
+        { "canonicalId": "cooking_oil", "qty": 0.3, "unit": "l" },
+        {
+          "names": { "ar": "عدس بني", "tr": "Yeşil mercimek", "en": "Brown lentils" },
+          "qty": 0.2,
+          "unit": "kg"
+        }
+      ]
+    },
+    {
+      "id": "molokhia",
+      "names": { "ar": "ملوخية بالفراخ", "tr": "Tavuklu molohiya", "en": "Molokhia with chicken" },
+      "cuisine": "egyptian",
+      "occasions": ["everyday", "iftar"],
+      "servings": 4,
+      "ingredients": [
+        {
+          "names": { "ar": "ملوخية مجمدة", "tr": "Dondurulmuş molohiya", "en": "Frozen molokhia" },
+          "qty": 2,
+          "unit": "pack"
+        },
+        { "canonicalId": "chicken", "qty": 1.2, "unit": "kg" },
+        { "canonicalId": "garlic", "qty": 1, "unit": "piece" },
+        { "canonicalId": "rice", "qty": 0.4, "unit": "kg" }
+      ]
+    },
+    {
+      "id": "mahshi",
+      "names": { "ar": "محشي", "tr": "Mısır usulü dolma", "en": "Mahshi (stuffed vegetables)" },
+      "cuisine": "egyptian",
+      "occasions": ["iftar", "guests"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "rice", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "pepper_green", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "eggplant", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "tomato", "qty": 0.6, "unit": "kg" },
+        { "canonicalId": "parsley", "qty": 1, "unit": "bunch" },
+        { "canonicalId": "minced_meat", "qty": 0.3, "unit": "kg" },
+        { "names": { "ar": "كوسا", "tr": "Kabak", "en": "Zucchini" }, "qty": 0.5, "unit": "kg" }
+      ]
+    },
+    {
+      "id": "fatta",
+      "names": { "ar": "فتة", "tr": "Fatta (Mısır usulü)", "en": "Fatta" },
+      "cuisine": "egyptian",
+      "occasions": ["eid", "guests"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "lamb", "qty": 1, "unit": "kg" },
+        { "canonicalId": "rice", "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "arabic_bread", "qty": 1, "unit": "bag" },
+        { "canonicalId": "garlic", "qty": 1, "unit": "piece" },
+        { "canonicalId": "tomato", "qty": 0.4, "unit": "kg" },
+        { "names": { "ar": "خل", "tr": "Sirke", "en": "Vinegar" }, "qty": 1, "unit": "bottle" }
+      ]
+    },
+    {
+      "id": "kunafa",
+      "names": { "ar": "كنافة", "tr": "Künefe", "en": "Kunafa" },
+      "cuisine": "egyptian",
+      "occasions": ["iftar", "eid", "guests"],
+      "servings": 4,
+      "ingredients": [
+        { "names": { "ar": "عجينة كنافة", "tr": "Kadayıf", "en": "Kunafa dough" }, "qty": 0.5, "unit": "kg" },
+        { "canonicalId": "butter", "qty": 1, "unit": "pack" },
+        { "canonicalId": "sugar", "qty": 0.3, "unit": "kg" },
+        { "names": { "ar": "قشطة", "tr": "Kaymak", "en": "Clotted cream" }, "qty": 1, "unit": "pack" }
+      ]
+    },
+    {
+      "id": "kahk",
+      "names": { "ar": "كحك العيد", "tr": "Bayram kurabiyesi (kahk)", "en": "Eid kahk cookies" },
+      "cuisine": "egyptian",
+      "occasions": ["eid"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "flour", "qty": 1, "unit": "kg" },
+        { "canonicalId": "butter", "qty": 2, "unit": "pack" },
+        {
+          "names": { "ar": "سكر بودرة", "tr": "Pudra şekeri", "en": "Powdered sugar" },
+          "qty": 1,
+          "unit": "pack"
+        }
+      ]
+    },
+    {
+      "id": "foul_medames",
+      "names": { "ar": "فول مدمس", "tr": "Ful medames", "en": "Ful medames" },
+      "cuisine": "egyptian",
+      "occasions": ["suhoor", "everyday"],
+      "servings": 4,
+      "ingredients": [
+        {
+          "names": { "ar": "فول مدمس معلب", "tr": "Konserve bakla (ful)", "en": "Canned fava beans" },
+          "qty": 2,
+          "unit": "can"
+        },
+        { "canonicalId": "lemon", "qty": 0.2, "unit": "kg" },
+        { "canonicalId": "garlic", "qty": 1, "unit": "piece" },
+        { "canonicalId": "olive_oil", "qty": 0.05, "unit": "l" },
+        { "canonicalId": "arabic_bread", "qty": 1, "unit": "bag" }
+      ]
+    },
+    {
+      "id": "shakshuka",
+      "names": { "ar": "شكشوكة", "tr": "Şakşuka (yumurtalı)", "en": "Shakshuka" },
+      "cuisine": "international",
+      "occasions": ["suhoor", "everyday"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "eggs", "qty": 6, "unit": "piece" },
+        { "canonicalId": "tomato", "qty": 0.8, "unit": "kg" },
+        { "canonicalId": "pepper_green", "qty": 0.3, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 0.15, "unit": "kg" },
+        { "canonicalId": "olive_oil", "qty": 0.03, "unit": "l" }
+      ]
+    },
+    {
+      "id": "pasta_bolognese",
+      "names": { "ar": "معكرونة باللحم المفروم", "tr": "Kıymalı makarna", "en": "Pasta bolognese" },
+      "cuisine": "international",
+      "occasions": ["everyday"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "pasta", "qty": 1, "unit": "pack" },
+        { "canonicalId": "minced_meat", "qty": 0.4, "unit": "kg" },
+        { "canonicalId": "tomato_paste", "qty": 1, "unit": "can" },
+        { "canonicalId": "onion", "qty": 0.15, "unit": "kg" },
+        { "canonicalId": "garlic", "qty": 1, "unit": "piece" }
+      ]
+    },
+    {
+      "id": "grilled_fish",
+      "names": {
+        "ar": "سمك مشوي مع رز صيادية",
+        "tr": "Izgara balık ve pilav",
+        "en": "Grilled fish with sayadieh rice"
+      },
+      "cuisine": "international",
+      "occasions": ["everyday", "guests"],
+      "servings": 4,
+      "ingredients": [
+        { "canonicalId": "fish", "qty": 1.2, "unit": "kg" },
+        { "canonicalId": "rice", "qty": 0.4, "unit": "kg" },
+        { "canonicalId": "onion", "qty": 0.3, "unit": "kg" },
+        { "canonicalId": "lemon", "qty": 0.2, "unit": "kg" }
+      ]
+    }
+  ]
+}
