@@ -191,7 +191,11 @@ class NotificationsTest {
         val devices = com.fridgelist.app.fakes.FakeDevices()
         val detection = com.fridgelist.app.fakes.FakeDetectionStore(com.fridgelist.core.data.stores.DetectionState(enabled = true))
         val fences = com.fridgelist.app.fakes.FakeFences()
-        com.fridgelist.app.feature.settings.SignOut(auth, session, devices, detection, fences, context)()
+        val widgetStore = com.fridgelist.app.fakes.FakeWidgetStore(com.fridgelist.core.model.WidgetSnapshot(updatedAt = 1, viewerLang = "tr", householdId = "h1"))
+        val items = com.fridgelist.app.fakes.FakeItems()
+        val widgets = com.fridgelist.app.widget.WidgetSnapshotWriter(context, com.fridgelist.app.fakes.householdContext(com.fridgelist.core.model.Role.ADULT, session), items, items, session, widgetStore)
+        com.fridgelist.app.feature.settings.SignOut(auth, session, devices, detection, fences, widgets, context)()
+        assertNull(widgetStore.data.value) // widgets show nothing of the household any more
         assertEquals(listOf("clear"), fences.calls)
         assertEquals(false, detection.data.value.enabled)
         assertEquals(listOf("u1"), devices.unregistered)

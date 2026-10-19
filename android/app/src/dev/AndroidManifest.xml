@@ -15,5 +15,10 @@
                 <action android:name="com.fridgelist.app.debug.PUSH" />
             </intent-filter>
         </receiver>
+        <!-- Hosts the list widget at every size for screenshots (A8); see WidgetPreviewActivity. -->
+        <activity
+            android:name="com.fridgelist.app.debug.WidgetPreviewActivity"
+            android:exported="true"
+            android:theme="@style/Theme.FridgeList" />
     </application>
 </manifest>

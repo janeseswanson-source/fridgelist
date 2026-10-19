@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Static long-press shortcuts (ARCHITECTURE §8.3). Dynamic ones (one per list) come from Shortcuts.kt. -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_add"
+        android:shortcutId="add_items"
+        android:shortcutLongLabel="@string/shortcut_add_long"
+        android:shortcutShortLabel="@string/shortcut_add_short">
+        <!-- CONTRACT §6 internal add link; the URL scheme is CLAUDE.md URL_SCHEME. -->
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="fridgelist://add?mode=voice"
+            android:targetClass="com.fridgelist.app.quickadd.QuickAddActivity"
+            android:targetPackage="${applicationId}" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_going"
+        android:shortcutId="im_going"
+        android:shortcutLongLabel="@string/shortcut_going_long"
+        android:shortcutShortLabel="@string/shortcut_going_short">
+        <intent
+            android:action="com.fridgelist.app.action.GOING"
+            android:targetClass="com.fridgelist.app.MainActivity"
+            android:targetPackage="${applicationId}" />
+    </shortcut>
+</shortcuts>

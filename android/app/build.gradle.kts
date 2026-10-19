@@ -113,6 +113,8 @@ dependencies {
     implementation(libs.zxing.core)
     implementation(libs.androidx.work.runtime)
     implementation(libs.play.services.location)
+    implementation(libs.glance.appwidget)
+    implementation(libs.glance.material3)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)

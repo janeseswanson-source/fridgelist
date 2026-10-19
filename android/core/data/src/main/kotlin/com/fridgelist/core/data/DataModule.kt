@@ -29,6 +29,8 @@ import com.fridgelist.core.data.flags.FirebaseRemoteFlags
 import com.fridgelist.core.data.flags.RemoteFlags
 import com.fridgelist.core.data.stores.DataStoreDetectionStore
 import com.fridgelist.core.data.stores.DetectionStore
+import com.fridgelist.core.data.widget.DataStoreWidgetSnapshotStore
+import com.fridgelist.core.data.widget.WidgetSnapshotStore
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -68,4 +70,6 @@ interface DataModule {
     @Binds fun flags(impl: FirebaseRemoteFlags): RemoteFlags
 
     @Binds fun detection(impl: DataStoreDetectionStore): DetectionStore
+
+    @Binds fun widgetSnapshot(impl: DataStoreWidgetSnapshotStore): WidgetSnapshotStore
 }

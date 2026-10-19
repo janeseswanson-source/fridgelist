@@ -8,6 +8,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.fridgelist.app.AppViewModel
 import com.fridgelist.app.feature.home.HomeRoute
 import com.fridgelist.app.feature.household.MembersRoute
@@ -34,7 +35,7 @@ import kotlinx.serialization.Serializable
 @Serializable data class JoinHousehold(val code: String? = null)
 @Serializable data object Notifications
 @Serializable data object Home
-@Serializable data class ListDetail(val listId: String)
+@Serializable data class ListDetail(val listId: String, val going: Boolean = false)
 @Serializable data class Shopping(val listId: String? = null, val tripId: String? = null)
 @Serializable data object Members
 @Serializable data object Settings
@@ -90,6 +91,17 @@ fun FridgeListNavHost(start: OnboardingStep, app: AppViewModel) {
         }
     }
 
+    // "I'm going" shortcut: the first list, with the sheet open.
+    val pendingGoing by app.pendingGoing.collectAsStateWithLifecycle()
+    LaunchedEffect(pendingGoing) {
+        if (pendingGoing && app.currentStep() == OnboardingStep.DONE) {
+            // Look up first: consuming changes this effect's key, which would cancel the lookup.
+            val listId = app.firstListId()
+            listId?.let { nav.navigate(ListDetail(it, going = true)) { launchSingleTop = true } }
+            app.consumeGoing()
+        }
+    }
+
     NavHost(navController = nav, startDestination = start.route()) {
         composable<Welcome> { WelcomeRoute(onContinue = { nav.navigate(SignIn) }) }
         composable<SignIn> { SignInRoute(onNext = onNext, onBack = { nav.popIfCan() }) }
@@ -111,8 +123,9 @@ fun FridgeListNavHost(start: OnboardingStep, app: AppViewModel) {
                 onOpenSettings = { nav.navigate(Settings) },
             )
         }
-        composable<ListDetail> {
-            ListDetailRoute(onBack = { nav.popIfCan() }, onStartShopping = { nav.navigate(Shopping(listId = it)) })
+        composable<ListDetail> { entry ->
+            ListDetailRoute(
+                openGoing = entry.toRoute<ListDetail>().going,onBack = { nav.popIfCan() }, onStartShopping = { nav.navigate(Shopping(listId = it)) })
         }
         composable<Shopping> { ShoppingRoute(onClose = { nav.popIfCan() }) }
         composable<Members> { MembersRoute(onBack = { nav.popIfCan() }) }

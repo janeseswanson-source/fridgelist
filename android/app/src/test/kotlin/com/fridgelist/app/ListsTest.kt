@@ -194,6 +194,21 @@ class ListsTest {
     }
 
     @Test
+    fun quickAddFromAWidgetOrTheTileRecordsWhereItCameFrom() = runTest(main.dispatcher) {
+        for ((via, expected) in listOf("widget" to "widget", "qs_tile" to "qs_tile", "nonsense" to "app_text")) {
+            val items = FakeItems()
+            val vm = AddItemsViewModel(
+                SavedStateHandle(mapOf("listId" to "l1", "via" to via)), contextSource(Role.ADULT, items), items, items, items,
+                speechEngines = { listOf(engine) }, recorder = FakeRecorder(), transcriber = FakeTranscriber { TranscribeAudioResponse("") },
+            )
+            runCurrent()
+            vm.onTextChange("süt")
+            vm.confirm()
+            assertEquals(FieldPatch.Set(expected), items.added.single()["addedVia"])
+        }
+    }
+
+    @Test
     fun localChipsAppearAtOnceAndOfflineStillAdds() = runTest(main.dispatcher) {
         val items = FakeItems() // parse throws NETWORK
         val vm = adder(Role.ADULT, items)

@@ -20,6 +20,8 @@ import com.google.firebase.firestore.MetadataChanges
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -46,6 +48,9 @@ interface ItemRepository {
     fun update(householdId: String, listId: String, itemId: String, patch: Patch)
 
     fun delete(householdId: String, listId: String, itemId: String)
+
+    /** Waits (briefly) until local writes reached the server: widget taps run in a short-lived process. */
+    suspend fun flush() = Unit
 }
 
 interface AliasRepository {
@@ -67,6 +72,10 @@ class FirestoreItemsData @Inject constructor(
 ) : ListRepository, ItemRepository, AliasRepository, ParseRepository {
 
     private fun household(hid: String) = firestore.collection("households").document(hid)
+
+    override suspend fun flush() {
+        withTimeoutOrNull(FLUSH_TIMEOUT_MS) { runCatching { firestore.waitForPendingWrites().await() } }
+    }
     private fun listsRef(hid: String): CollectionReference = household(hid).collection("lists")
     private fun itemsRef(hid: String, lid: String): CollectionReference = listsRef(hid).document(lid).collection("items")
 
@@ -171,6 +180,7 @@ class FirestoreItemsData @Inject constructor(
         callables.call("parseItems", request, ParseItemsRequest.serializer(), ParseItemsResponse.serializer())
 
     private companion object {
+        const val FLUSH_TIMEOUT_MS = 5_000L
         const val TAG = "ItemsData"
 
         fun Patch.toFirestore(): Map<String, Any> = mapValues { (_, v) ->

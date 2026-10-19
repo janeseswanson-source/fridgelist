@@ -25,6 +25,7 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | Backend | B6 Trips, notifications, live surfaces | done, real delivery needs the dev project | 2026-10-19 | every push type snapshot-tested in ar/tr/en; throttle, stale job; Android trip E2E |
 | Backend | B5 Stores | done, real import awaits owner OK | 2026-10-19 | UAE and Saudi dry runs on live OSM data; `nearbyStores`/`addStore` |
 | Backend | B4 Item pipeline | done, LLM/STT recordings pending a key | 2026-10-19 | golden 30/30 on catalog + dialect alone; LLM and STT behind interfaces, untested against the real services |
+| Android | A8 Widgets, tile, shortcuts | done | 2026-10-19 | widget tick on the server in 0.7 s; `list_changed` refresh, Quick Add, tile, shortcuts verified on the emulator (`docs/test-widgets.md`) |
 | Android | A7 Store detection | done, field test per country pending | 2026-10-19 | real 2-min DWELL → auto trip → AUTO_LEFT → refresh verified on the emulator (`docs/test-geofence.md`) |
 | Android | A1 Scaffold | done | 2026-10-18 | core:i18n passes 28/28 fixture cases (18/18 split required) |
 | Android | A2 Sign-in, onboarding, household | done | 2026-10-18 | two-user join E2E passes against backend B3 (2026-10-19) |
@@ -35,6 +36,46 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Android A8 Widgets, tile, shortcuts
+- Shipped:
+  - **Widget snapshot (CONTRACT §7)** in DataStore `widget_snapshot`, built by `SnapshotBuilder` from the same sections and display rule as the list screen: to-buy items in display order (≤ 12 per list) with titles in the viewer's language and localized quantities, `openCount`, and `activeTrip` (only while shopping here, not while heading). `WidgetSnapshotWriter`:
+    - while the app is on screen, follows Firestore (debounced 1 s);
+    - `refreshOnce()` after a widget tick, after Quick Add and on `list_changed` pushes (`WidgetRefreshWorker`), letting the cache and then the server answer;
+    - every write updates the widgets and the per-list shortcuts.
+  - **Glance `ListWidget`** (responsive):
+    - 2×2: count, +, the next two;
+    - 4×2: a one-line header (list name, or "At Migros · 7 left" during a trip, and the count), + and a checklist;
+    - 4×4: the same with up to 12 items;
+    - "All done ✓" when empty; "Open FridgeList to set up your list" when signed out.
+    - Brand colours in light and dark.
+    - Item lines bidi-isolate the name and the quantity, so Arabic names with Latin units keep their order in every language (found in the screenshots).
+    - **Checkbox** → `ToggleItemCallback`: the item leaves the widget at once, `done` is written with the SDK (with `doneTripId` while shopping that list), then `waitForPendingWrites` (≤ 5 s, new `ItemRepository.flush()`), then a refresh.
+    - **Configuration** (`WidgetConfigActivity`): pick a list; reconfigurable and optional (the first list by default).
+  - **Quick Add** (`QuickAddActivity`, transparent, voice first): the same add sheet as the list screen, opened by `{URL_SCHEME}://add?listId=&mode=` (CONTRACT §6, new `Links.add`/`addUrl`).
+    - Writes `addedVia: widget` or `qs_tile`; shortcuts count as normal app adds.
+    - Falls back to the first list when the link's list is gone; sends you to the app when signed out.
+  - **Quick Settings tile** "Add to list" (`startActivityAndCollapse(PendingIntent)` on API 34+).
+  - **Shortcuts:** static "Add items" (voice) and "I'm going" (opens the first list with its sheet); dynamic "Add to {list}" for up to 3 lists.
+  - **Sign-out** clears the snapshot, the widgets and the dynamic shortcuts.
+  - **Glance 1.1.1** added (it was already in the agreed stack).
+  - **Dev-only `WidgetPreviewActivity`** hosts the widget at all three sizes for screenshots.
+- Fixed during the emulator run:
+  - the size buckets were bigger than real launcher cells (a 2×2 arrives at ~94 dp);
+  - the default widget background picked a container colour;
+  - the "I'm going" shortcut never navigated (consuming the flag cancelled its own lookup);
+  - own Quick Add adds didn't refresh the widgets;
+  - `withoutItem` changed the trip counters for an unknown item (unit test).
+- Tests: **app 262** (+8 `WidgetTest`: order / language / quantities, the 12 cap, `activeTrip`, the instant tick, the codec and versions, bidi lines, `list_changed` routing and other households, Quick Add links; +1 `ListsTest` for `addedVia` widget / qs_tile; the sign-out test now checks the snapshot is cleared), core:model 27 (+1 add links), i18n 76, data 23; lint clean.
+- Emulator run (`docs/test-widgets.md`):
+  - widget tick → `done` on the server in **0.7 s**;
+  - another member's add + `list_changed` → widget count updated with the app closed;
+  - + → Quick Add → `addedVia: widget`, enriched to dairy;
+  - tile → Quick Add;
+  - static and dynamic shortcuts present; "I'm going" opens the sheet.
+  - Screenshots of every size in ar/tr/en, light and dark: `docs/screenshots/widget_*.png`.
+- Contract changes: none (`WidgetSnapshot` already matched §7).
+- Next: A9 fridge tags, QR, App Links.
 
 ### 2026-10-19 — Android A7 Store detection
 - Shipped:

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_name">Alışveriş listesi</string>
+    <string name="widget_description">Onay kutulu listen ve hızlı ekleme düğmesi</string>
+    <string name="widget_open_app">Listeni kurmak için FridgeList’i aç</string>
+    <string name="widget_all_done">Hepsi tamam ✓</string>
+    <plurals name="widget_to_buy">
+        <item quantity="one">Alınacak %1$d ürün</item>
+        <item quantity="other">Alınacak %1$d ürün</item>
+    </plurals>
+    <plurals name="widget_trip">
+        <item quantity="one">%1$s · %2$d kaldı</item>
+        <item quantity="other">%1$s · %2$d kaldı</item>
+    </plurals>
+    <string name="widget_add">Ürün ekle</string>
+    <string name="widget_config_title">Bir liste seç</string>
+    <string name="tile_label">Listeye ekle</string>
+    <string name="shortcut_add_short">Ürün ekle</string>
+    <string name="shortcut_add_long">Sesle ürün ekle</string>
+    <string name="shortcut_going_short">Gidiyorum</string>
+    <string name="shortcut_going_long">Alışverişe gittiğini herkese haber ver</string>
+    <string name="shortcut_list_long">%1$s listesine ekle</string>
+</resources>

@@ -6,12 +6,16 @@ import com.fridgelist.app.feature.onboarding.StepResolver
 import com.fridgelist.core.data.auth.AuthRepository
 import com.fridgelist.core.data.device.DeviceRegistry
 import com.fridgelist.core.data.firebase.AppEnvironment
+import com.fridgelist.core.data.items.ListRepository
 import com.fridgelist.core.data.session.OnboardingStep
+import com.fridgelist.core.data.session.SessionStore
 import com.fridgelist.core.model.Links
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,6 +26,8 @@ class AppViewModel @Inject constructor(
     private val steps: StepResolver,
     auth: AuthRepository,
     devices: DeviceRegistry,
+    private val session: SessionStore,
+    private val lists: ListRepository,
 ) : ViewModel() {
 
     private val _startStep = MutableStateFlow<OnboardingStep?>(null)
@@ -58,4 +64,26 @@ class AppViewModel @Inject constructor(
     }
 
     fun consumeJoinCode(): String? = _pendingJoinCode.value.also { _pendingJoinCode.value = null }
+
+    private val _pendingGoing = MutableStateFlow(false)
+
+    /** The "I'm going" app shortcut: open the first list with its "I'm going" sheet. */
+    val pendingGoing: StateFlow<Boolean> = _pendingGoing.asStateFlow()
+
+    fun consumeGoing(): Boolean = _pendingGoing.value.also { _pendingGoing.value = false }
+
+    fun onIntent(intent: android.content.Intent?) {
+        if (intent?.action == ACTION_GOING) _pendingGoing.value = true else onLink(intent?.dataString)
+    }
+
+    /** The household's first list (from the offline cache, so this works offline too). */
+    suspend fun firstListId(): String? {
+        val householdId = session.current().householdId ?: return null
+        return withTimeoutOrNull(3_000) { lists.lists(householdId).first().firstOrNull()?.id }
+    }
+
+    companion object {
+        /** Static shortcut in xml/shortcuts.xml. */
+        const val ACTION_GOING = "com.fridgelist.app.action.GOING"
+    }
 }

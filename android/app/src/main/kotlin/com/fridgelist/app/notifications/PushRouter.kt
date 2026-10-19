@@ -1,6 +1,7 @@
 package com.fridgelist.app.notifications
 
 import android.util.Log
+import com.fridgelist.app.widget.WidgetRefresher
 import com.fridgelist.core.data.session.SessionStore
 import com.fridgelist.core.model.PushMessage
 import com.fridgelist.core.model.TripStatus
@@ -11,6 +12,7 @@ class PushRouter @Inject constructor(
     private val household: HouseholdNotifier,
     private val trips: TripNotifier,
     private val session: SessionStore,
+    private val widgets: WidgetRefresher = WidgetRefresher {},
 ) {
     suspend fun route(data: Map<String, String>) {
         val message = PushMessage.parse(data)
@@ -23,8 +25,8 @@ class PushRouter @Inject constructor(
         when (message) {
             is PushMessage.TripHeading, is PushMessage.TripArrived, is PushMessage.ItemMissing -> household.show(message)
             is PushMessage.TripUpdate -> onTripUpdate(message)
-            // A8 refreshes widgets on list_changed; nothing to show before that.
-            is PushMessage.ListChanged -> Unit
+            // Another member changed a list: widgets catch up even with the app closed (CONTRACT §5.1).
+            is PushMessage.ListChanged -> widgets.refresh()
             is PushMessage.Unknown -> Log.i(TAG, "ignored push type ${message.type}")
             null -> Log.w(TAG, "push without household")
         }

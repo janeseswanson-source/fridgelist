@@ -39,9 +39,20 @@ data class WidgetSnapshot(
     val lists: List<SnapshotList> = emptyList(),
     val activeTrip: SnapshotTrip? = null,
 ) {
+    /** The list a widget shows: its chosen one, else the first. */
+    fun list(id: String?): SnapshotList? = lists.firstOrNull { it.id == id } ?: lists.firstOrNull()
+
+    fun encode(): String = ContractJson.encodeToString(serializer(), this)
+
     companion object {
+        const val VERSION = 1
+
         /** CONTRACT §7: at most 12 items per list. */
         const val MAX_ITEMS_PER_LIST = 12
+
+        /** Null for missing, unreadable or newer-version snapshots: widgets then say "open the app". */
+        fun decode(text: String?): WidgetSnapshot? =
+            text?.let { runCatching { ContractJson.decodeFromString(serializer(), it) }.getOrNull() }?.takeIf { it.v <= VERSION }
     }
 }
 

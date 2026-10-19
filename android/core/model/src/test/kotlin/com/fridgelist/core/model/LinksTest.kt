@@ -79,4 +79,18 @@ class LinksTest {
         val join = ContractJson.decodeFromString(JoinHouseholdResponse.serializer(), """{"householdId":"h1","role":"helper"}""")
         assertEquals(Role.HELPER, join.roleEnum)
     }
+
+    @Test
+    fun addLinks() {
+        assertEquals(Links.AddLink("l1", voice = true), Links.add("fridgelist://add?listId=l1&mode=voice", "fridgelist"))
+        assertEquals(Links.AddLink("l1", voice = false), Links.add("fridgelist://add?listId=l1&mode=text", "fridgelist"))
+        assertEquals(Links.AddLink(null, voice = true), Links.add("fridgelist://add", "fridgelist"))
+        assertEquals(Links.AddLink(null, voice = true), Links.add("fridgelist://add?listId=../x", "fridgelist"))
+        kotlin.test.assertNull(Links.add("fridgelist://shop?tripId=t1", "fridgelist"))
+        kotlin.test.assertNull(Links.add("https://evil.example/add?listId=l1", "fridgelist"))
+        assertEquals("fridgelist://add?listId=l1&mode=voice", Links.addUrl("fridgelist", "l1", voice = true))
+        assertEquals("fridgelist://add?mode=text", Links.addUrl("fridgelist", null, voice = false))
+        val round = Links.add(Links.addUrl("fridgelist", "abc_1-2", voice = false), "fridgelist")
+        assertEquals(Links.AddLink("abc_1-2", voice = false), round)
+    }
 }

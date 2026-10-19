@@ -5,6 +5,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.fridgelist.core.data.auth.AuthRepository
 import com.fridgelist.core.data.device.DeviceRegistry
 import com.fridgelist.app.location.StoreFences
+import com.fridgelist.app.widget.WidgetSnapshotWriter
 import com.fridgelist.core.data.session.SessionStore
 import com.fridgelist.core.data.stores.DetectionStore
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -21,6 +22,7 @@ class SignOut @Inject constructor(
     private val devices: DeviceRegistry,
     private val detection: DetectionStore,
     private val fences: StoreFences,
+    private val widgets: WidgetSnapshotWriter,
     @param:ApplicationContext private val context: Context,
 ) {
     suspend operator fun invoke() {
@@ -30,6 +32,7 @@ class SignOut @Inject constructor(
         // Store detection belongs to the signed-in member: fences and state go too.
         fences.clear()
         detection.clear()
+        widgets.clear()
         NotificationManagerCompat.from(context).cancelAll()
     }
 }

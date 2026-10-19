@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_name">قائمة التسوق</string>
+    <string name="widget_description">قائمتك مع خانات اختيار وزر إضافة سريعة</string>
+    <string name="widget_open_app">افتح FridgeList لإعداد قائمتك</string>
+    <string name="widget_all_done">تم كل شيء ✓</string>
+    <plurals name="widget_to_buy">
+        <item quantity="zero">لا شيء للشراء</item>
+        <item quantity="one">صنف واحد للشراء</item>
+        <item quantity="two">صنفان للشراء</item>
+        <item quantity="few">%1$d أصناف للشراء</item>
+        <item quantity="many">%1$d صنفاً للشراء</item>
+        <item quantity="other">%1$d صنف للشراء</item>
+    </plurals>
+    <plurals name="widget_trip">
+        <item quantity="zero">في %1$s · لم يبقَ شيء</item>
+        <item quantity="one">في %1$s · باقٍ صنف واحد</item>
+        <item quantity="two">في %1$s · باقٍ صنفان</item>
+        <item quantity="few">في %1$s · باقٍ %2$d أصناف</item>
+        <item quantity="many">في %1$s · باقٍ %2$d صنفاً</item>
+        <item quantity="other">في %1$s · باقٍ %2$d صنف</item>
+    </plurals>
+    <string name="widget_add">أضف أصنافاً</string>
+    <string name="widget_config_title">اختر قائمة</string>
+    <string name="tile_label">أضف إلى القائمة</string>
+    <string name="shortcut_add_short">أضف أصنافاً</string>
+    <string name="shortcut_add_long">أضف أصنافاً بالصوت</string>
+    <string name="shortcut_going_short">أنا ذاهب</string>
+    <string name="shortcut_going_long">أخبر الجميع أنك ذاهب للتسوق</string>
+    <string name="shortcut_list_long">أضف إلى %1$s</string>
+</resources>

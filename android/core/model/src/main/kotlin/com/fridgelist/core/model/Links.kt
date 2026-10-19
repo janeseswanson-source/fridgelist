@@ -45,6 +45,27 @@ object Links {
 
     fun joinUrl(code: String, linkDomain: String): String = "https://$linkDomain/join/$code"
 
+    /** `{URL_SCHEME}://add?listId={lid}&mode=voice|text` (CONTRACT §6): widgets, tile, shortcuts. */
+    data class AddLink(val listId: String?, val voice: Boolean)
+
+    fun add(text: String, urlScheme: String): AddLink? {
+        val uri = runCatching { URI(text.trim()) }.getOrNull() ?: return null
+        if (!uri.scheme.equals(urlScheme, ignoreCase = true) || uri.host != "add") return null
+        val query = query(uri)
+        val listId = query["listId"]?.takeIf(::isId)
+        return AddLink(listId, voice = query["mode"] != "text")
+    }
+
+    fun addUrl(urlScheme: String, listId: String?, voice: Boolean): String =
+        "$urlScheme://add?" + listOfNotNull(listId?.let { "listId=$it" }, "mode=" + if (voice) "voice" else "text").joinToString("&")
+
+    private fun query(uri: URI): Map<String, String> = uri.rawQuery.orEmpty().split('&')
+        .filter { it.isNotEmpty() }
+        .associate { it.substringBefore('=') to it.substringAfter('=', "") }
+
+    /** Firestore auto-IDs and our own IDs: letters, digits, _ and -. */
+    private fun isId(value: String) = value.isNotEmpty() && value.length <= 128 && value.all { c -> c.isLetterOrDigit() || c == '_' || c == '-' }
+
     /** `{URL_SCHEME}://shop?tripId={tid}` (CONTRACT §6): the trip to open in Shopping Mode. */
     fun shopTripId(text: String, urlScheme: String): String? {
         val uri = runCatching { URI(text.trim()) }.getOrNull() ?: return null

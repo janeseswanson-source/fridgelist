@@ -1,11 +1,11 @@
 package com.fridgelist.app.feature.lists
 
+import android.content.res.Resources
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.os.ConfigurationCompat
 import com.fridgelist.app.R
 import com.fridgelist.core.model.Category
@@ -85,13 +85,18 @@ private fun ItemUnit?.format(): UnitFormat = when (this) {
 /** "2 kg", "٣ علب", "1,5 kg" in the UI locale (CLAUDE.md rule 3). Null when there is nothing to show. */
 @Composable
 fun quantityText(qty: Double?, unit: ItemUnit?): String? {
-    if (qty == null && unit == null) return null
     val locale = ConfigurationCompat.getLocales(LocalConfiguration.current)[0] ?: Locale.ROOT
+    return quantityText(LocalContext.current.resources, locale, qty, unit)
+}
+
+/** The same text outside Compose (widget snapshot). */
+fun quantityText(resources: Resources, locale: Locale, qty: Double?, unit: ItemUnit?): String? {
+    if (qty == null && unit == null) return null
     val amount = qty ?: 1.0
     val number = Quantities.format(amount, locale)
     return when (val f = unit.format()) {
-        is UnitFormat.Measured -> stringResource(f.res, number)
-        is UnitFormat.Counted -> pluralStringResource(f.res, Quantities.pluralCount(amount), number)
+        is UnitFormat.Measured -> resources.getString(f.res, number)
+        is UnitFormat.Counted -> resources.getQuantityString(f.res, Quantities.pluralCount(amount), number)
     }
 }
 

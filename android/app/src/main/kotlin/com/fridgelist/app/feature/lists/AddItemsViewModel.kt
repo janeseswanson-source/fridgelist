@@ -84,6 +84,9 @@ class AddItemsViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val listId: String = checkNotNull(savedState.get<String>("listId"))
+
+    /** Quick Add from a widget or the tile (`widget`, `qs_tile`); null in the app. */
+    private val launchedVia: AddedVia? = savedState.get<String>("via")?.let(AddedVia::fromWire)
     private val splitter = LocalSplitter()
     private val catalog = Catalog.bundled
 
@@ -182,7 +185,7 @@ class AddItemsViewModel @Inject constructor(
         if (chips.isEmpty()) return
         refineJob?.cancel()
         val status = StatusRules.createStatus(ctx.role)
-        val via = if (usedVoice) AddedVia.APP_VOICE else AddedVia.APP_TEXT
+        val via = launchedVia ?: if (usedVoice) AddedVia.APP_VOICE else AddedVia.APP_TEXT
         val patches = chips.map { ItemPatches.create(ItemDraft(it.name, it.qty, it.unit), status, ctx.uid, via) }
         items.add(ctx.householdId, listId, patches)
         voiceInput.cancel()

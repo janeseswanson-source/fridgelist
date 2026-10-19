@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A8 widgets, tile, shortcuts (ARCHITECTURE §8.3). -->
+<resources>
+    <string name="widget_name">Shopping list</string>
+    <string name="widget_description">Your list with checkboxes and a quick add button</string>
+    <string name="widget_open_app">Open FridgeList to set up your list</string>
+    <string name="widget_all_done">All done ✓</string>
+    <plurals name="widget_to_buy">
+        <item quantity="one">%1$d to buy</item>
+        <item quantity="other">%1$d to buy</item>
+    </plurals>
+    <plurals name="widget_trip">
+        <item quantity="one">At %1$s · %2$d left</item>
+        <item quantity="other">At %1$s · %2$d left</item>
+    </plurals>
+    <string name="widget_add">Add items</string>
+    <string name="widget_config_title">Choose a list</string>
+    <string name="tile_label">Add to list</string>
+    <string name="shortcut_add_short">Add items</string>
+    <string name="shortcut_add_long">Add items by voice</string>
+    <string name="shortcut_going_short">I’m going</string>
+    <string name="shortcut_going_long">Tell everyone you’re going shopping</string>
+    <string name="shortcut_list_long">Add to %1$s</string>
+</resources>

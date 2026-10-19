@@ -45,6 +45,9 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
             <!-- CONTRACT §6 internal links: {URL_SCHEME}://shop?tripId= (Live Update / notification taps). -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -65,6 +68,45 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
+
+        <!-- A8: Quick Add (widgets, tile, shortcuts), the list widget, the Quick Settings tile. -->
+        <activity
+            android:name=".quickadd.QuickAddActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:taskAffinity="${applicationId}.quickadd"
+            android:theme="@style/Theme.FridgeList.Transparent"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".widget.WidgetConfigActivity"
+            android:excludeFromRecents="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+        <receiver
+            android:name=".widget.ListWidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/list_widget_info" />
+        </receiver>
+        <service
+            android:name=".quickadd.QuickAddTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_add"
+            android:label="@string/tile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
 
         <service
             android:name=".push.PushService"

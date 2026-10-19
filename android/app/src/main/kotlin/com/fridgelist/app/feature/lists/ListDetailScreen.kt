@@ -184,13 +184,18 @@ private fun EmptyList(modifier: Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListDetailRoute(onBack: () -> Unit, onStartShopping: (listId: String) -> Unit = {}, vm: ListDetailViewModel = hiltViewModel()) {
+fun ListDetailRoute(
+    onBack: () -> Unit,
+    onStartShopping: (listId: String) -> Unit = {},
+    openGoing: Boolean = false,
+    vm: ListDetailViewModel = hiltViewModel(),
+) {
     val state by vm.state.collectAsStateWithLifecycle()
     val undo by vm.undo.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     var editing by remember { mutableStateOf<ItemRowUi?>(null) }
     var adding by rememberSaveable { mutableStateOf(false) }
-    var going by rememberSaveable { mutableStateOf(false) }
+    var going by rememberSaveable { mutableStateOf(openGoing) }
 
     val undoLabel = stringResource(R.string.action_undo)
     val undoMessage = undo?.let { stringResource(it.message) }
