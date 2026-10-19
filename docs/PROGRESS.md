@@ -16,8 +16,9 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | --- | --- | --- | --- | --- |
 | Backend | B1 Scaffold | done | 2026-10-19 | `npm run emulators` builds, starts Auth/Firestore/Functions/Hosting/Storage/Pub/Sub and seeds |
 | Backend | B2 Security rules | done | 2026-10-19 | 144 rules tests (full §3.6 matrix); Android offline flow passes the real rules |
+| Backend | B3 Households, invites, devices | done | 2026-10-19 | callables + `onMemberWritten`; Android two-user join passes against it |
 | Android | A1 Scaffold | done | 2026-10-18 | core:i18n passes 28/28 fixture cases (18/18 split required) |
-| Android | A2 Sign-in, onboarding, household | done, E2E pending B3 | 2026-10-18 | two-user join test passes against a QA stand-in of the callables (2026-10-19); re-run on B3 |
+| Android | A2 Sign-in, onboarding, household | done | 2026-10-18 | two-user join E2E passes against backend B3 (2026-10-19) |
 | Android | A3 Lists and items, offline-first | done, server part pending B4 | 2026-10-19 | offline add/tick/undo/delete → sync verified (instrumented test + device); categories/translations wait for B4 |
 | Android | A4 Voice add | done, real-speech run pending | 2026-10-19 | fallback chain verified on emulator (no mic audio there); `docs/test-voice.md` to run on real phones |
 | Android | A5 Shopping Mode | done, server trip pending B6 | 2026-10-19 | tick/undo/missing/finish UI-tested online and offline; local mode verified on device |
@@ -25,6 +26,30 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Backend B3 Households, invites, devices
+- Shipped (CONTRACT §4, zod-validated, logic in `*Core` functions with thin `onCall` wrappers):
+  - `createHousehold`: one transaction writes the household (`memberLanguages` = owner's language, `plan: free`), the owner member (default `notify`), the default grocery list and the user link (`householdIds` arrayUnion; `createdAt` only for a new user doc).
+    - The list is named in `defaultLanguage`: "البقالة", "Market listesi", "Groceries" (`src/i18n/*.json`).
+    - Names are trimmed and 1–40 characters.
+  - `createInvite`: owner or adult only; roles adult, kid or helper.
+    - The code comes from `crypto.randomInt`, and `create()` never overwrites an existing code (retries on collision).
+    - 7 days, 10 uses; returns `{code, url, expiresAt}` in Unix seconds.
+  - `joinHousehold`: accepts codes as typed (lowercase, spaces, dashes). One transaction:
+    - unknown code or deleted household → `not-found`;
+    - already a member → current role, invite not used (the owner stays owner);
+    - expired or used up → `failed-precondition`;
+    - otherwise creates the member, increments uses, and adds the language and the household link.
+    - Retry budget raised to 15 so a burst of joins on one QR doesn't fail on contention.
+  - `onMemberWritten`: recomputes `memberLanguages` (sorted union, written only when changed) and adds/removes `users/{uid}.householdIds` on member create/delete. Idempotent with the callables; covers language changes and removals (B9).
+  - `devices`: client-written by contract; B2 rules already cover them.
+- **Bug found and fixed:** functions after `health` were defined in `us-central1`. ES module imports run before `index.ts`'s own `setGlobalOptions`, so they'd have deployed to the wrong region, unreachable by the apps. `src/setup.ts` is now the first import, and `test/regions.test.ts` checks every export (it fails on the old code).
+- Tests: 13 unit + 162 emulator tests pass (144 rules + 18 integration).
+  - The integration tests cover invite expiry at the exact boundary, max uses, 14 concurrent joins (uses = successes ≤ 10, members = 1 + successes), joining twice, roles, language bookkeeping, validation, and the trigger's change/removal/deleted-household paths.
+  - `npm test` = unit + `test:emulator`.
+- End to end on the dev emulators: Android `TwoUsersJoinHouseholdTest` (create → invite → join → both see each other with the right roles) and `OfflineItemsTest` both **pass against the real backend and rules**. Function logs show the trigger firing, with IDs and roles only (no names).
+- Contract changes: none.
+- Next: B4 (catalog seed, normalize/units/localSplit in TypeScript against `fixtures/`, `parseItems`, `transcribeAudio`, `onItemCreated`/`onItemUpdated`, golden test). This needs the Anthropic API key and Google Speech-to-Text for **recording** real responses once; tests replay recordings offline.
 
 ### 2026-10-19 — Backend B2 Security rules
 - Shipped: `backend/firestore.rules` from CONTRACT §3 and ARCHITECTURE §3.3, replacing the B1 deny-all placeholder.

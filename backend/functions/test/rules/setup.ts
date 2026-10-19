@@ -23,7 +23,8 @@ const NOTIFY = { tripHeading: true, tripArrived: false, itemMissing: true, usual
 
 export async function setupEnv(): Promise<RulesTestEnvironment> {
   const host = process.env.FIRESTORE_EMULATOR_HOST;
-  if (!host) throw new Error("Run rules tests with `npm run test:rules` (inside firebase emulators:exec).");
+  if (!host)
+    throw new Error("Run rules tests with `npm run test:emulator` (inside firebase emulators:exec).");
   const [hostname, port] = host.split(":");
   return initializeTestEnvironment({
     projectId: "demo-fridgelist-rules",

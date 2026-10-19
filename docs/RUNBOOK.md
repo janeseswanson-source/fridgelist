@@ -24,7 +24,7 @@ npm run emulators             # builds functions, starts all emulators, seeds de
 - Project: `demo-fridgelist`. The `demo-` prefix means the emulators never touch a real Google Cloud project.
 - Emulator UI: http://127.0.0.1:4000
 - Ports: Auth 9099, Firestore 8080, Functions 5001, Hosting 5000, Storage 9199, Pub/Sub 8085, Hub 4400.
-- Functions are served at `http://127.0.0.1:5001/demo-fridgelist/me-central2/<name>`. The emulator reloads them when `functions/lib` changes: run `npm --prefix functions run build` (or `npx tsc -w -p functions/tsconfig.build.json`) while it runs.
+- Functions are served at `http://127.0.0.1:5001/demo-fridgelist/me-central2/<name>`. If you change a function's region or options, restart the emulators (hot reload keeps the old registration). The emulator reloads them when `functions/lib` changes: run `npm --prefix functions run build` (or `npx tsc -w -p functions/tsconfig.build.json`) while it runs.
 - Re-seed at any time with `npm run seed` while the emulators run. The seed uses fixed IDs, so it overwrites rather than duplicates.
 
 ### Seeded data
@@ -50,7 +50,7 @@ cd backend/functions && npm ci && npm run lint && npm run typecheck && npm test
 cd backend && npm run typecheck   # seed and launcher scripts
 ```
 
-`npm test` = `test:unit` (vitest, no emulator) + `test:rules`. `test:rules` starts its own Firestore emulator on port **8180** (`firebase.rules-test.json`, project `demo-fridgelist-rules`) with `firebase emulators:exec`, so it runs alongside `npm run emulators` and never touches the seeded data. It needs Java 21 and the Firebase CLI.
+`npm test` = `test:unit` (vitest, no emulator) + `test:emulator` (security rules in `test/rules/` and callable/trigger integration tests in `test/integration/`). `test:emulator` starts its own Firestore emulator on port **8180** (`firebase.rules-test.json`, project `demo-fridgelist-rules`) with `firebase emulators:exec`, so it runs alongside `npm run emulators` and never touches the seeded data. It needs Java 21 and the Firebase CLI.
 
 ### Security rules (B2)
 
@@ -80,6 +80,11 @@ curl -s -X POST -H "Content-Type: application/json" -d '{"data":{}}' \
 - `npm run deploy:dev` (from `backend/`) runs `firebase deploy --project dev`.
 - Rollback, secret rotation, budget alerts *(B9)*.
 
-## 5. Privacy in logs
+## 5. Function code conventions
+
+- `src/setup.ts` must stay the **first import** of `src/index.ts`: it initializes the Admin SDK and sets the region before any function is defined. `test/regions.test.ts` fails if any export is not in `REGION`.
+- Each callable keeps its logic in a `*Core(db, uid, data, now?)` function that the integration tests call directly against the emulator; the `onCall` wrapper only adds auth.
+
+## 6. Privacy in logs
 
 Functions log only through `functions/src/lib/log.ts`. It accepts IDs, codes, counts and flags; keys that look like user text (`name`, `text`, `title`, `body`, `notes`, `email`) are redacted. `console.*` is a lint error (CLAUDE.md rule 4).
