@@ -2,7 +2,10 @@ package com.fridgelist.app.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import android.widget.Toast
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
+import com.fridgelist.app.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -21,7 +24,10 @@ import com.fridgelist.app.feature.onboarding.NotificationsRoute
 import com.fridgelist.app.feature.onboarding.ProfileRoute
 import com.fridgelist.app.feature.onboarding.SignInRoute
 import com.fridgelist.app.feature.onboarding.WelcomeRoute
+import com.fridgelist.app.feature.planner.PlannerRoute
 import com.fridgelist.app.feature.settings.DetectionDebugRoute
+import com.fridgelist.app.feature.share.ShareTagRoute
+import com.fridgelist.app.feature.share.SharedLinkRoute
 import com.fridgelist.app.feature.settings.SettingsRoute
 import com.fridgelist.core.data.session.OnboardingStep
 import kotlinx.serialization.Serializable
@@ -40,6 +46,9 @@ import kotlinx.serialization.Serializable
 @Serializable data object Members
 @Serializable data object Settings
 @Serializable data object DetectionDebug
+@Serializable data class ShareTag(val listId: String)
+@Serializable data class SharedLink(val token: String)
+@Serializable data object Planner
 
 private fun OnboardingStep.route(): Any = when (this) {
     OnboardingStep.WELCOME -> Welcome
@@ -102,6 +111,24 @@ fun FridgeListNavHost(start: OnboardingStep, app: AppViewModel) {
         }
     }
 
+    // Fridge tag / QR: public, so it opens even before sign-in (guest view); members go to Quick Add.
+    val pendingShare by app.pendingShareToken.collectAsStateWithLifecycle()
+    LaunchedEffect(pendingShare) {
+        app.consumeShareToken()?.let { nav.navigate(SharedLink(it)) { launchSingleTop = true } }
+    }
+    val pendingList by app.pendingListLink.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    LaunchedEffect(pendingList) {
+        val link = pendingList ?: return@LaunchedEffect
+        if (app.currentStep() != OnboardingStep.DONE) return@LaunchedEffect
+        app.consumeListLink()
+        if (link.householdId == app.currentHouseholdId()) {
+            nav.navigate(ListDetail(link.listId)) { launchSingleTop = true }
+        } else {
+            Toast.makeText(context, R.string.link_other_household, Toast.LENGTH_LONG).show()
+        }
+    }
+
     NavHost(navController = nav, startDestination = start.route()) {
         composable<Welcome> { WelcomeRoute(onContinue = { nav.navigate(SignIn) }) }
         composable<SignIn> { SignInRoute(onNext = onNext, onBack = { nav.popIfCan() }) }
@@ -121,11 +148,13 @@ fun FridgeListNavHost(start: OnboardingStep, app: AppViewModel) {
                 onResumeShopping = { nav.navigate(Shopping(listId = it)) },
                 onOpenMembers = { nav.navigate(Members) },
                 onOpenSettings = { nav.navigate(Settings) },
+                onPlanIftar = { nav.navigate(Planner) { launchSingleTop = true } },
             )
         }
         composable<ListDetail> { entry ->
             ListDetailRoute(
-                openGoing = entry.toRoute<ListDetail>().going,onBack = { nav.popIfCan() }, onStartShopping = { nav.navigate(Shopping(listId = it)) })
+                openGoing = entry.toRoute<ListDetail>().going,
+                onShareTag = { nav.navigate(ShareTag(it)) },onBack = { nav.popIfCan() }, onStartShopping = { nav.navigate(Shopping(listId = it)) })
         }
         composable<Shopping> { ShoppingRoute(onClose = { nav.popIfCan() }) }
         composable<Members> { MembersRoute(onBack = { nav.popIfCan() }) }
@@ -137,5 +166,10 @@ fun FridgeListNavHost(start: OnboardingStep, app: AppViewModel) {
             )
         }
         composable<DetectionDebug> { DetectionDebugRoute(onBack = { nav.popIfCan() }) }
+        composable<ShareTag> { ShareTagRoute(onBack = { nav.popIfCan() }) }
+        composable<Planner> { PlannerRoute(onBack = { nav.popIfCan() }) }
+        composable<SharedLink> {
+            SharedLinkRoute(onBack = { if (nav.previousBackStackEntry != null) nav.popBackStack() else nav.goTo(OnboardingStep.DONE, null) })
+        }
     }
 }

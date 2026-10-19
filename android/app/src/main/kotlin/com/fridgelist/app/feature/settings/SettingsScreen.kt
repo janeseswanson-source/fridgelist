@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -18,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -56,6 +58,9 @@ fun SettingsRoute(
         onSaveHost = viewModel::saveHost,
         onBack = onBack,
         onSignOut = viewModel::signOut,
+        numbers = remember { NumberStyle.current() },
+        onNumbers = viewModel::setNumbers,
+        onForcePlanner = viewModel::setForcePlanner,
         detection = { DetectionRoute() },
         onOpenDetectionDebug = if (viewModel.showDeveloper) onOpenDetectionDebug else null,
     )
@@ -72,6 +77,9 @@ fun SettingsScreen(
     onSaveHost: () -> Unit,
     onBack: () -> Unit,
     onSignOut: (() -> Unit)? = null,
+    numbers: NumberStyle = NumberStyle.SYSTEM,
+    onNumbers: (NumberStyle) -> Unit = {},
+    onForcePlanner: (Boolean) -> Unit = {},
     /** Store detection (A7); a slot so screenshot tests can leave it out. */
     detection: (@Composable () -> Unit)? = null,
     onOpenDetectionDebug: (() -> Unit)? = null,
@@ -100,6 +108,12 @@ fun SettingsScreen(
                     LanguageRow(option, selected = option == language, onClick = { onLanguageSelected(option) })
                 }
             }
+            SectionHeader(stringResource(R.string.settings_numbers_header))
+            Column(Modifier.selectableGroup()) {
+                NumberStyle.entries.forEach { option ->
+                    OptionRow(stringResource(option.label), selected = option == numbers, onClick = { onNumbers(option) })
+                }
+            }
             if (detection != null) {
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
                 SectionHeader(stringResource(R.string.detect_header))
@@ -116,6 +130,17 @@ fun SettingsScreen(
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
                 SectionHeader(stringResource(R.string.settings_dev_header))
                 DeveloperSection(dev, onHostChange, onSaveHost)
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 56.dp)
+                        .toggleable(value = dev.forcePlanner, onValueChange = onForcePlanner, role = Role.Switch)
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(stringResource(R.string.settings_force_planner), modifier = Modifier.weight(1f))
+                    Switch(checked = dev.forcePlanner, onCheckedChange = null)
+                }
                 if (onOpenDetectionDebug != null) {
                     TextButton(onClick = onOpenDetectionDebug, modifier = Modifier.padding(horizontal = 8.dp).heightIn(min = 48.dp)) {
                         Text(stringResource(R.string.debug_detect_open))
@@ -137,7 +162,11 @@ private fun SectionHeader(text: String) {
 }
 
 @Composable
-private fun LanguageRow(option: AppLanguage, selected: Boolean, onClick: () -> Unit) {
+private fun LanguageRow(option: AppLanguage, selected: Boolean, onClick: () -> Unit) =
+    OptionRow(stringResource(option.label), selected, onClick)
+
+@Composable
+private fun OptionRow(label: String, selected: Boolean, onClick: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -148,7 +177,7 @@ private fun LanguageRow(option: AppLanguage, selected: Boolean, onClick: () -> U
     ) {
         RadioButton(selected = selected, onClick = null)
         Text(
-            stringResource(option.label),
+            label,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(start = 16.dp),
         )

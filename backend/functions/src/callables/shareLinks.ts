@@ -113,18 +113,29 @@ function subtitle(qty: unknown, unit: unknown): string | undefined {
  * `lang` by the display rule, else the household's default language. No member names, no
  * `addedBy`, nothing else from the household.
  */
-export async function resolveShareLinkCore(db: Firestore, data: unknown, now: Date = new Date()) {
+/**
+ * CONTRACT §4 `resolveShareLink`. A signed-in member of the link's household also gets
+ * `member: { householdId, listId }` (v5), so the app opens Quick Add for that list instead of the
+ * guest view. Guests learn nothing new.
+ */
+export async function resolveShareLinkCore(
+  db: Firestore,
+  data: unknown,
+  now: Date = new Date(),
+  uid?: string,
+) {
   const input = parse(ResolveShareLinkRequest, data);
   const link = await activeLink(db, input.token, now);
   const householdId = String(link.householdId);
   const listId = String(link.listId);
-  const [household, list, items] = await Promise.all([
+  const [household, list, items, member] = await Promise.all([
     db.doc(`households/${householdId}`).get(),
     db.doc(`households/${householdId}/lists/${listId}`).get(),
     db
       .collection(`households/${householdId}/lists/${listId}/items`)
       .where("status", "in", ["open", "claimed"])
       .get(),
+    uid ? db.doc(`households/${householdId}/members/${uid}`).get() : Promise.resolve(null),
   ]);
   if (!household.exists || !list.exists) throw new HttpsError("not-found", "This link no longer works.");
   const defaultLanguage = String(household.get("defaultLanguage") ?? "en");
@@ -155,6 +166,7 @@ export async function resolveShareLinkCore(db: Firestore, data: unknown, now: Da
     listName: String(list.get("name") ?? ""),
     scope: link.scope as "view" | "add",
     items: out,
+    ...(member?.exists ? { member: { householdId, listId } } : {}),
   };
 }
 
@@ -256,6 +268,6 @@ export const revokeShareLink = onCall((request) =>
   revokeShareLinkCore(getFirestore(), requireUid(request), request.data),
 );
 export const resolveShareLink = onCall(PUBLIC, (request) =>
-  resolveShareLinkCore(getFirestore(), request.data),
+  resolveShareLinkCore(getFirestore(), request.data, new Date(), request.auth?.uid),
 );
 export const guestAddItem = onCall(PUBLIC, (request) => guestAddItemCore(getFirestore(), request.data));

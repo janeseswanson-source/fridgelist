@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="planner_card">خطّط للإفطار</string>
+    <string name="planner_title">خطّط للإفطار</string>
+    <string name="planner_intro">أخبرنا بعدد الأشخاص والأيام. نقترح أطباقاً، تختار منها، ونضيف الناقص إلى قائمتك.</string>
+    <string name="planner_people">الأشخاص</string>
+    <string name="planner_days">الأيام</string>
+    <plurals name="planner_people_value">
+        <item quantity="zero">لا أحد</item>
+        <item quantity="one">شخص واحد</item>
+        <item quantity="two">شخصان</item>
+        <item quantity="few">%1$d أشخاص</item>
+        <item quantity="many">%1$d شخصاً</item>
+        <item quantity="other">%1$d شخص</item>
+    </plurals>
+    <plurals name="planner_days_value">
+        <item quantity="zero">لا أيام</item>
+        <item quantity="one">يوم واحد</item>
+        <item quantity="two">يومان</item>
+        <item quantity="few">%1$d أيام</item>
+        <item quantity="many">%1$d يوماً</item>
+        <item quantity="other">%1$d يوم</item>
+    </plurals>
+    <string name="planner_less">أقل: %1$s</string>
+    <string name="planner_more_of">أكثر: %1$s</string>
+    <string name="planner_suggest">اقترح أطباقاً</string>
+    <string name="planner_pick">اختر الأطباق التي تريد تحضيرها</string>
+    <string name="planner_more">أفكار أخرى</string>
+    <plurals name="planner_make_list">
+        <item quantity="zero">جهّز القائمة</item>
+        <item quantity="one">جهّز القائمة لطبق واحد</item>
+        <item quantity="two">جهّز القائمة لطبقين</item>
+        <item quantity="few">جهّز القائمة لـ %1$d أطباق</item>
+        <item quantity="many">جهّز القائمة لـ %1$d طبقاً</item>
+        <item quantity="other">جهّز القائمة لـ %1$d طبق</item>
+    </plurals>
+    <string name="planner_confirm">أضف إلى %1$s</string>
+    <string name="planner_skipped">لم يُضف</string>
+    <string name="planner_skipped_on_list">%1$s · موجود في القائمة</string>
+    <string name="planner_skipped_bought">%1$s · اشتُري خلال الأيام السبعة الأخيرة</string>
+    <plurals name="planner_add">
+        <item quantity="zero">أضف</item>
+        <item quantity="one">أضف صنفاً واحداً</item>
+        <item quantity="two">أضف صنفين</item>
+        <item quantity="few">أضف %1$d أصناف</item>
+        <item quantity="many">أضف %1$d صنفاً</item>
+        <item quantity="other">أضف %1$d صنف</item>
+    </plurals>
+    <plurals name="planner_added">
+        <item quantity="zero">لم يُضف شيء إلى %2$s</item>
+        <item quantity="one">أُضيف صنف واحد إلى %2$s ✓</item>
+        <item quantity="two">أُضيف صنفان إلى %2$s ✓</item>
+        <item quantity="few">أُضيفت %1$d أصناف إلى %2$s ✓</item>
+        <item quantity="many">أُضيف %1$d صنفاً إلى %2$s ✓</item>
+        <item quantity="other">أُضيف %1$d صنف إلى %2$s ✓</item>
+    </plurals>
+    <string name="planner_done">تم</string>
+    <string name="planner_selected">مختار</string>
+    <string name="planner_not_selected">غير مختار</string>
+    <string name="planner_no_ideas">لا أفكار أخرى الآن.</string>
+    <string name="planner_no_list">أنشئ قائمة أولاً.</string>
+    <string name="planner_offline">أفكار الوجبات تحتاج إلى الإنترنت.</string>
+    <string name="planner_unavailable">أفكار الوجبات غير متاحة الآن. حاول لاحقاً.</string>
+    <string name="planner_too_many">تخطيط كثير خلال ساعة واحدة. حاول لاحقاً.</string>
+    <string name="cuisine_levantine">شامي</string>
+    <string name="cuisine_gulf">خليجي</string>
+    <string name="cuisine_turkish">تركي</string>
+    <string name="cuisine_egyptian">مصري</string>
+    <string name="cuisine_international">عالمي</string>
+</resources>

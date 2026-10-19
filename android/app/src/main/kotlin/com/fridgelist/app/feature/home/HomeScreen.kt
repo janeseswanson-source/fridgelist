@@ -45,6 +45,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fridgelist.app.R
+import com.fridgelist.app.feature.planner.PlanIftarCard
+import com.fridgelist.app.feature.planner.PlannerEntryViewModel
 import com.fridgelist.app.feature.lists.ListRowUi
 import com.fridgelist.app.feature.lists.ListsUiState
 import com.fridgelist.app.feature.lists.ListsViewModel
@@ -67,6 +69,7 @@ fun HomeScreen(
     onOpenMembers: () -> Unit,
     onOpenSettings: () -> Unit,
     onResumeShopping: (listId: String) -> Unit = {},
+    onPlanIftar: (() -> Unit)? = null,
 ) {
     Scaffold(
         topBar = {
@@ -108,6 +111,7 @@ fun HomeScreen(
                 state.shoppingList?.let { list ->
                     item(key = "resume") { ResumeShopping(list.name) { onResumeShopping(list.id) } }
                 }
+                onPlanIftar?.let { plan -> item(key = "iftar") { PlanIftarCard(plan) } }
                 items(state.lists, key = { it.list.id }) { row ->
                     ListRow(row, onClick = { onOpenList(row) })
                     HorizontalDivider(Modifier.padding(start = 72.dp))
@@ -241,11 +245,17 @@ fun HomeRoute(
     onResumeShopping: (listId: String) -> Unit,
     onOpenMembers: () -> Unit,
     onOpenSettings: () -> Unit,
+    onPlanIftar: () -> Unit = {},
     vm: ListsViewModel = hiltViewModel(),
+    planner: PlannerEntryViewModel = hiltViewModel(),
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
+    val plannerAvailable by planner.available.collectAsStateWithLifecycle()
     var creating by remember { mutableStateOf(false) }
-    HomeScreen(state, { onOpenList(it.list.id) }, { creating = true }, onOpenMembers, onOpenSettings, onResumeShopping)
+    HomeScreen(
+        state, { onOpenList(it.list.id) }, { creating = true }, onOpenMembers, onOpenSettings, onResumeShopping,
+        onPlanIftar = if (plannerAvailable && state.canCreate) onPlanIftar else null,
+    )
     if (creating) {
         ModalBottomSheet(onDismissRequest = { creating = false }) {
             NewListContent { name, type, emoji ->

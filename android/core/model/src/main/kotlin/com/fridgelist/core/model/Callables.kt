@@ -96,6 +96,95 @@ data class NearbyStore(val storeId: String, val name: String, val chainId: Strin
 @Serializable
 data class NearbyStoresResponse(val stores: List<NearbyStore> = emptyList())
 
+/** CONTRACT §4 `createShareLink` (owner or adult): a fridge tag, QR or link for one list. */
+@Serializable
+data class CreateShareLinkRequest(
+    val householdId: String,
+    val listId: String,
+    /** `view` | `add` */
+    val scope: String,
+    /** `nfc` | `qr` | `link` */
+    val kind: String,
+    val expiresInDays: Int? = null,
+)
+
+@Serializable
+data class CreateShareLinkResponse(val token: String, val url: String)
+
+/** CONTRACT §4 `resolveShareLink` (public). */
+@Serializable
+data class ResolveShareLinkRequest(val token: String, val lang: String? = null)
+
+@Serializable
+data class GuestItem(val id: String, val title: String, val subtitle: String? = null, val category: String = "other", val status: String = "open")
+
+/** v5: present only when the signed-in caller is a member of the link's household. */
+@Serializable
+data class ShareMember(val householdId: String, val listId: String)
+
+@Serializable
+data class ResolveShareLinkResponse(
+    val householdName: String,
+    val listName: String,
+    val scope: String,
+    val items: List<GuestItem> = emptyList(),
+    val member: ShareMember? = null,
+) {
+    val canAdd: Boolean get() = ShareScope.fromWire(scope) == ShareScope.ADD
+}
+
+/** CONTRACT §4 `guestAddItem` (public, scope `add`). */
+@Serializable
+data class GuestAddItemRequest(val token: String, val text: String, val guestName: String? = null)
+
+@Serializable
+data class GuestAddItemResponse(val added: Int = 0)
+
+/** CONTRACT §4 `suggestMeals` (10 calls/hour/household). */
+@Serializable
+data class SuggestMealsRequest(
+    val householdId: String,
+    val people: Int,
+    /** `Occasion` wire value. */
+    val occasion: String,
+    val cuisines: List<String>? = null,
+    val days: Int? = null,
+    val exclude: List<String>? = null,
+    val lang: String,
+)
+
+@Serializable
+data class SuggestedMeal(
+    val mealId: String,
+    val title: String,
+    val description: String = "",
+    val servings: Int,
+    val cuisine: String,
+    val tags: List<String> = emptyList(),
+)
+
+@Serializable
+data class SuggestMealsResponse(val meals: List<SuggestedMeal> = emptyList())
+
+/** CONTRACT §4 `mealToItems`: no writes; the app confirms, then writes with `addedVia: meal_plan`. */
+@Serializable
+data class MealToItemsRequest(val householdId: String, val listId: String, val mealIds: List<String>, val people: Int, val lang: String)
+
+/** `reason`: `on_list` | `recently_bought`. */
+@Serializable
+data class SkippedIngredient(val name: String, val reason: String)
+
+@Serializable
+data class MealToItemsResponse(val items: List<ParsedItem> = emptyList(), val skipped: List<SkippedIngredient> = emptyList())
+
+/** PRODUCT_SPEC F11 / CONTRACT §4 ranges. */
+object PlannerLimits {
+    const val PEOPLE_MIN = 2
+    const val PEOPLE_MAX = 30
+    const val DAYS_MIN = 1
+    const val DAYS_MAX = 7
+}
+
 /** CONTRACT §4 `addStore`: a store missing from the database; works at once for this household. */
 @Serializable
 data class AddStoreRequest(val name: String, val lat: Double, val lng: Double, val chainId: String? = null)
@@ -115,6 +204,10 @@ object Limits {
     const val ITEM_NOTES_MAX = 120
     const val QTY_MAX = 999.0
     const val PARSE_TEXT_MAX = 500
+
+    /** CONTRACT §4 `guestAddItem`: text ≤ 200, guestName ≤ 30. */
+    const val GUEST_TEXT_MAX = 200
+    const val GUEST_NAME_MAX = 30
 
     /** Below this `ParsedItem.confidence` the app asks which meaning was meant (prompt A3). */
     const val AMBIGUOUS_CONFIDENCE = 0.6

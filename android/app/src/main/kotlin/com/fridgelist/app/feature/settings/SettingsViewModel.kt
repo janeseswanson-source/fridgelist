@@ -18,6 +18,7 @@ data class DevUiState(
     val hostInvalid: Boolean = false,
     val connectedHost: String? = null,
     val saved: Boolean = false,
+    val forcePlanner: Boolean = false,
 )
 
 @HiltViewModel
@@ -38,7 +39,7 @@ class SettingsViewModel @Inject constructor(
         if (showDeveloper) {
             viewModelScope.launch {
                 val host = devSettings.currentEmulatorHost()
-                _dev.update { it.copy(hostInput = host) }
+                _dev.update { it.copy(hostInput = host, forcePlanner = devSettings.currentForcePlanner()) }
             }
         }
     }
@@ -57,6 +58,14 @@ class SettingsViewModel @Inject constructor(
             _signedOut.value = true
         }
     }
+
+    fun setForcePlanner(on: Boolean) {
+        _dev.update { it.copy(forcePlanner = on) }
+        viewModelScope.launch { devSettings.setForcePlanner(on) }
+    }
+
+    /** Numbers as ١٢٣ or 123 (PRODUCT_SPEC F12): the per-app locale's numbering system. */
+    fun setNumbers(style: NumberStyle) = AppLanguage.apply(AppLanguage.current(), style)
 
     fun saveHost() {
         val host = _dev.value.hostInput.trim()

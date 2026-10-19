@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performClick
 import com.fridgelist.app.feature.settings.AppLanguage
 import com.fridgelist.app.feature.settings.DevUiState
@@ -53,8 +54,9 @@ class SettingsScreenTest {
     @Test
     fun developerSectionShowsHostError() {
         show(dev = DevUiState(hostInput = "http://x", hostInvalid = true))
-        compose.onNodeWithText("Developer").assertIsDisplayed()
-        compose.onNodeWithText("Enter an IP address or host name, without a port").assertIsDisplayed()
+        // Below the language and numbers sections: scroll there first.
+        compose.onNodeWithText("Developer").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Enter an IP address or host name, without a port").performScrollTo().assertIsDisplayed()
     }
 
     @Test

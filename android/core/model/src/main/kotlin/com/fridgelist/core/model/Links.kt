@@ -45,6 +45,32 @@ object Links {
 
     fun joinUrl(code: String, linkDomain: String): String = "https://$linkDomain/join/$code"
 
+    /** CONTRACT §3.11: share tokens are 24 URL-safe characters. */
+    const val SHARE_TOKEN_LENGTH = 24
+
+    /** `https://{LINK_DOMAIN}/k/{token}` (fridge tag, QR) → the token. */
+    fun shareToken(text: String, linkDomain: String): String? =
+        pathSegments(text, linkDomain)?.takeIf { it.size == 2 && it[0] == "k" }?.get(1)
+            ?.takeIf { it.length == SHARE_TOKEN_LENGTH && it.all { c -> c.isAsciiLetterOrDigit() || c == '_' || c == '-' } }
+
+    fun shareUrl(linkDomain: String, token: String): String = "https://$linkDomain/k/$token"
+
+    /** `https://{LINK_DOMAIN}/l/{householdId}/{listId}` → that list (members only). */
+    data class ListLink(val householdId: String, val listId: String)
+
+    fun listLink(text: String, linkDomain: String): ListLink? =
+        pathSegments(text, linkDomain)?.takeIf { it.size == 3 && it[0] == "l" && isId(it[1]) && isId(it[2]) }
+            ?.let { ListLink(it[1], it[2]) }
+
+    /** Path segments of an https link on our domain; null for anything else. */
+    private fun pathSegments(text: String, linkDomain: String): List<String>? {
+        val uri = runCatching { URI(text.trim()) }.getOrNull() ?: return null
+        if (!uri.scheme.equals("https", ignoreCase = true) || !uri.host.equals(linkDomain, ignoreCase = true)) return null
+        return uri.path.orEmpty().split('/').filter { it.isNotEmpty() }
+    }
+
+    private fun Char.isAsciiLetterOrDigit() = this in 'a'..'z' || this in 'A'..'Z' || this in '0'..'9'
+
     /** `{URL_SCHEME}://add?listId={lid}&mode=voice|text` (CONTRACT §6): widgets, tile, shortcuts. */
     data class AddLink(val listId: String?, val voice: Boolean)
 

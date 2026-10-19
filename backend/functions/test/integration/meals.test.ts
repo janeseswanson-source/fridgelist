@@ -6,6 +6,7 @@ import { mealToItemsCore, suggestMealsCore } from "../../src/callables/meals.js"
 import type { ParsedItem } from "../../src/callables/parseItems.js";
 import { LlmUnavailableError } from "../../src/llm/transport.js";
 import type { MealPlanner, PlannedMeal, PlanRequest } from "../../src/meals/planner.js";
+import { SeedMealPlanner } from "../../src/meals/seedPlanner.js";
 import { FakeLlm } from "../fakes.js";
 import { clearDb, expectHttpsError, testDb } from "./setup.js";
 
@@ -179,6 +180,40 @@ describe("mealToItems", () => {
       ]),
     );
     expect(items.map((i) => i.canonicalId)).toContain("onion"); // done on the list and bought 9 days ago: still needed
+  });
+
+  it("F11 without an LLM: a 6-person, 3-day iftar plan gives a sensible, deduplicated list in Arabic and Turkish", async () => {
+    let seed = 7;
+    const random = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+    const { meals } = await suggest(
+      { people: 6, days: 3, lang: "ar" },
+      new SeedMealPlanner(undefined, random),
+    );
+    expect(meals).toHaveLength(8); // 3 days → 8 ideas (6–10)
+    expect(new Set(meals.map((m) => m.cuisine)).size).toBeGreaterThanOrEqual(3); // a mix, not all one cuisine
+    expect(meals.every((m) => /[\u0600-\u06FF]/u.test(m.title) && m.servings === 6)).toBe(true);
+    await db
+      .collection(`households/${hid}/lists/${lid}/items`)
+      .add({ name: "soğan", canonicalId: "onion", status: "open", addedBy: OWNER });
+
+    const ids = meals.slice(0, 3).map((m) => m.mealId);
+    for (const lang of ["ar", "tr"]) {
+      const { items, skipped } = await mealToItemsCore(
+        db,
+        OWNER,
+        { householdId: hid, listId: lid, mealIds: ids, people: 6, lang },
+        new FakeLlm(),
+        NOW,
+      );
+      const keys = items.map((i) => i.canonicalId ?? i.name);
+      expect(new Set(keys).size).toBe(keys.length); // merged across dishes
+      expect(items.length).toBeGreaterThan(3);
+      expect(items.every((i) => i.qty == null || (i.qty > 0 && i.qty <= 999))).toBe(true);
+      expect(items.map((i) => i.canonicalId)).not.toContain("onion"); // already on the list
+      if (skipped.length > 0) expect(skipped.every((s) => s.reason === "on_list")).toBe(true);
+      const script = lang === "ar" ? /[\u0600-\u06FF]/u : /[A-Za-zÇĞİÖŞÜçğıöşü]/u;
+      expect(items.filter((i) => i.canonicalId).every((i) => script.test(i.name))).toBe(true);
+    }
   });
 
   it("expired or unknown meals and unknown lists", async () => {

@@ -161,4 +161,42 @@ class ScreenshotTest(private val config: String, private val qualifiers: String)
             )
         }
     }
+
+    @Test fun share_tag() = capture("share_tag") {
+        com.fridgelist.app.feature.share.ShareTagScreen(
+            state = com.fridgelist.app.feature.share.ShareTagUiState(listName = "البقالة", qrUrl = "https://links.example.com/k/Ab3_-xYz0123456789abcdEF"),
+            hasNfc = true, nfcOn = true, onBack = {}, onGuestsCanAdd = {}, onRetry = {}, onShare = {}, onPrint = {},
+            onWriteTag = {}, onCancelTag = {}, onNfcSettings = {},
+        )
+    }
+
+    @Test fun share_tag_hold() = capture("share_tag_hold") {
+        com.fridgelist.app.feature.share.ShareTagScreen(
+            state = com.fridgelist.app.feature.share.ShareTagUiState(
+                listName = "البقالة",
+                qrUrl = "https://links.example.com/k/Ab3_-xYz0123456789abcdEF",
+                tagStep = com.fridgelist.app.feature.share.TagStep.HOLD,
+                message = R.string.share_nfc_too_small,
+            ),
+            hasNfc = true, nfcOn = true, onBack = {}, onGuestsCanAdd = {}, onRetry = {}, onShare = {}, onPrint = {},
+            onWriteTag = {}, onCancelTag = {}, onNfcSettings = {},
+        )
+    }
+
+    @Test fun guest_view() = capture("guest_view") {
+        com.fridgelist.app.feature.share.SharedLinkScreen(
+            state = com.fridgelist.app.feature.share.SharedLinkUiState(
+                loading = false,
+                link = com.fridgelist.core.model.ResolveShareLinkResponse(
+                    "Komşu Evi", "Market", "add",
+                    listOf(
+                        com.fridgelist.core.model.GuestItem("1", "ekmek"),
+                        com.fridgelist.core.model.GuestItem("2", "حليب", "2 L"),
+                    ),
+                ),
+                added = 2,
+            ),
+            onBack = {}, onRetry = {}, onText = {}, onGuestName = {}, onAdd = {},
+        )
+    }
 }

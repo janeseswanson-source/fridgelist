@@ -5,7 +5,7 @@ This file is the single source of truth for every data shape shared by the backe
 **Changing it:** update this file in the same commit as the code, bump `CONTRACT_VERSION`, add a line to the changelog at the bottom, and list the change in `docs/PROGRESS.md` under "Contract changes for other platforms".
 
 ```
-CONTRACT_VERSION = 4
+CONTRACT_VERSION = 5
 ```
 
 ---
@@ -268,7 +268,7 @@ All callables require Firebase Auth and App Check unless marked **public**. Publ
 | `addStore` | `{ name, lat, lng, chainId? }` | `{ storeId }` | `verified: false` |
 | `createShareLink` | `{ householdId, listId, scope, kind, expiresInDays? }` | `{ token, url }` | owner or adult |
 | `revokeShareLink` | `{ householdId, token }` | `{ ok: true }` | owner or adult |
-| `resolveShareLink` **public** | `{ token, lang? }` | `{ householdName, listName, scope, items: [{ id, title, subtitle?, category, status }] }` | only `open` and `claimed` items; titles in `lang`, else household default |
+| `resolveShareLink` **public** | `{ token, lang? }` | `{ householdName, listName, scope, items: [{ id, title, subtitle?, category, status }], member?: { householdId, listId } }` | only `open` and `claimed` items; titles in `lang`, else household default; `member` only when the caller is signed in and a member of that household (apps then open Quick Add for that list) |
 | `guestAddItem` **public** | `{ token, text (≤ 200), guestName? (≤ 30) }` | `{ added }` | scope `add` only; 20 adds/hour/token; strips URLs |
 | `suggestMeals` | `{ householdId, people (1–30), occasion, cuisines?, days? (1–7), exclude?: string[], lang }` | `{ meals: [{ mealId, title, description, servings, cuisine, tags }] }` | 10 calls/hour/household |
 | `mealToItems` | `{ householdId, listId, mealIds, people, lang }` | `{ items: ParsedItem[], skipped: [{ name, reason: "on_list" \| "recently_bought" }] }` | no writes; client confirms, then writes with `addedVia: meal_plan` |
@@ -456,4 +456,5 @@ Keep at most 12 items per list, in display order. `activeTrip` is present only w
 - **v1 (2026-10-18):** initial contract.
 - **v2 (2026-10-19):** §5.1 Android delivery: `trip_heading`, `trip_arrived`, `item_missing` go to Android as data-only messages with `title` and `body` data keys (server-localized), so the app can build the notification with the inline reply. Backend must change; iOS unaffected.
 - **v3 (2026-10-19):** §4 `startTrip` refuses `kid` with `permission-denied` (PRODUCT_SPEC roles: kids request, they don't shop). §3.2 the user may delete their own device docs (sign-out). Backend must implement both; Android already complies (A1–A6 QA); iOS: hide trip entry points for kids and delete the device doc on sign-out.
+- **v5 (2026-10-19):** §4 `resolveShareLink` returns `member?: { householdId, listId }` when the signed-in caller is a member of the link's household, so a member's fridge tag or QR opens Quick Add for that list (A9). Optional; guests see no change.
 - **v4 (2026-10-19):** phase 2 (B10), all off by default: §10 flags `usuals_enabled` and `aisle_learning_enabled`; §3.13 stores gain `aisleOrder?`, `aisleStats?`, `aisleTrips?`; §3.7 trips gain `aisleLearned?`; new functions-only collections §3.17 `usuals` (members read), §3.18 `whatsappLinkCodes`, §3.19 `whatsappNumbers` (hashed numbers only). Apps: no change needed until they use usuals or learned aisle order.

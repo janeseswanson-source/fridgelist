@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="share_menu">ملصق الثلاجة ورمز QR</string>
+    <string name="share_title">ملصق الثلاجة وQR</string>
+    <string name="share_intro">ضع %1$s على الثلاجة. كل من يمسح الرمز أو يلمس الملصق يرى القائمة، حتى بدون التطبيق.</string>
+    <string name="share_guests_can_add">يمكن للضيوف إضافة أصناف</string>
+    <string name="share_qr_header">رمز QR</string>
+    <string name="share_qr_desc">رمز QR لـ %1$s</string>
+    <string name="share_share">مشاركة</string>
+    <string name="share_print">طباعة</string>
+    <string name="share_print_job">FridgeList – %1$s</string>
+    <string name="share_retry">حاول مجدداً</string>
+    <string name="share_cancel">إلغاء</string>
+    <string name="share_offline">إنشاء ملصق أو رمز يحتاج إلى الإنترنت.</string>
+    <string name="share_nfc_header">ملصق NFC للثلاجة</string>
+    <string name="share_nfc_desc">استخدم ملصق NFC فارغاً (NTAG213 أو 215 أو 216). لمسه يفتح القائمة على أي هاتف.</string>
+    <string name="share_nfc_write">اكتب ملصقاً للثلاجة</string>
+    <string name="share_nfc_hold">قرّب الملصق من ظهر هاتفك…</string>
+    <string name="share_nfc_done">الملصق جاهز. لمسه يفتح %1$s.</string>
+    <string name="share_nfc_another">اكتب ملصقاً آخر</string>
+    <string name="share_nfc_too_small">هذا الملصق صغير جداً. استخدم NTAG213 أو 215 أو 216.</string>
+    <string name="share_nfc_read_only">هذا الملصق مقفل ولا يمكن الكتابة عليه.</string>
+    <string name="share_nfc_unsupported">لا يستطيع الهاتف الكتابة على هذا النوع من الملصقات.</string>
+    <string name="share_nfc_failed">أبقِ الملصق ثابتاً على الهاتف وحاول مجدداً.</string>
+    <string name="share_nfc_off">فعّل NFC لكتابة الملصق.</string>
+    <string name="share_nfc_settings">افتح إعدادات NFC</string>
+
+    <string name="guest_add_hint">أضف شيئاً، مثلاً: حليب، خبز</string>
+    <string name="guest_your_name">اسمك (اختياري)</string>
+    <string name="guest_add">إضافة</string>
+    <plurals name="guest_added">
+        <item quantity="zero">لم يُضف شيء</item>
+        <item quantity="one">أُضيف صنف واحد ✓</item>
+        <item quantity="two">أُضيف صنفان ✓</item>
+        <item quantity="few">أُضيفت %1$d أصناف ✓</item>
+        <item quantity="many">أُضيف %1$d صنفاً ✓</item>
+        <item quantity="other">أُضيف %1$d صنف ✓</item>
+    </plurals>
+    <string name="guest_empty">لا شيء في هذه القائمة الآن.</string>
+    <string name="guest_offline">فتح هذه القائمة يحتاج إلى الإنترنت.</string>
+    <string name="guest_not_found">هذا الرابط لم يعد يعمل.</string>
+    <string name="guest_too_many">إضافات كثيرة حالياً. حاول لاحقاً.</string>
+    <string name="link_other_household">هذه القائمة تخص أسرة أخرى.</string>
+</resources>

@@ -109,6 +109,20 @@ describe("resolveShareLink (public)", () => {
     ]);
   });
 
+  it("members of that household also get the list (v5); guests and others don't", async () => {
+    const { token } = await link({ scope: "add", kind: "nfc" });
+    expect((await resolveShareLinkCore(db, { token }, NOW, OWNER)).member).toEqual({
+      householdId: hid,
+      listId: lid,
+    });
+    expect((await resolveShareLinkCore(db, { token }, NOW, HELPER)).member).toEqual({
+      householdId: hid,
+      listId: lid,
+    });
+    expect((await resolveShareLinkCore(db, { token }, NOW, "u-stranger")).member).toBeUndefined();
+    expect((await resolveShareLinkCore(db, { token }, NOW)).member).toBeUndefined();
+  });
+
   it("expired, unknown and malformed tokens", async () => {
     const { token } = await link({ expiresInDays: 1 });
     await expectHttpsError(

@@ -64,6 +64,7 @@ fun ListDetailScreen(
     onBack: () -> Unit,
     onStartShopping: () -> Unit = {},
     onGoing: () -> Unit = {},
+    onShareTag: (() -> Unit)? = null,
 ) {
     Scaffold(
         topBar = {
@@ -75,6 +76,12 @@ fun ListDetailScreen(
                     }
                 },
                 actions = {
+                    // createShareLink is for owners and adults (CONTRACT §4).
+                    if (onShareTag != null && (state.role == Role.OWNER || state.role == Role.ADULT)) {
+                        IconButton(onClick = onShareTag) {
+                            Icon(painterResource(R.drawable.ic_qr), contentDescription = stringResource(R.string.share_menu))
+                        }
+                    }
                     // Kids request and watch; shopping is for adults and helpers (PRODUCT_SPEC roles).
                     if (state.sections.toBuyCount > 0 && state.role != Role.KID) {
                         TextButton(onClick = onGoing) { Text(stringResource(R.string.going_title)) }
@@ -188,6 +195,7 @@ fun ListDetailRoute(
     onBack: () -> Unit,
     onStartShopping: (listId: String) -> Unit = {},
     openGoing: Boolean = false,
+    onShareTag: ((listId: String) -> Unit)? = null,
     vm: ListDetailViewModel = hiltViewModel(),
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
@@ -224,7 +232,7 @@ fun ListDetailRoute(
         }
     }
 
-    ListDetailScreen(state, actions, snackbar, onAdd = { adding = true }, onBack = onBack, onStartShopping = { onStartShopping(vm.listId) }, onGoing = { going = true })
+    ListDetailScreen(state, actions, snackbar, onAdd = { adding = true }, onBack = onBack, onStartShopping = { onStartShopping(vm.listId) }, onGoing = { going = true }, onShareTag = onShareTag?.let { share -> { share(vm.listId) } })
 
     editing?.let { row ->
         ModalBottomSheet(onDismissRequest = { editing = null }) {

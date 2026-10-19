@@ -17,4 +17,8 @@
     <string name="settings_emulator_connected">متصل بالمحاكيات على %1$s</string>
     <string name="settings_save">حفظ</string>
     <string name="settings_saved">تم الحفظ. أعد تشغيل التطبيق لتفعيل التغيير.</string>
+    <string name="settings_numbers_header">الأرقام</string>
+    <string name="settings_numbers_system">حسب النظام</string>
+    <string name="settings_numbers_arabic">هندية (١٢٣)</string>
+    <string name="settings_numbers_western">عربية غربية (123)</string>
 </resources>

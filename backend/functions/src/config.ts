@@ -10,7 +10,7 @@
 export const REGION = "me-central2";
 
 /** CONTRACT_VERSION this code implements (docs/CONTRACT.md). */
-export const CONTRACT_VERSION = 4;
+export const CONTRACT_VERSION = 5;
 
 export const LINK_DOMAIN = "links.example.com";
 export const URL_SCHEME = "fridgelist";

@@ -81,6 +81,30 @@ class LinksTest {
     }
 
     @Test
+    fun shareLinks() {
+        val token = "Ab3_-xYz0123456789abcdEF"
+        assertEquals(token, Links.shareToken("https://links.example.com/k/$token", domain))
+        assertEquals(token, Links.shareToken(" https://LINKS.example.com/k/$token/ ", domain))
+        assertEquals(token, Links.shareToken(Links.shareUrl(domain, token), domain))
+        assertNull(Links.shareToken("https://links.example.com/k/short", domain), "not 24 characters")
+        assertNull(Links.shareToken("https://links.example.com/k/${token.dropLast(1)}!", domain), "not URL-safe")
+        assertNull(Links.shareToken("https://links.example.com/k/${token.dropLast(1)}ب", domain), "non-ASCII letters")
+        assertNull(Links.shareToken("http://links.example.com/k/$token", domain), "https only")
+        assertNull(Links.shareToken("https://evil.example/k/$token", domain), "our domain only")
+        assertNull(Links.shareToken("https://links.example.com/join/$token", domain))
+        assertNull(Links.shareToken("https://links.example.com/k/$token/extra", domain))
+    }
+
+    @Test
+    fun listLinks() {
+        assertEquals(Links.ListLink("h1", "l_2"), Links.listLink("https://links.example.com/l/h1/l_2", domain))
+        assertNull(Links.listLink("https://links.example.com/l/h1", domain))
+        assertNull(Links.listLink("https://links.example.com/l/h1/l2/x", domain))
+        assertNull(Links.listLink("https://links.example.com/l/h1/..%2Fx", domain))
+        assertNull(Links.listLink("https://other.example/l/h1/l2", domain))
+    }
+
+    @Test
     fun addLinks() {
         assertEquals(Links.AddLink("l1", voice = true), Links.add("fridgelist://add?listId=l1&mode=voice", "fridgelist"))
         assertEquals(Links.AddLink("l1", voice = false), Links.add("fridgelist://add?listId=l1&mode=text", "fridgelist"))

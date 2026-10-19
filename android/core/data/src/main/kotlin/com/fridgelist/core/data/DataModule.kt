@@ -31,6 +31,10 @@ import com.fridgelist.core.data.stores.DataStoreDetectionStore
 import com.fridgelist.core.data.stores.DetectionStore
 import com.fridgelist.core.data.widget.DataStoreWidgetSnapshotStore
 import com.fridgelist.core.data.widget.WidgetSnapshotStore
+import com.fridgelist.core.data.share.CallableShareLinkRepository
+import com.fridgelist.core.data.share.ShareLinkRepository
+import com.fridgelist.core.data.meals.CallableMealRepository
+import com.fridgelist.core.data.meals.MealRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -72,4 +76,8 @@ interface DataModule {
     @Binds fun detection(impl: DataStoreDetectionStore): DetectionStore
 
     @Binds fun widgetSnapshot(impl: DataStoreWidgetSnapshotStore): WidgetSnapshotStore
+
+    @Binds fun shareLinks(impl: CallableShareLinkRepository): ShareLinkRepository
+
+    @Binds fun meals(impl: CallableMealRepository): MealRepository
 }

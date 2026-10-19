@@ -60,10 +60,34 @@ class AppViewModel @Inject constructor(
             _pendingShopTrip.value = it
             return
         }
+        Links.shareToken(url, environment.linkDomain)?.let {
+            _pendingShareToken.value = it
+            return
+        }
+        Links.listLink(url, environment.linkDomain)?.let {
+            _pendingListLink.value = it
+            return
+        }
         Links.joinCode(url, environment.linkDomain)?.let { _pendingJoinCode.value = it }
     }
 
     fun consumeJoinCode(): String? = _pendingJoinCode.value.also { _pendingJoinCode.value = null }
+
+    private val _pendingShareToken = MutableStateFlow<String?>(null)
+
+    /** A fridge tag or QR (`/k/{token}`), from a tap, a scan or an NFC tag. */
+    val pendingShareToken: StateFlow<String?> = _pendingShareToken.asStateFlow()
+
+    fun consumeShareToken(): String? = _pendingShareToken.value.also { _pendingShareToken.value = null }
+
+    private val _pendingListLink = MutableStateFlow<Links.ListLink?>(null)
+
+    /** `/l/{householdId}/{listId}`: open that list when it is this household's. */
+    val pendingListLink: StateFlow<Links.ListLink?> = _pendingListLink.asStateFlow()
+
+    fun consumeListLink(): Links.ListLink? = _pendingListLink.value.also { _pendingListLink.value = null }
+
+    suspend fun currentHouseholdId(): String? = session.current().householdId
 
     private val _pendingGoing = MutableStateFlow(false)
 

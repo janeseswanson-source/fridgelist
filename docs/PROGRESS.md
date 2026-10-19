@@ -9,6 +9,7 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | 2026-10-18 | 1 | Initial contract | — | — | — |
 | 2026-10-19 | 2 | §5.1: `trip_heading`, `trip_arrived`, `item_missing` reach **Android** as data-only messages with `title` + `body` data keys (server-localized). Needed for the inline reply. | done (B6) | done (A6) | no change |
 | 2026-10-19 | 3 | §4 `startTrip` refuses `kid` (`permission-denied`); §3.2 a user may delete their own device docs (sign-out). | done (B2 device delete, B6 `startTrip`) | done (QA pass) | to do |
+| 2026-10-19 | 5 | §4 `resolveShareLink` adds `member?: { householdId, listId }` for signed-in members of that household (a member's tag/QR opens Quick Add). | done (A9) | done (A9) | to do (I11) |
 | 2026-10-19 | 4 | Phase 2 (off by default): flags `usuals_enabled`, `aisle_learning_enabled`; stores `aisleOrder?`/`aisleStats?`/`aisleTrips?`; trips `aisleLearned?`; functions-only `usuals` (members read), `whatsappLinkCodes`, `whatsappNumbers` (hashed). | done (B10) | no change yet (uses `aisleOrder` and usuals later) | no change yet |
 
 ## Milestones
@@ -25,6 +26,8 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | Backend | B6 Trips, notifications, live surfaces | done, real delivery needs the dev project | 2026-10-19 | every push type snapshot-tested in ar/tr/en; throttle, stale job; Android trip E2E |
 | Backend | B5 Stores | done, real import awaits owner OK | 2026-10-19 | UAE and Saudi dry runs on live OSM data; `nearbyStores`/`addStore` |
 | Backend | B4 Item pipeline | done, LLM/STT recordings pending a key | 2026-10-19 | golden 30/30 on catalog + dialect alone; LLM and STT behind interfaces, untested against the real services |
+| Android | A10 Ramadan planner lite, localization, accessibility | done | 2026-10-19 | F11 at no AI cost (seed planner); 6-person 3-day plan → 14 items on the emulator; screenshots reviewed |
+| Android | A9 Fridge tags, QR, App Links | done, real-sticker run and App Links verification pending | 2026-10-19 | QR, member/guest links, NFC intent and `/l/` verified on the emulator; contract v5 |
 | Android | A8 Widgets, tile, shortcuts | done | 2026-10-19 | widget tick on the server in 0.7 s; `list_changed` refresh, Quick Add, tile, shortcuts verified on the emulator (`docs/test-widgets.md`) |
 | Android | A7 Store detection | done, field test per country pending | 2026-10-19 | real 2-min DWELL → auto trip → AUTO_LEFT → refresh verified on the emulator (`docs/test-geofence.md`) |
 | Android | A1 Scaffold | done | 2026-10-18 | core:i18n passes 28/28 fixture cases (18/18 split required) |
@@ -36,6 +39,63 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Android A10 Ramadan planner lite, localization, accessibility (+ backend)
+- Committed together with A9, because their edits share files (navigation, Home, Settings, models).
+- **Backend: meal ideas without an LLM** (owner chose a $0 launch).
+  - `SeedMealPlanner` picks from the 43 reviewed seed dishes for the occasion, shuffled and taken round-robin across cuisines, with ingredients scaled to the number of people and titles in each requested language. The description is the servings; apps show the cuisine.
+  - With no key, `suggestMeals` uses it alone. With a key, `FallbackMealPlanner` tries the LLM first and falls back on `LlmUnavailableError`. So F11 never shows "unavailable" for want of a key.
+  - Tests: +3 unit (variety, scaling, languages, fallback only on LLM errors), +1 emulator (F11's "done when": a 6-person, 3-day iftar plan gives 8 mixed ideas and then a deduplicated list in Arabic and Turkish, skipping what is on the list).
+  - Also: the emulator launcher writes the placeholder `none` for empty secrets, because an empty one made the emulator try Secret Manager now that the CLI is signed in.
+- **Android planner** (F11):
+  - "Plan iftar" on Home when `ramadan_planner_enabled` is on **and** today is in Sha'ban or Ramadan (`IslamicCalendar`, Umm al-Qura). Owners, adults and helpers only.
+  - Steps: people (2–30) and days (1–7) → `suggestMeals(iftar)` → pick, with "More ideas" (excludes what was shown) → `mealToItems` into the grocery list in the viewer's item language → keep or drop each ingredient, with "Not added: already on the list / bought in the last 7 days" → written offline-first with `addedVia: meal_plan` (kids' adds as requests).
+  - Errors for offline / unavailable / rate limit.
+  - Dev builds can't fetch Remote Config, so Settings › Developer has "Show the Ramadan planner" (ignores the flag and the date).
+- **Numbers as ١٢٣ or 123** (F12): Settings › Numbers (system / Arabic-Indic / Western), stored as the per-app locale's Unicode `nu` extension (`ar-u-nu-arab`), so every formatted number and plural follows it; the language choice keeps it.
+- **Localization:**
+  - all new strings are in `values`, `values-ar` and `values-tr` with full Arabic plural forms;
+  - a hard-coded "٧" in an Arabic string became a word;
+  - guest-view items are bidi-isolated (found in the A9 screenshots: "2 L" showed as "L 2" in Arabic).
+- **Accessibility:** `AccessibilityTest` scans Home, list, add, Shopping, Settings, the planner steps and the share screen in Arabic: every clickable has a TalkBack label and a touch area of at least 48 dp. A self-check proves an unlabeled control fails it. This Compose version widens every clickable's touch area to 48 dp, so the label rule is the one that catches mistakes.
+- **Screenshots** (committed, reviewed for RTL):
+  - planner setup / pick / confirm / done and Home with the planner card, in ar/tr/en × light/dark;
+  - the A9 share and guest screens;
+  - `fontscale200_*_ar` for Home, list, add, Shopping, Settings and planner at 200% font: text wraps, nothing is cut or overlaps.
+- **Tests:** app 339 (+6 `PlannerTest`: the Hijri window on real 1448 AH dates, the numbers locale tags, availability with flag, date and override, the full 6-person flow, kids' requests, errors; +10 `AccessibilityTest`), core:model 29; lint clean.
+- **Emulator run:** dev override on → Home "خطّط للإفطار" → 6 people, 3 days → 8 dishes (Levantine, Gulf, Egyptian, Turkish) → hummus, threed and koshari → a merged, scaled list (1 kg chickpeas, 1.5 kg lamb, 1.25 kg onions…), tomatoes skipped as already on the list → "أُضيف 14 صنفاً إلى البقالة ✓", 14 items with `addedVia: meal_plan` on the server.
+- Next: A11 release readiness.
+
+### 2026-10-19 — Android A9 Fridge tags, QR, App Links (+ backend, contract v5; committed with A10)
+- **Contract v5:** `resolveShareLink` also returns `member: { householdId, listId }` when the signed-in caller is a member of the link's household. Without it the app couldn't tell a member's own fridge tag from someone else's, since `shareLinks` is functions-only.
+  - Backend: the callable passes `request.auth?.uid`; +1 emulator test (owner and helper get it; strangers and guests don't).
+  - iOS: to do in I11.
+- Shipped (Android):
+  - **List › Fridge tag and QR** (owners and adults; `createShareLink`):
+    - one link per kind and scope, made when first needed (`kind: qr` for the code, `kind: nfc` for tags);
+    - "Guests can add items" switches between `add` and `view`;
+    - QR with **Share** (a print-sized PNG through a `FileProvider`) and **Print** (one A4 page through the framework print system; no new dependency).
+  - **NFC tags:**
+    - reader mode only while "hold the sticker" shows;
+    - writes one NDEF URI record (`Ndef`, or `NdefFormatable` for blank stickers), checks the size first, never locks, no Android Application Record;
+    - clear messages for too small / locked / unsupported / moved away / NFC off (with settings);
+    - "Write another tag" reuses the link. The NFC section is hidden on phones without NFC.
+  - **Links (CONTRACT §6):**
+    - App Links (`autoVerify`) for `/k/`, `/join/`, `/l/` on LINK_DOMAIN, and `NDEF_DISCOVERED` for the same;
+    - `/k/{token}` → `resolveShareLink`: a member of this phone's household goes to Quick Add for that list (voice ready); anyone else, signed in or not, gets the **guest view** (list, items, add with an optional name when the scope allows; dead link / offline / rate limit say so);
+    - `/l/{householdId}/{listId}` opens that list for its household, otherwise a toast.
+    - New `Links.shareToken`/`shareUrl`/`listLink` with tests.
+  - `backend/hosting/signing.json` now holds this dev machine's **debug SHA-256** (B7:F5:BE:2A:…:8B:EE). The release and Play app-signing keys stay TODO.
+- Tests: **app** +7 `ShareLinksTest` (one URI record that fits an NTAG213; links per kind and scope with reuse; tag write outcomes; offline and retry; member → Quick Add, a member on another household, guests, add, rate limit, view-only, dead link, offline) + share/guest screenshots in ar/tr/en, light and dark; **core:model** +2 link tests; **backend** 283 unit + 239 emulator.
+- Emulator run (`docs/test-nfc.md`):
+  - QR screen in Arabic with Share/Print;
+  - Mama's own link → Quick Add for البقالة;
+  - a neighbour household's tag through an `NDEF_DISCOVERED` intent → guest view → "2 ayran" added as `guest:<token>` / `guest_web`;
+  - `/l/` for her own list opened; another household's showed the toast.
+- Owner:
+  - run the real-phone part of `docs/test-nfc.md` with NTAG213/215/216 stickers;
+  - LINK_DOMAIN and the release/Play fingerprints for App Links verification.
+- Next: A10 Ramadan planner lite, localization, accessibility.
 
 ### 2026-10-19 — Android A8 Widgets, tile, shortcuts
 - Shipped:

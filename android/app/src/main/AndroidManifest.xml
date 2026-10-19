@@ -14,6 +14,11 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- A9 fridge tags; phones without NFC still get QR codes. -->
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-feature
+        android:name="android.hardware.nfc"
+        android:required="false" />
 
     <!-- Android 11+ package visibility: find the phone's speech recognizer (ARCHITECTURE §8.6). -->
     <queries>
@@ -57,17 +62,39 @@
                     android:host="shop"
                     android:scheme="fridgelist" />
             </intent-filter>
-            <!-- CONTRACT §6 join link. Verification (assetlinks.json) is completed in A9. -->
+            <!-- CONTRACT §6 App Links (verified by /.well-known/assetlinks.json on LINK_DOMAIN). -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:host="${linkDomain}"
-                    android:pathPrefix="/join/"
-                    android:scheme="https" />
+                <data android:scheme="https" />
+                <data android:host="${linkDomain}" />
+                <data android:pathPrefix="/k/" />
+                <data android:pathPrefix="/join/" />
+                <data android:pathPrefix="/l/" />
+            </intent-filter>
+            <!-- A fridge tag tapped with the screen on (ARCHITECTURE §8.7). -->
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="https" />
+                <data android:host="${linkDomain}" />
+                <data android:pathPrefix="/k/" />
+                <data android:pathPrefix="/join/" />
+                <data android:pathPrefix="/l/" />
             </intent-filter>
         </activity>
+
+        <!-- A9: the QR image shared from the cache. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.files"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
         <!-- A8: Quick Add (widgets, tile, shortcuts), the list widget, the Quick Settings tile. -->
         <activity

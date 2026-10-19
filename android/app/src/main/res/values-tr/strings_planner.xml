@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="planner_card">İftar planla</string>
+    <string name="planner_title">İftar planla</string>
+    <string name="planner_intro">Kaç kişi ve kaç gün olduğunu söyle. Yemek önerelim; sen seç, eksikleri listene ekleyelim.</string>
+    <string name="planner_people">Kişi</string>
+    <string name="planner_days">Gün</string>
+    <plurals name="planner_people_value">
+        <item quantity="one">%1$d kişi</item>
+        <item quantity="other">%1$d kişi</item>
+    </plurals>
+    <plurals name="planner_days_value">
+        <item quantity="one">%1$d gün</item>
+        <item quantity="other">%1$d gün</item>
+    </plurals>
+    <string name="planner_less">Azalt: %1$s</string>
+    <string name="planner_more_of">Artır: %1$s</string>
+    <string name="planner_suggest">Yemek öner</string>
+    <string name="planner_pick">Yapmak istediğin yemekleri seç</string>
+    <string name="planner_more">Başka fikirler</string>
+    <plurals name="planner_make_list">
+        <item quantity="one">%1$d yemek için liste yap</item>
+        <item quantity="other">%1$d yemek için liste yap</item>
+    </plurals>
+    <string name="planner_confirm">%1$s listesine ekle</string>
+    <string name="planner_skipped">Eklenmedi</string>
+    <string name="planner_skipped_on_list">%1$s · zaten listede</string>
+    <string name="planner_skipped_bought">%1$s · son 7 günde alındı</string>
+    <plurals name="planner_add">
+        <item quantity="one">%1$d ürün ekle</item>
+        <item quantity="other">%1$d ürün ekle</item>
+    </plurals>
+    <plurals name="planner_added">
+        <item quantity="one">%2$s listesine %1$d ürün eklendi ✓</item>
+        <item quantity="other">%2$s listesine %1$d ürün eklendi ✓</item>
+    </plurals>
+    <string name="planner_done">Tamam</string>
+    <string name="planner_selected">Seçili</string>
+    <string name="planner_not_selected">Seçili değil</string>
+    <string name="planner_no_ideas">Şimdilik başka fikir yok.</string>
+    <string name="planner_no_list">Önce bir liste oluştur.</string>
+    <string name="planner_offline">Yemek önerileri için internet gerekli.</string>
+    <string name="planner_unavailable">Yemek önerileri şu an kullanılamıyor. Sonra tekrar dene.</string>
+    <string name="planner_too_many">Bir saatte çok fazla planlama yapıldı. Sonra tekrar dene.</string>
+    <string name="cuisine_levantine">Levanten</string>
+    <string name="cuisine_gulf">Körfez</string>
+    <string name="cuisine_turkish">Türk</string>
+    <string name="cuisine_egyptian">Mısır</string>
+    <string name="cuisine_international">Uluslararası</string>
+</resources>

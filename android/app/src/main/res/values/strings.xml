@@ -24,4 +24,8 @@
     <string name="settings_emulator_connected">Connected to emulators at %1$s</string>
     <string name="settings_save">Save</string>
     <string name="settings_saved">Saved. Restart the app to apply.</string>
+    <string name="settings_numbers_header">Numbers</string>
+    <string name="settings_numbers_system">System default</string>
+    <string name="settings_numbers_arabic">Arabic-Indic (١٢٣)</string>
+    <string name="settings_numbers_western">Western (123)</string>
 </resources>

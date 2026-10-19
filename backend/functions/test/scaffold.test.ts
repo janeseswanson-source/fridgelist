@@ -52,6 +52,6 @@ describe("time", () => {
 describe("health", () => {
   it("reports region and contract version only", () => {
     expect(healthResponse()).toEqual({ ok: true, region: REGION, contractVersion: CONTRACT_VERSION });
-    expect(CONTRACT_VERSION).toBe(4);
+    expect(CONTRACT_VERSION).toBe(5);
   });
 });

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A9 fridge tags, QR codes, links (ARCHITECTURE §8.7, CONTRACT §6). -->
+<resources>
+    <string name="share_menu">Fridge tag and QR code</string>
+    <string name="share_title">Fridge tag and QR</string>
+    <string name="share_intro">Put %1$s on the fridge. Anyone who scans the code or taps the tag sees the list, even without the app.</string>
+    <string name="share_guests_can_add">Guests can add items</string>
+    <string name="share_qr_header">QR code</string>
+    <string name="share_qr_desc">QR code for %1$s</string>
+    <string name="share_share">Share</string>
+    <string name="share_print">Print</string>
+    <string name="share_print_job">FridgeList – %1$s</string>
+    <string name="share_retry">Try again</string>
+    <string name="share_cancel">Cancel</string>
+    <string name="share_offline">Making a tag or code needs the internet.</string>
+    <string name="share_nfc_header">NFC fridge tag</string>
+    <string name="share_nfc_desc">Use a blank NFC sticker (NTAG213, 215 or 216). Tapping it opens the list on any phone.</string>
+    <string name="share_nfc_write">Write a fridge tag</string>
+    <string name="share_nfc_hold">Hold the sticker against the back of your phone…</string>
+    <string name="share_nfc_done">Tag ready. Tapping it opens %1$s.</string>
+    <string name="share_nfc_another">Write another tag</string>
+    <string name="share_nfc_too_small">This sticker is too small. Use an NTAG213, 215 or 216.</string>
+    <string name="share_nfc_read_only">This sticker is locked and can’t be written.</string>
+    <string name="share_nfc_unsupported">The phone can’t write this kind of tag.</string>
+    <string name="share_nfc_failed">Keep the sticker still against the phone and try again.</string>
+    <string name="share_nfc_off">Turn on NFC to write a tag.</string>
+    <string name="share_nfc_settings">Open NFC settings</string>
+
+    <string name="guest_add_hint">Add something, e.g. milk, bread</string>
+    <string name="guest_your_name">Your name (optional)</string>
+    <string name="guest_add">Add</string>
+    <plurals name="guest_added">
+        <item quantity="one">Added %1$d item ✓</item>
+        <item quantity="other">Added %1$d items ✓</item>
+    </plurals>
+    <string name="guest_empty">Nothing on this list right now.</string>
+    <string name="guest_offline">Opening this list needs the internet.</string>
+    <string name="guest_not_found">This link no longer works.</string>
+    <string name="guest_too_many">Too many additions for now. Try again later.</string>
+    <string name="link_other_household">This list belongs to another household.</string>
+</resources>

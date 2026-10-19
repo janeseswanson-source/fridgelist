@@ -3,7 +3,8 @@ import { defineSecret, defineString } from "firebase-functions/params";
 import { AnthropicTransport } from "./llm/anthropic.js";
 import { ClassifyingLlm, NO_LLM, type LlmProvider } from "./llm/provider.js";
 import { Catalog } from "./lib/catalog.js";
-import { LlmMealPlanner, NO_MEALS, type MealPlanner } from "./meals/planner.js";
+import { LlmMealPlanner, type MealPlanner } from "./meals/planner.js";
+import { FallbackMealPlanner, SeedMealPlanner } from "./meals/seedPlanner.js";
 import type { CachedCandidate, CandidateCache } from "./lib/resolve.js";
 import { createHash } from "node:crypto";
 import { configured } from "./lib/secrets.js";
@@ -27,15 +28,19 @@ export function fastLlm(): LlmProvider {
   );
 }
 
-/** The smart model for meal plans (prompt B8); no key → every plan is `unavailable`. */
+/**
+ * Meal plans (prompt B8): the smart model when a key is set, falling back to the reviewed seed
+ * dishes when it fails; with no key, the seed dishes alone (no LLM cost).
+ */
 export function smartMealPlanner(): MealPlanner {
   const key = configured(ANTHROPIC_API_KEY.value());
-  if (!key) return NO_MEALS;
-  return new LlmMealPlanner(
+  if (!key) return new SeedMealPlanner();
+  const llm = new LlmMealPlanner(
     new AnthropicTransport(key),
     LLM_MODEL_SMART.value(),
     Catalog.bundled.items.map((item) => item.id),
   );
+  return new FallbackMealPlanner(llm, new SeedMealPlanner());
 }
 
 /** `catalogCandidates/{hash}` (CONTRACT §3.15). */

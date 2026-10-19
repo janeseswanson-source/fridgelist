@@ -17,4 +17,8 @@
     <string name="settings_emulator_connected">Emülatörlere bağlı: %1$s</string>
     <string name="settings_save">Kaydet</string>
     <string name="settings_saved">Kaydedildi. Uygulamayı yeniden başlatın.</string>
+    <string name="settings_numbers_header">Rakamlar</string>
+    <string name="settings_numbers_system">Sistem varsayılanı</string>
+    <string name="settings_numbers_arabic">Arap-Hint (١٢٣)</string>
+    <string name="settings_numbers_western">Batı (123)</string>
 </resources>

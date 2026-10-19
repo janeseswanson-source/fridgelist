@@ -3,6 +3,7 @@ package com.fridgelist.core.data.settings
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -25,6 +26,15 @@ class DevSettings @Inject constructor(@ApplicationContext private val context: C
 
     suspend fun currentEmulatorHost(): String = emulatorHost.first()
 
+    /** Shows the Ramadan planner regardless of the flag and the date (dev builds have no Remote Config). */
+    val forcePlanner: Flow<Boolean> = context.devDataStore.data.map { it[FORCE_PLANNER] ?: false }
+
+    suspend fun currentForcePlanner(): Boolean = forcePlanner.first()
+
+    suspend fun setForcePlanner(on: Boolean) {
+        context.devDataStore.edit { it[FORCE_PLANNER] = on }
+    }
+
     suspend fun setEmulatorHost(host: String) {
         context.devDataStore.edit { prefs ->
             val trimmed = host.trim()
@@ -34,6 +44,7 @@ class DevSettings @Inject constructor(@ApplicationContext private val context: C
 
     companion object {
         private val EMULATOR_HOST = stringPreferencesKey("emulator_host")
+        private val FORCE_PLANNER = booleanPreferencesKey("force_planner")
 
         /** Accepts an IPv4 address or a hostname such as `localhost` or `my-pc.local`. */
         fun isValidHost(host: String): Boolean = HOST.matches(host.trim())

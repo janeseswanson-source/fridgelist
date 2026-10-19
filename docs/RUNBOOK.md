@@ -184,6 +184,12 @@ Everything is off until its Remote Config flag is `true` (`whatsapp_enabled`, `u
 - **Aisle learning:** `learnAisleOrder` runs daily at 02:00 Riyadh and needs the `trips (status, endedAt)` index. To reset a store, clear `aisleStats`, `aisleTrips` and `aisleOrder` on its doc.
 - **Locally:** Remote Config isn't emulated, so in the emulator the flags are the contract defaults unless overridden in `functions/.env.local` (e.g. `FLAG_WHATSAPP_ENABLED=true`, then restart the emulators). The emulator launcher fills missing secret lines in `functions/.secret.local` with empty values. To try the webhook, post a payload signed with the `WHATSAPP_APP_SECRET` you put there (see `test/integration/phase2.test.ts`).
 
+## 4b. Meal ideas without an LLM (A10)
+
+With no `ANTHROPIC_API_KEY` (or the placeholder `none`), `suggestMeals` plans from the 43 reviewed seed dishes (`functions/src/meals/seed_dishes.json`), at no cost. With a key, it uses `LLM_MODEL_SMART` and falls back to the seed dishes on any LLM failure. To change what is suggested, edit the seed file (names in ar/tr/en, occasions, cuisine, servings, ingredients); `test/meals.test.ts` checks it against the catalog.
+
+The Ramadan planner shows in the apps only while `ramadan_planner_enabled` is `true` **and** it is Sha'ban or Ramadan (Umm al-Qura). Turn the flag on in January; for testing on dev builds, Settings › Developer › "Show the Ramadan planner".
+
 ## 5. Deploy
 
 **Never deploy to prod from a session.** Deploy to dev only when the owner writes "deploy dev".

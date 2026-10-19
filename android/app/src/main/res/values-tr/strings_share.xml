@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="share_menu">Buzdolabı etiketi ve QR kod</string>
+    <string name="share_title">Buzdolabı etiketi ve QR</string>
+    <string name="share_intro">%1$s listesini buzdolabına koy. Kodu okutan ya da etikete dokunan herkes listeyi görür, uygulama olmadan da.</string>
+    <string name="share_guests_can_add">Misafirler ürün ekleyebilir</string>
+    <string name="share_qr_header">QR kod</string>
+    <string name="share_qr_desc">%1$s için QR kod</string>
+    <string name="share_share">Paylaş</string>
+    <string name="share_print">Yazdır</string>
+    <string name="share_print_job">FridgeList – %1$s</string>
+    <string name="share_retry">Tekrar dene</string>
+    <string name="share_cancel">İptal</string>
+    <string name="share_offline">Etiket veya kod oluşturmak için internet gerekli.</string>
+    <string name="share_nfc_header">NFC buzdolabı etiketi</string>
+    <string name="share_nfc_desc">Boş bir NFC etiketi kullan (NTAG213, 215 veya 216). Dokununca liste her telefonda açılır.</string>
+    <string name="share_nfc_write">Buzdolabı etiketi yaz</string>
+    <string name="share_nfc_hold">Etiketi telefonunun arkasına tut…</string>
+    <string name="share_nfc_done">Etiket hazır. Dokununca %1$s açılır.</string>
+    <string name="share_nfc_another">Başka bir etiket yaz</string>
+    <string name="share_nfc_too_small">Bu etiket çok küçük. NTAG213, 215 veya 216 kullan.</string>
+    <string name="share_nfc_read_only">Bu etiket kilitli, üzerine yazılamaz.</string>
+    <string name="share_nfc_unsupported">Telefon bu tür bir etikete yazamıyor.</string>
+    <string name="share_nfc_failed">Etiketi telefona sabit tut ve tekrar dene.</string>
+    <string name="share_nfc_off">Etiket yazmak için NFC’yi aç.</string>
+    <string name="share_nfc_settings">NFC ayarlarını aç</string>
+
+    <string name="guest_add_hint">Bir şey ekle, ör. süt, ekmek</string>
+    <string name="guest_your_name">Adın (isteğe bağlı)</string>
+    <string name="guest_add">Ekle</string>
+    <plurals name="guest_added">
+        <item quantity="one">%1$d ürün eklendi ✓</item>
+        <item quantity="other">%1$d ürün eklendi ✓</item>
+    </plurals>
+    <string name="guest_empty">Bu listede şu an bir şey yok.</string>
+    <string name="guest_offline">Bu listeyi açmak için internet gerekli.</string>
+    <string name="guest_not_found">Bu bağlantı artık çalışmıyor.</string>
+    <string name="guest_too_many">Şimdilik çok fazla ekleme yapıldı. Sonra tekrar dene.</string>
+    <string name="link_other_household">Bu liste başka bir haneye ait.</string>
+</resources>

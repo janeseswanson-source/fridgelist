@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A10 Ramadan planner lite (PRODUCT_SPEC F11). -->
+<resources>
+    <string name="planner_card">Plan iftar</string>
+    <string name="planner_title">Plan iftar</string>
+    <string name="planner_intro">Tell us how many people and for how many days. We suggest dishes; you pick, and we add what’s missing to your list.</string>
+    <string name="planner_people">People</string>
+    <string name="planner_days">Days</string>
+    <plurals name="planner_people_value">
+        <item quantity="one">%1$d person</item>
+        <item quantity="other">%1$d people</item>
+    </plurals>
+    <plurals name="planner_days_value">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <string name="planner_less">Fewer: %1$s</string>
+    <string name="planner_more_of">More: %1$s</string>
+    <string name="planner_suggest">Suggest dishes</string>
+    <string name="planner_pick">Pick the dishes you want to make</string>
+    <string name="planner_more">More ideas</string>
+    <plurals name="planner_make_list">
+        <item quantity="one">Make the list for %1$d dish</item>
+        <item quantity="other">Make the list for %1$d dishes</item>
+    </plurals>
+    <string name="planner_confirm">Add to %1$s</string>
+    <string name="planner_skipped">Not added</string>
+    <string name="planner_skipped_on_list">%1$s · already on the list</string>
+    <string name="planner_skipped_bought">%1$s · bought in the last 7 days</string>
+    <plurals name="planner_add">
+        <item quantity="one">Add %1$d item</item>
+        <item quantity="other">Add %1$d items</item>
+    </plurals>
+    <plurals name="planner_added">
+        <item quantity="one">Added %1$d item to %2$s ✓</item>
+        <item quantity="other">Added %1$d items to %2$s ✓</item>
+    </plurals>
+    <string name="planner_done">Done</string>
+    <string name="planner_selected">Selected</string>
+    <string name="planner_not_selected">Not selected</string>
+    <string name="planner_no_ideas">No more ideas for now.</string>
+    <string name="planner_no_list">Make a list first.</string>
+    <string name="planner_offline">Meal ideas need the internet.</string>
+    <string name="planner_unavailable">Meal ideas aren’t available right now. Try again later.</string>
+    <string name="planner_too_many">That’s a lot of planning for one hour. Try again later.</string>
+    <string name="cuisine_levantine">Levantine</string>
+    <string name="cuisine_gulf">Gulf</string>
+    <string name="cuisine_turkish">Turkish</string>
+    <string name="cuisine_egyptian">Egyptian</string>
+    <string name="cuisine_international">International</string>
+    <string name="settings_force_planner" translatable="false">Show the Ramadan planner (ignore flag and date)</string>
+</resources>

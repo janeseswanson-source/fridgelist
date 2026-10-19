@@ -13,8 +13,60 @@ import {
 import { CUISINES, DISHES, OCCASIONS, candidateDishes, suggestionCount } from "../src/meals/dishes.js";
 import { LlmMealPlanner, type PlanRequest } from "../src/meals/planner.js";
 import { scaleAndMerge, shoppingQty } from "../src/meals/scale.js";
+import { FallbackMealPlanner, SeedMealPlanner } from "../src/meals/seedPlanner.js";
 
 const catalogIds = Catalog.bundled.items.map((i) => i.id);
+
+describe("SeedMealPlanner (no LLM)", () => {
+  const request = (count: number, people = 4, languages = ["ar", "tr"]) => ({
+    occasion: "iftar" as const,
+    cuisines: [],
+    people,
+    count,
+    languages,
+    candidates: candidateDishes("iftar", [], []),
+  });
+
+  it("mixes cuisines, scales to people, titles in every requested language", async () => {
+    let seed = 1;
+    const random = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const meals = await new SeedMealPlanner(undefined, random).plan(request(8, 6));
+    expect(meals).toHaveLength(8);
+    expect(new Set(meals.map((m) => m.cuisine)).size).toBeGreaterThanOrEqual(4);
+    expect(new Set(meals.map((m) => m.dishId)).size).toBe(8);
+    for (const m of meals) {
+      expect(Object.keys(m.title)).toEqual(["ar", "tr"]);
+      expect(m.description.tr).toMatch(/6 kişilik$/u);
+      expect(m.ingredients.every((i) => i.name.length > 0 && (i.qty ?? 0) > 0)).toBe(true);
+    }
+    const lentils = (
+      await new SeedMealPlanner().plan({
+        ...request(1, 8),
+        candidates: candidateDishes("iftar", ["levantine"], []).filter((d) => d.id === "lentil_soup"),
+      })
+    )[0];
+    expect(lentils?.ingredients.find((i) => i.canonicalId === "lentils_red")?.qty).toBe(0.6); // 0.3 kg for 4 → 8 people
+    expect(lentils?.description.tr).toBe("8 kişilik");
+  });
+
+  it("fewer candidates than asked: all of them; none: an empty plan", async () => {
+    expect(
+      await new SeedMealPlanner().plan({
+        ...request(10),
+        candidates: candidateDishes("iftar", ["international"], []),
+      }),
+    ).toHaveLength(candidateDishes("iftar", ["international"], []).length);
+    expect(await new SeedMealPlanner().plan({ ...request(6), candidates: [] })).toEqual([]);
+  });
+
+  it("the fallback answers when the LLM can't, and only then", async () => {
+    const seed = new SeedMealPlanner();
+    const down = { plan: () => Promise.reject(new LlmUnavailableError("down")) };
+    expect(await new FallbackMealPlanner(down, seed).plan(request(6))).toHaveLength(6);
+    const broken = { plan: () => Promise.reject(new Error("bug")) };
+    await expect(new FallbackMealPlanner(broken, seed).plan(request(6))).rejects.toThrow("bug");
+  });
+});
 
 describe("seed dishes (flagged for owner review)", () => {
   it("about 40 dishes, valid cuisines, occasions, units and catalog ids; names in ar/tr/en", () => {
