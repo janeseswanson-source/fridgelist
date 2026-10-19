@@ -35,6 +35,12 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 
 ## Entries
 
+### 2026-10-19 — Ops: dev project on the free plan
+- `fridgelist-dev-yt` exists (Firebase added, Firestore at `me-central2`); live: Firestore rules and the Remote Config template.
+- Billing is not available yet (both billing accounts closed; reopening asks for a prepayment the owner can't make now), so the project stays on Spark. Blocked until Blaze: Cloud Functions, Hosting with function rewrites, Storage bucket, Speech-to-Text, TTL policies and composite indexes, the IAM Token Creator grant, the budget alert.
+- Until then all development and device testing run on the local Emulator Suite (debug builds already point there; a physical phone uses the dev machine's LAN IP). Nothing in the code depends on the cloud project.
+- Open: delete the empty extra project `fridgelist-dev-yt-47016` created from the console (owner to confirm).
+
 ### 2026-10-19 — Backend B10 Phase-2 stubs (off by default)
 - Shipped (all gated by Remote Config flags that default to `false`; read server-side with a 1-minute cache, falling back to the contract default when Remote Config can't be read; in the emulator, defaults or `FLAG_<KEY>` from `functions/.env.local`, since Remote Config isn't emulated and the Admin SDK hung there in the live check):
   - `whatsappWebhook` (HTTP):
