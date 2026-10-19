@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "demo-fridgelist",
+    "dev": "fridgelist-dev-TODO",
+    "prod": "fridgelist-prod-TODO"
+  }
+}

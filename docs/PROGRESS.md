@@ -14,7 +14,7 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 
 | Workstream | Milestone | Status | Date | Notes |
 | --- | --- | --- | --- | --- |
-| Backend | B1 Scaffold | not started | | |
+| Backend | B1 Scaffold | done | 2026-10-19 | `npm run emulators` builds, starts Auth/Firestore/Functions/Hosting/Storage/Pub/Sub and seeds; rules deny all until B2 |
 | Android | A1 Scaffold | done | 2026-10-18 | core:i18n passes 28/28 fixture cases (18/18 split required) |
 | Android | A2 Sign-in, onboarding, household | done, E2E pending B3 | 2026-10-18 | two-user join test passes against a QA stand-in of the callables (2026-10-19); re-run on B3 |
 | Android | A3 Lists and items, offline-first | done, server part pending B4 | 2026-10-19 | offline add/tick/undo/delete → sync verified (instrumented test + device); categories/translations wait for B4 |
@@ -24,6 +24,25 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Backend B1 Scaffold
+- Shipped:
+  - `backend/`: `firebase.json`; `.firebaserc` (`dev`/`prod` placeholders from CLAUDE.md; default `demo-fridgelist`); placeholder deny-all `firestore.rules` and `storage.rules` (B2 replaces them); indexes; hosting placeholder.
+  - Emulators: Auth 9099, Firestore 8080, Functions 5001 (the ports the Android dev build already uses), Hosting 5000, Storage 9199, Pub/Sub 8085, UI 4000.
+  - `functions/`: TypeScript 6.0 strict, ESM, Node 22, `firebase-functions` 7.4 v2 API, `firebase-admin` 14.5, `zod` 4; ESLint 10 + `typescript-eslint` strict type-checked + Prettier; vitest 5. Region and constants in `src/config.ts`.
+    - TypeScript 6.0.3, not 7.0, because `typescript-eslint` supports `< 6.1`.
+  - `lib/log.ts`: the only logger. It takes IDs, codes and counts and redacts text-like keys; `console` is a lint error (rule 4).
+  - `lib/ids.ts` (contract invite codes from `crypto.randomInt`, OSM store IDs) and `lib/time.ts`.
+  - `health` callable for diagnostics (not in CONTRACT §4; no auth, no user data).
+  - `npm run emulators` (`scripts/emulators.ts`): builds functions, starts the suite, waits for the hub, runs `scripts/emulator-seed.ts`.
+    - Seed: household `seed-home`; owner (`ar`), adult (`tr`) and helper (`fil`) linked to the Android dev test sign-in (Mama/Ayse/Maria); 2 lists; 15 items in mixed languages; 30 stores (Kadıköy, Olaya, Dubai Marina) with geohashes.
+    - Idempotent (fixed IDs).
+  - `docs/RUNBOOK.md`.
+  - `tsx` (dev only) approved by the owner for running scripts.
+- Decisions: contract v3 (kids can't `startTrip`; self may delete device docs). `transcribeAudio` added to B4 in `prompts/01-backend.md` (it had no owner).
+- Tests: functions lint, Prettier, typecheck and 7 vitest tests pass. Scripts typecheck. On the running emulators: `health` returns `{ok, region: me-central2, contractVersion: 3}`; Firestore has 30 stores, 3 members, 13 + 2 items; the "Mama" test sign-in resolves to `seed-owner`; re-seeding leaves 30 stores and 3 users.
+- Next: B2 security rules with `@firebase/rules-unit-testing` (every Writer-column row and §3.6 transition; v3 device delete).
+- Open: the region check for 2nd-gen functions in `me-central2` happens at the first "deploy dev". Real project IDs, `APPLE_TEAM_ID`, `SUPPORT_EMAIL` and `PRIVACY_POLICY_URL` are still TODO in CLAUDE.md.
 
 ### 2026-10-19 — Android QA pass A1–A6
 - Scope: code review of all modules, edge-case and fuzz tests, full suite, and a device run (API 36.1 emulator) in Arabic, Turkish and English, light and dark, against the Auth/Firestore emulators plus a **throwaway stand-in** for the CONTRACT §4 callables. That stand-in lived in the session scratchpad and is not in the repo; it is not B3/B6.

@@ -1,0 +1,19 @@
+{
+  "name": "fridgelist-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "emulators": "tsx scripts/emulators.ts",
+    "seed": "tsx scripts/emulator-seed.ts",
+    "typecheck": "tsc -p scripts/tsconfig.json --noEmit",
+    "deploy:dev": "echo \"Deploys only when the owner writes 'deploy dev' (prompts/01-backend.md).\" && firebase deploy --project dev",
+    "import:stores": "echo \"import-stores.ts arrives in B5\" && exit 1"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "firebase-admin": "14.5.0",
+    "geofire-common": "6.0.0",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3"
+  }
+}

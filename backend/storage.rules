@@ -1,0 +1,10 @@
+rules_version = '2';
+
+// No client uploads yet (photos are phase 2). Exports are served by signed URLs (B9).
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
