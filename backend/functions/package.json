@@ -7,15 +7,18 @@
     "node": "22"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "npm run fixtures && tsc -p tsconfig.build.json && node scripts/copy-prompts.mjs",
+    "typecheck": "npm run fixtures && tsc -p tsconfig.json --noEmit",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "test": "npm run test:unit && npm run test:emulator",
-    "test:unit": "vitest run",
-    "test:emulator": "firebase emulators:exec --config ../firebase.rules-test.json --only firestore --project demo-fridgelist-rules \"vitest run -c vitest.emulator.config.ts\""
+    "test:unit": "npm run fixtures && vitest run",
+    "test:emulator": "firebase emulators:exec --config ../firebase.rules-test.json --only firestore --project demo-fridgelist-rules \"vitest run -c vitest.emulator.config.ts\"",
+    "fixtures": "node scripts/copy-fixtures.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "0.135.0",
+    "@google-cloud/speech": "8.2.0",
     "firebase-admin": "14.5.0",
     "firebase-functions": "7.4.0",
     "zod": "4.6.7"

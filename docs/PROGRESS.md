@@ -17,15 +17,67 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | Backend | B1 Scaffold | done | 2026-10-19 | `npm run emulators` builds, starts Auth/Firestore/Functions/Hosting/Storage/Pub/Sub and seeds |
 | Backend | B2 Security rules | done | 2026-10-19 | 144 rules tests (full §3.6 matrix); Android offline flow passes the real rules |
 | Backend | B3 Households, invites, devices | done | 2026-10-19 | callables + `onMemberWritten`; Android two-user join passes against it |
+| Backend | B4 Item pipeline | done, LLM/STT recordings pending a key | 2026-10-19 | golden 30/30 on catalog + dialect alone; LLM and STT behind interfaces, untested against the real services |
 | Android | A1 Scaffold | done | 2026-10-18 | core:i18n passes 28/28 fixture cases (18/18 split required) |
 | Android | A2 Sign-in, onboarding, household | done | 2026-10-18 | two-user join E2E passes against backend B3 (2026-10-19) |
-| Android | A3 Lists and items, offline-first | done, server part pending B4 | 2026-10-19 | offline add/tick/undo/delete → sync verified (instrumented test + device); categories/translations wait for B4 |
+| Android | A3 Lists and items, offline-first | done | 2026-10-19 | server categories/translations now run (B4); | offline add/tick/undo/delete → sync verified (instrumented test + device); categories/translations wait for B4 |
 | Android | A4 Voice add | done, real-speech run pending | 2026-10-19 | fallback chain verified on emulator (no mic audio there); `docs/test-voice.md` to run on real phones |
 | Android | A5 Shopping Mode | done, server trip pending B6 | 2026-10-19 | tick/undo/missing/finish UI-tested online and offline; local mode verified on device |
 | Android | A6 "I'm going", notifications, inline reply, Live Updates | done, cross-phone run pending B6 | 2026-10-19 | contract v2; reply + Live Update verified on emulators via the dev push simulator |
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Backend B4 Item pipeline
+- The owner chose to build without an API key for now: the LLM and Speech-to-Text sit behind interfaces, are fully tested with fakes, and are **not yet run against the real services**.
+- Shipped:
+  - **Shared parsing in TypeScript:** `lib/normalize.ts`, `numbers.ts`, `units.ts`, `catalog.ts`, `localSplit.ts` (incl. the alias ID), line-by-line ports of Android `core:i18n`, keeping Kotlin regex semantics (ASCII whitespace class, `Char.isWhitespace`).
+  - **New shared fixture `fixtures/split_cases.json` (rule 6):** the exact splitter output (name, qty, unit, canonicalId, ambiguity) for 94 inputs, plus 20 `matchKey`/alias-ID cases.
+    - It is generated from the Android reference by `SplitCasesFixtureTest` (verified on every Kotlin run; `-PwriteFixtures=true` regenerates it).
+    - TypeScript passes all 114 on the first run. **iOS (FridgeKit) must pass it too.**
+  - `scripts/seed-catalog.ts`: idempotent; removes catalog docs no longer in the seed; `--live <project>` only on request. Part of `npm run emulators` (63 items).
+  - **LLM** (`llm/`):
+    - an `LlmTransport` interface (forced tool call), with an Anthropic implementation (`@anthropic-ai/sdk` 0.135), a replay transport and a recording transport keyed by a request hash;
+    - `ClassifyingLlm` validates with zod, retries once, drops canonical IDs the catalog doesn't have, otherwise reports "unavailable";
+    - the prompt is in `llm/prompts/classify.md`, with few-shot examples;
+    - key: `defineSecret("ANTHROPIC_API_KEY")`; models: params `LLM_MODEL_FAST`/`LLM_MODEL_SMART`.
+  - **Resolver** (`lib/resolve.ts`): household alias -> dialect rule with locale hints -> catalog synonym (longest first) -> `catalogCandidates` cache -> one batched LLM call.
+    - LLM down -> local result, category `other`; it never throws.
+    - The typed name stays as the item's own-language name; catalog names fill the other member languages.
+  - `parseItems`: member check, rate limit 30/min/user, local split with the apps' rules, then resolve.
+    - Optional fields are omitted; qty is kept only within 0 < q <= 999.
+    - An ambiguous dialect word -> best candidate, confidence 0.4, `notes: "alternatives: bread, rice"`.
+    - `source` is catalog, llm or mixed.
+  - `transcribeAudio` (**assigned to B4 on 2026-10-19**):
+    - zod validation (<= 1 MB base64, ogg/mp4/wav, base64 alphabet) and rate limit 20/hour/user;
+    - up to 3 recognition languages from the hints (`ar` -> `ar-SA`);
+    - `SpeechToText` interface with a Google Speech-to-Text v2 implementation (`@google-cloud/speech` 8.2, the client the stack's "Speech-to-Text v2" requires; flagged as a new dependency);
+    - failures -> `unavailable`; audio is never stored or logged.
+  - `onItemCreated`:
+    - locale hints come from the adder's device locales (e.g. `ar-EG`), then their member language;
+    - sets `lang`, `names` (every member language), `canonicalId` and `category`/`categorySource: auto`, unless the member chose `user`;
+    - an ambiguous word gets the likely category but no `canonicalId`;
+    - then merges per ARCHITECTURE 4.2 in a transaction: same canonicalId, else normalized name; oldest open/claimed; same unit adds (cap 999), a different unit goes to notes; `requestedBy`; urgency carries over; the newer doc is deleted; `item_merged`. Otherwise `item_added`.
+    - It is idempotent, with a B6 hook marked.
+  - `onItemUpdated`:
+    - `done` -> a purchase (`{itemId}_{millis}`, with the trip's `storeId`/`chainId`) and `item_done`. An undo within 30 minutes removes the purchase.
+    - `missing` -> `item_missing` (actor = the active trip's shopper) and a push to the adder through a `MissingNotifier`. It respects `notify.itemMissing` and never notifies the shopper. The sender is a stub until B6.
+  - Events: `writeEvent` with `expireAt` = 30 days.
+- **Golden report** (`backend/functions/test/golden-report.md`): **30/30 (100%)** with no LLM recordings. Every fixture case resolves through the catalog, dialect rules and splitter. It doesn't exercise the LLM, which matters for non-catalog words and fil/hi/ur translations; recording with `RECORD=1` waits for a key.
+- Tests: **181 unit** (114 split/normalize parity, 21 split counts, 16 logic tests over normalize/units/merge/LLM/replay/resolve, golden, regions, scaffold) + **168 emulator** (144 rules, 18 households, 19 items/triggers/transcribe).
+- End to end on the dev emulators:
+  - signed in as seeded Mama: `parseItems` -> tomato 2 kg, "عيش" -> rice for `ar-AE`, basmati in a bag;
+  - an item written through the security rules was enriched by `onItemCreated`, and a duplicate merged (1 + 2 = 3, `requestedBy`);
+  - Android `OfflineItemsTest` and `TwoUsersJoinHouseholdTest` pass with the triggers active.
+- Bugs found and fixed:
+  - **Latin-script item names from an Arabic speaker were tagged `lang: ar`** (found end to end with "ibuprofen"). Latin text now only takes Latin-script hints, else `en`; covered by a test.
+  - The editor tooling had written literal invisible characters into regexes and test strings in both codebases. All are now `\u` escapes; the Kotlin and TypeScript scans are clean.
+- Android (no behaviour change): `SplitCasesFixtureTest` added; invisible characters escaped in five Kotlin files; 348 unit tests pass, lint clean.
+- Contract changes: none. New shared fixture: `fixtures/split_cases.json`.
+- Owner actions still open:
+  - an Anthropic API key (record once; see RUNBOOK);
+  - enable Cloud Speech-to-Text on the dev project (needs the project and billing).
+- Next: B5 (stores import and `nearbyStores`/`addStore`).
 
 ### 2026-10-19 — Backend B3 Households, invites, devices
 - Shipped (CONTRACT §4, zod-validated, logic in `*Core` functions with thin `onCall` wrappers):

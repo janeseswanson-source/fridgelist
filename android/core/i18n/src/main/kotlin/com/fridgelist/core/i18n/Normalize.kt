@@ -24,7 +24,7 @@ object Normalize {
     /**
      * Display-safe cleanup for typed or dictated text: drops bidi marks, zero-width spaces, BOM and
      * soft hyphens, and turns no-break spaces into plain spaces. Keyboards and speech engines insert
-     * these; left in, "‏حليب" would not match "حليب".
+     * these; left in, "\u200Fحليب" would not match "حليب".
      */
     fun invisible(text: String): String = UNICODE_SPACE.replace(INVISIBLE.replace(text, ""), " ")
 

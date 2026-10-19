@@ -11,6 +11,7 @@ import { initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { FieldValue, Timestamp, getFirestore } from "firebase-admin/firestore";
 import { geohashForLocation } from "geofire-common";
+import { seedCatalog } from "./seed-catalog.js";
 
 const PROJECT = "demo-fridgelist";
 process.env.FIRESTORE_EMULATOR_HOST ??= "127.0.0.1:8080";
@@ -203,7 +204,8 @@ async function seedStores(): Promise<number> {
 await seedAuth();
 await seedHousehold();
 const stores = await seedStores();
+const catalog = await seedCatalog(db);
 process.stdout.write(
-  `Seeded household ${HID}: ${String(members.length)} members, 2 lists, ${String(ITEMS.length)} items; ${String(stores)} stores.\n` +
+  `Seeded household ${HID}: ${String(members.length)} members, 2 lists, ${String(ITEMS.length)} items; ${String(stores)} stores; ${String(catalog)} catalog items.\n` +
     `Dev app test sign-in: Mama (owner, ar), Ayse (adult, tr), Maria (helper, fil).\n`,
 );

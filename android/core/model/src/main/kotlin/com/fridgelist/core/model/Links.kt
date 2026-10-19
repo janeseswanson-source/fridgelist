@@ -15,7 +15,7 @@ object InviteCode {
                 when (c) {
                     in '٠'..'٩' -> append('0' + (c - '٠'))
                     in '۰'..'۹' -> append('0' + (c - '۰'))
-                    ' ', '-', ' ' -> Unit
+                    ' ', '-', '\u00A0' -> Unit
                     else -> append(c)
                 }
             }

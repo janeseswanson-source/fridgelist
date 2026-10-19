@@ -69,6 +69,27 @@ curl -s -X POST -H "Content-Type: application/json" -d '{"data":{}}' \
 # {"result":{"ok":true,"region":"me-central2","contractVersion":3}}
 ```
 
+### Item pipeline (B4)
+
+- **Catalog:** `npm run seed:catalog` loads `fixtures/catalog_seed.json` into `catalog/` (idempotent; `npm run emulators` runs it). For a real project: `npm run seed:catalog -- --live <projectId>`, only when the owner asks.
+  - The functions bundle the same file: `npm run fixtures` copies it to `functions/src/generated/` (git-ignored) before build, typecheck and tests.
+- **Shared parsing:** `functions/src/lib/{normalize,numbers,units,catalog,localSplit}.ts` are line-by-line ports of the Android reference and must reproduce `fixtures/split_cases.json` exactly (`test/split-fixtures.test.ts`).
+  - When behaviour changes, change Android first, regenerate with `./gradlew :core:i18n:test -PwriteFixtures=true`, then make the TypeScript (and Swift) match.
+- **LLM:**
+  - The key is the `ANTHROPIC_API_KEY` secret (`defineSecret`); models come from the params `LLM_MODEL_FAST` and `LLM_MODEL_SMART`.
+  - Without a key everything works on the catalog and fallbacks (category `other`, no machine translation).
+  - Locally, put the key in `functions/.secret.local` (git-ignored; `npm run emulators` creates it empty). With it empty, the emulator logs "Unable to access secret ... Secret Manager" on each call; that warning is harmless.
+- **Golden test:** `test/golden.test.ts` scores `fixtures/parse_cases.json` and writes `test/golden-report.md`. It replays `test/recordings/` offline. To record real responses once (costs a few cents):
+  ```sh
+  cd backend/functions
+  RECORD=1 ANTHROPIC_API_KEY=sk-ant-... npx vitest run test/golden.test.ts
+  ```
+  Commit the new files in `test/recordings/`. The >= 90% gate applies once recordings exist.
+- **Speech-to-Text (`transcribeAudio`):** uses Google Cloud Speech-to-Text v2 in the functions' own project.
+  - **Owner action** before it works on a real project: enable the "Cloud Speech-to-Text API" in Google Cloud Console > APIs & Services for the dev project, with billing on.
+  - The emulator has no STT, so it returns `unavailable` locally, and the apps show their offline message.
+- **Rate limits:** counters in `rateLimits/{bucket}:{uid}` (functions only; the rules close it). Limits: `parseItems` 30/min/user, `transcribeAudio` 20/hour/user.
+
 ## 3. Projects and regions
 
 - `.firebaserc` aliases: `dev` → `fridgelist-dev-TODO`, `prod` → `fridgelist-prod-TODO`. These are placeholders until the owner creates the projects.

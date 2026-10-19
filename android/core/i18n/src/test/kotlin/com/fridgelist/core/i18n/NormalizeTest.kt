@@ -98,9 +98,9 @@ class NormalizeTest {
 
     @Test
     fun invisibleCharactersAreRemovedAndSpacesUnified() {
-        assertEquals("حليب", Normalize.invisible("‏‫حليب‬﻿"))
-        assertEquals("2 süt", Normalize.invisible("2 süt"))
-        assertEquals("نان", Normalize.matchKey("‌نان"), "match keys also drop ZWNJ")
-        assertEquals("a b", Normalize.matchKey(" a  b "))
+        assertEquals("حليب", Normalize.invisible("\u200F\u202Bحليب\u202C\uFEFF"))
+        assertEquals("2 süt", Normalize.invisible("2\u00A0süt"))
+        assertEquals("نان", Normalize.matchKey("\u200Cنان"), "match keys also drop ZWNJ")
+        assertEquals("a b", Normalize.matchKey(" a\u202F\u2007b "))
     }
 }

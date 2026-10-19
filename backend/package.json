@@ -7,7 +7,8 @@
     "seed": "tsx scripts/emulator-seed.ts",
     "typecheck": "tsc -p scripts/tsconfig.json --noEmit",
     "deploy:dev": "echo \"Deploys only when the owner writes 'deploy dev' (prompts/01-backend.md).\" && firebase deploy --project dev",
-    "import:stores": "echo \"import-stores.ts arrives in B5\" && exit 1"
+    "import:stores": "echo \"import-stores.ts arrives in B5\" && exit 1",
+    "seed:catalog": "tsx scripts/seed-catalog.ts"
   },
   "devDependencies": {
     "@types/node": "22.20.5",

@@ -3,10 +3,17 @@
  * project, waits until it is ready, then seeds it (scripts/emulator-seed.ts). Ctrl+C stops all.
  */
 import { spawn, spawnSync } from "node:child_process";
+import { existsSync, writeFileSync } from "node:fs";
 
 const PROJECT = "demo-fridgelist";
 const HUB = "http://127.0.0.1:4400/emulators";
 const shell = process.platform === "win32";
+
+// Secrets for the Functions emulator (git-ignored). An empty key means "no LLM": parseItems and
+// onItemCreated use the catalog and fallbacks, and the emulator doesn't try Secret Manager.
+// Put a real key here to use the LLM locally: ANTHROPIC_API_KEY=sk-ant-...
+const secrets = "functions/.secret.local";
+if (!existsSync(secrets)) writeFileSync(secrets, `ANTHROPIC_API_KEY=${"\n"}`);
 
 const build = spawnSync("npm", ["--prefix", "functions", "run", "build"], { stdio: "inherit", shell });
 if (build.status !== 0) process.exit(build.status ?? 1);

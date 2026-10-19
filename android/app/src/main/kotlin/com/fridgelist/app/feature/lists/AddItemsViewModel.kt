@@ -217,7 +217,7 @@ class AddItemsViewModel @Inject constructor(
     }
 
     /** Arabic block U+0600–U+06FF: join with the Arabic comma "،". */
-    private fun isArabicScript(text: String) = text.any { it in '؀'..'ۿ' }
+    private fun isArabicScript(text: String) = text.any { it in '\u0600'..'ۿ' }
 
     override fun onCleared() {
         voiceInput.cancel()

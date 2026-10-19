@@ -26,3 +26,5 @@ backend/functions/lib/
 backend/functions/coverage/
 backend/**/*-debug.log
 backend/.emulator-data/
+backend/functions/src/generated/
+backend/functions/.secret.local

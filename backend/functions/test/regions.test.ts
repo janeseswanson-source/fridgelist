@@ -8,7 +8,17 @@ describe("regions", () => {
 
   it("exports functions", () => {
     expect(exported.map(([name]) => name)).toEqual(
-      expect.arrayContaining(["health", "createHousehold", "createInvite", "joinHousehold", "onMemberWritten"]),
+      expect.arrayContaining([
+        "health",
+        "createHousehold",
+        "createInvite",
+        "joinHousehold",
+        "onMemberWritten",
+        "parseItems",
+        "transcribeAudio",
+        "onItemCreated",
+        "onItemUpdated",
+      ]),
     );
   });
 

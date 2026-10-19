@@ -156,11 +156,11 @@ class LocalSplitterTest {
 
     @Test
     fun invisibleMarksAndNoBreakSpacesAreIgnored() {
-        val rtl = splitter.split("‏حليب‏", listOf("ar")).single()
+        val rtl = splitter.split("\u200Fحليب\u200F", listOf("ar")).single()
         assertEquals("حليب", rtl.name, "no bidi mark left in the name")
         assertEquals("milk", rtl.canonicalId)
-        assertEquals("milk", splitter.split("milk​", listOf("en")).single().name)
-        val nbsp = splitter.split("2 süt", listOf("tr")).single()
+        assertEquals("milk", splitter.split("milk\u200B", listOf("en")).single().name)
+        val nbsp = splitter.split("2\u00A0süt", listOf("tr")).single()
         assertEquals("süt", nbsp.name)
         assertEquals(2.0, nbsp.qty)
     }

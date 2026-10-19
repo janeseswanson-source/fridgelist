@@ -24,6 +24,8 @@ sourceSets {
 
 tasks.test {
     systemProperty("fixtures.dir", fixturesDir.asFile.absolutePath)
+    // ./gradlew :core:i18n:test -PwriteFixtures=true regenerates fixtures/split_cases.json from this code.
+    systemProperty("fixtures.write", providers.gradleProperty("writeFixtures").getOrElse("false"))
     jvmArgs("-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-Dstderr.encoding=UTF-8")
     inputs.dir(fixturesDir).withPropertyName("fixtures")
     testLogging {

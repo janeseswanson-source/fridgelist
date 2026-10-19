@@ -3,3 +3,5 @@ node_modules
 coverage
 test/recordings
 package-lock.json
+src/generated
+test/golden-report.md

@@ -1,0 +1,1811 @@
+{
+  "version": 1,
+  "howToUse": "Generated from the Android reference (core:i18n SplitCasesFixtureTest). For each split case, LocalSplitter.split(text, localeHints, aliases) must return exactly `expect`, in order: name (as typed, after invisible-mark cleanup), qty (number or null), unit (contract Unit or null), canonicalId (or null) and ambiguity ({wordKey, candidates} or null). matchKey cases: Normalize.matchKey(text, turkish) == key and AliasId.of(key) == aliasId.",
+  "split": [
+    {
+      "text": "جيب ٢ كيلو بندورة وعلبة لبنة وحليب",
+      "localeHints": [
+        "ar-SY"
+      ],
+      "expect": [
+        {
+          "name": "بندورة",
+          "qty": 2.0,
+          "unit": "kg",
+          "canonicalId": "tomato",
+          "ambiguity": null
+        },
+        {
+          "name": "لبنة",
+          "qty": 1.0,
+          "unit": "pack",
+          "canonicalId": "labneh",
+          "ambiguity": null
+        },
+        {
+          "name": "حليب",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "نبي طماطم وخيار و٥ كيلو رز بسمتي",
+      "localeHints": [
+        "ar-SA"
+      ],
+      "expect": [
+        {
+          "name": "طماطم",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "tomato",
+          "ambiguity": null
+        },
+        {
+          "name": "خيار",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "cucumber",
+          "ambiguity": null
+        },
+        {
+          "name": "رز بسمتي",
+          "qty": 5.0,
+          "unit": "kg",
+          "canonicalId": "rice_basmati",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "كيلو ونص لحمة مفرومة",
+      "localeHints": [
+        "ar-SY"
+      ],
+      "expect": [
+        {
+          "name": "لحمة مفرومة",
+          "qty": 1.5,
+          "unit": "kg",
+          "canonicalId": "minced_meat",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "خبز، حليب، بيض",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "خبز",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "bread",
+          "ambiguity": null
+        },
+        {
+          "name": "حليب",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        },
+        {
+          "name": "بيض",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "eggs",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "٣ علب تونة",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "تونة",
+          "qty": 3.0,
+          "unit": "can",
+          "canonicalId": "tuna",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "لا تنسوا الخبز",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "الخبز",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "bread",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "مناديل وسائل جلي",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "مناديل",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "tissues",
+          "ambiguity": null
+        },
+        {
+          "name": "سائل جلي",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "dish_soap",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "كرتونة بيض وربطة بقدونس",
+      "localeHints": [
+        "ar-AE"
+      ],
+      "expect": [
+        {
+          "name": "بيض",
+          "qty": 1.0,
+          "unit": "tray",
+          "canonicalId": "eggs",
+          "ambiguity": null
+        },
+        {
+          "name": "بقدونس",
+          "qty": 1.0,
+          "unit": "bunch",
+          "canonicalId": "parsley",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "تمر للإفطار",
+      "localeHints": [
+        "ar-SA"
+      ],
+      "expect": [
+        {
+          "name": "تمر للإفطار",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "dates",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "لتر زيت زيتون",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "زيت زيتون",
+          "qty": 1.0,
+          "unit": "l",
+          "canonicalId": "olive_oil",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "نص كيلو جبنة حلوم",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "جبنة حلوم",
+          "qty": 0.5,
+          "unit": "kg",
+          "canonicalId": "halloumi",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "عايزين عيش وجبنة بيضا",
+      "localeHints": [
+        "ar-EG"
+      ],
+      "expect": [
+        {
+          "name": "عيش",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "bread",
+          "ambiguity": null
+        },
+        {
+          "name": "جبنة بيضا",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "white_cheese",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "عيش بسمتي ودياي",
+      "localeHints": [
+        "ar-SA"
+      ],
+      "expect": [
+        {
+          "name": "عيش بسمتي",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "rice_basmati",
+          "ambiguity": null
+        },
+        {
+          "name": "دياي",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "chicken",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "لبن وفراخ",
+      "localeHints": [
+        "ar-EG"
+      ],
+      "expect": [
+        {
+          "name": "لبن",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        },
+        {
+          "name": "فراخ",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "chicken",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "لبن وجاج",
+      "localeHints": [
+        "ar-SY"
+      ],
+      "expect": [
+        {
+          "name": "لبن",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "yogurt",
+          "ambiguity": null
+        },
+        {
+          "name": "جاج",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "chicken",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "لبن ودجاج",
+      "localeHints": [
+        "ar-SA"
+      ],
+      "expect": [
+        {
+          "name": "لبن",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "laban_ayran",
+          "ambiguity": null
+        },
+        {
+          "name": "دجاج",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "chicken",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "2 ekmek, yarım kilo beyaz peynir ve süt",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "ekmek",
+          "qty": 2.0,
+          "unit": null,
+          "canonicalId": "bread",
+          "ambiguity": null
+        },
+        {
+          "name": "beyaz peynir",
+          "qty": 0.5,
+          "unit": "kg",
+          "canonicalId": "white_cheese",
+          "ambiguity": null
+        },
+        {
+          "name": "süt",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "yumurta 30 tane, 1 litre ayran, domates",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "yumurta",
+          "qty": 30.0,
+          "unit": "piece",
+          "canonicalId": "eggs",
+          "ambiguity": null
+        },
+        {
+          "name": "ayran",
+          "qty": 1.0,
+          "unit": "l",
+          "canonicalId": "laban_ayran",
+          "ambiguity": null
+        },
+        {
+          "name": "domates",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "tomato",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "1,5 kg kıyma",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "kıyma",
+          "qty": 1.5,
+          "unit": "kg",
+          "canonicalId": "minced_meat",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "domates biber patlıcan",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "domates",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "tomato",
+          "ambiguity": null
+        },
+        {
+          "name": "biber",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "pepper_green",
+          "ambiguity": null
+        },
+        {
+          "name": "patlıcan",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "eggplant",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "bir buçuk kilo pirinç ve 2 paket makarna",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "pirinç",
+          "qty": 1.5,
+          "unit": "kg",
+          "canonicalId": "rice",
+          "ambiguity": null
+        },
+        {
+          "name": "makarna",
+          "qty": 2.0,
+          "unit": "pack",
+          "canonicalId": "pasta",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "3 kutu ton balığı",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "ton balığı",
+          "qty": 3.0,
+          "unit": "can",
+          "canonicalId": "tuna",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "milk, 6 eggs and half a dozen lemons",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "milk",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        },
+        {
+          "name": "eggs",
+          "qty": 6.0,
+          "unit": null,
+          "canonicalId": "eggs",
+          "ambiguity": null
+        },
+        {
+          "name": "lemons",
+          "qty": 6.0,
+          "unit": "piece",
+          "canonicalId": "lemon",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "we're out of dish soap",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "dish soap",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "dish_soap",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "Pampers size 4 x2 and baby wipes",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "Pampers size 4",
+          "qty": 2.0,
+          "unit": null,
+          "canonicalId": "diapers",
+          "ambiguity": null
+        },
+        {
+          "name": "baby wipes",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "baby_wipes",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "milk, 6 eggs and خبز عربي",
+      "localeHints": [
+        "en",
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "milk",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        },
+        {
+          "name": "eggs",
+          "qty": 6.0,
+          "unit": null,
+          "canonicalId": "eggs",
+          "ambiguity": null
+        },
+        {
+          "name": "خبز عربي",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "arabic_bread",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "sugar 1kg and زيت زيتون",
+      "localeHints": [
+        "en",
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "sugar",
+          "qty": 1.0,
+          "unit": "kg",
+          "canonicalId": "sugar",
+          "ambiguity": null
+        },
+        {
+          "name": "زيت زيتون",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "olive_oil",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "2 süt ve labne",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "süt",
+          "qty": 2.0,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        },
+        {
+          "name": "labne",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "labneh",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "‏حليب‏، خبز​",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "حليب",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        },
+        {
+          "name": "خبز",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "bread",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "2 süt ve ekmek",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "süt",
+          "qty": 2.0,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        },
+        {
+          "name": "ekmek",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "bread",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "٢ كيلو بَندورة",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "بَندورة",
+          "qty": 2.0,
+          "unit": "kg",
+          "canonicalId": "tomato",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "خبز وحليب",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "خبز",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "bread",
+          "ambiguity": null
+        },
+        {
+          "name": "حليب",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "ورق تواليت",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "ورق تواليت",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "toilet_paper",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "جيب ٢ كيلو بندورة وعلبة لبنة",
+      "localeHints": [
+        "ar-SY"
+      ],
+      "expect": [
+        {
+          "name": "بندورة",
+          "qty": 2.0,
+          "unit": "kg",
+          "canonicalId": "tomato",
+          "ambiguity": null
+        },
+        {
+          "name": "لبنة",
+          "qty": 1.0,
+          "unit": "pack",
+          "canonicalId": "labneh",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "2 ekmek, yarım kilo beyaz peynir ve süt",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "ekmek",
+          "qty": 2.0,
+          "unit": null,
+          "canonicalId": "bread",
+          "ambiguity": null
+        },
+        {
+          "name": "beyaz peynir",
+          "qty": 0.5,
+          "unit": "kg",
+          "canonicalId": "white_cheese",
+          "ambiguity": null
+        },
+        {
+          "name": "süt",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "domates biber patlıcan",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "domates",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "tomato",
+          "ambiguity": null
+        },
+        {
+          "name": "biber",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "pepper_green",
+          "ambiguity": null
+        },
+        {
+          "name": "patlıcan",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "eggplant",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "yumurta 30 tane",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "yumurta",
+          "qty": 30.0,
+          "unit": "piece",
+          "canonicalId": "eggs",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "sugar 1kg",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "sugar",
+          "qty": 1.0,
+          "unit": "kg",
+          "canonicalId": "sugar",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "Pampers x2",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "Pampers",
+          "qty": 2.0,
+          "unit": null,
+          "canonicalId": "diapers",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "Pampers size 4",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "Pampers size 4",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "diapers",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "2 bags of rice",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "rice",
+          "qty": 2.0,
+          "unit": "bag",
+          "canonicalId": "rice",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "half a dozen eggs",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "eggs",
+          "qty": 6.0,
+          "unit": "piece",
+          "canonicalId": "eggs",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "a dozen eggs",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "eggs",
+          "qty": 12.0,
+          "unit": "piece",
+          "canonicalId": "eggs",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "on bir yumurta",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "yumurta",
+          "qty": 11.0,
+          "unit": null,
+          "canonicalId": "eggs",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "iki buçuk kilo un",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "un",
+          "qty": 2.5,
+          "unit": "kg",
+          "canonicalId": "flour",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "كيلو ونص رز",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "رز",
+          "qty": 1.5,
+          "unit": "kg",
+          "canonicalId": "rice",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "نص كيلو لحمة",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "لحمة",
+          "qty": 0.5,
+          "unit": "kg",
+          "canonicalId": null,
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "علبة حمص",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "حمص",
+          "qty": 1.0,
+          "unit": "pack",
+          "canonicalId": null,
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "كرتونة بيض",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "بيض",
+          "qty": 1.0,
+          "unit": "tray",
+          "canonicalId": "eggs",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "2 kutu ton balığı",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "ton balığı",
+          "qty": 2.0,
+          "unit": "can",
+          "canonicalId": "tuna",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "لبن",
+      "localeHints": [
+        "ar-EG"
+      ],
+      "expect": [
+        {
+          "name": "لبن",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "لبن",
+      "localeHints": [
+        "ar-SY"
+      ],
+      "expect": [
+        {
+          "name": "لبن",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "yogurt",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "لبن",
+      "localeHints": [
+        "ar-SA"
+      ],
+      "expect": [
+        {
+          "name": "لبن",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "laban_ayran",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "عيش",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "عيش",
+          "qty": null,
+          "unit": null,
+          "canonicalId": null,
+          "ambiguity": {
+            "wordKey": "عيش",
+            "candidates": [
+              "bread",
+              "rice"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "text": "العيش",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "العيش",
+          "qty": null,
+          "unit": null,
+          "canonicalId": null,
+          "ambiguity": {
+            "wordKey": "عيش",
+            "candidates": [
+              "bread",
+              "rice"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "text": "عيش بسمتي",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "عيش بسمتي",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "rice_basmati",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "بطاطا",
+      "localeHints": [
+        "ar-EG"
+      ],
+      "expect": [
+        {
+          "name": "بطاطا",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "sweet_potato",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "عيش",
+      "localeHints": [
+        "ar"
+      ],
+      "aliases": {
+        "عيش": "rice"
+      },
+      "expect": [
+        {
+          "name": "عيش",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "rice",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "2 عيش",
+      "localeHints": [
+        "ar"
+      ],
+      "aliases": {
+        "عيش": "bread"
+      },
+      "expect": [
+        {
+          "name": "عيش",
+          "qty": 2.0,
+          "unit": null,
+          "canonicalId": "bread",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "we need milk and don't forget the bread",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "milk",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        },
+        {
+          "name": "the bread",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "bread",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "lütfen 2 süt",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "süt",
+          "qty": 2.0,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "بدنا ٣ حبات ليمون",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "ليمون",
+          "qty": 3.0,
+          "unit": "piece",
+          "canonicalId": "lemon",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "1,5 kg peynir",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "peynir",
+          "qty": 1.5,
+          "unit": "kg",
+          "canonicalId": "white_cheese",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "1, 5 milk",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "milk",
+          "qty": 5.0,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "süt,ekmek",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "süt",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        },
+        {
+          "name": "ekmek",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "bread",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "٢٫٥ كيلو رز",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "رز",
+          "qty": 2.5,
+          "unit": "kg",
+          "canonicalId": "rice",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "۳ نان",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "نان",
+          "qty": 3.0,
+          "unit": null,
+          "canonicalId": null,
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "SÜT",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "SÜT",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "İNCİR",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "İNCİR",
+          "qty": null,
+          "unit": null,
+          "canonicalId": null,
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "ISPANAK",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "ISPANAK",
+          "qty": null,
+          "unit": null,
+          "canonicalId": null,
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "Milk & Eggs + bread; tea",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "Milk",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        },
+        {
+          "name": "Eggs",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "eggs",
+          "ambiguity": null
+        },
+        {
+          "name": "bread",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "bread",
+          "ambiguity": null
+        },
+        {
+          "name": "tea",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "tea",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "حليب، خبز؛ بيض",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "حليب",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        },
+        {
+          "name": "خبز",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "bread",
+          "ambiguity": null
+        },
+        {
+          "name": "بيض",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "eggs",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "‏حليب‏",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "حليب",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "milk​",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "milk",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "2 süt",
+      "localeHints": [
+        "tr"
+      ],
+      "expect": [
+        {
+          "name": "süt",
+          "qty": 2.0,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "‫خبز‬ و⁦بيض⁩",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "خبز",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "bread",
+          "ambiguity": null
+        },
+        {
+          "name": "بيض",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "eggs",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "0 milk",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "milk",
+          "qty": 0.0,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "-2 milk",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "-2 milk",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "1.5.2 milk",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "1.5.2 milk",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "2 2 milk",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "milk",
+          "qty": 4.0,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "99999999999 milk",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "milk",
+          "qty": 9.9999999999E10,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "dozen dozen eggs",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "eggs",
+          "qty": 144.0,
+          "unit": "piece",
+          "canonicalId": "eggs",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "half half milk",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "milk",
+          "qty": 0.25,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "كيلو 2 طماطم",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": [
+        {
+          "name": "2 طماطم",
+          "qty": 1.0,
+          "unit": "kg",
+          "canonicalId": "tomato",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "Pampers x2 x3",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "Pampers x2 2",
+          "qty": 3.0,
+          "unit": null,
+          "canonicalId": "diapers",
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "2",
+      "localeHints": [
+        "en"
+      ],
+      "expect": []
+    },
+    {
+      "text": "2 kg",
+      "localeHints": [
+        "en"
+      ],
+      "expect": []
+    },
+    {
+      "text": "x2",
+      "localeHints": [
+        "en"
+      ],
+      "expect": []
+    },
+    {
+      "text": "we need",
+      "localeHints": [
+        "en"
+      ],
+      "expect": []
+    },
+    {
+      "text": "جيب",
+      "localeHints": [
+        "ar"
+      ],
+      "expect": []
+    },
+    {
+      "text": "   ",
+      "localeHints": [
+        "en"
+      ],
+      "expect": []
+    },
+    {
+      "text": " , ، و and ",
+      "localeHints": [
+        "ar",
+        "en"
+      ],
+      "expect": []
+    },
+    {
+      "text": "🍎🍎",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "🍎🍎",
+          "qty": null,
+          "unit": null,
+          "canonicalId": null,
+          "ambiguity": null
+        }
+      ]
+    },
+    {
+      "text": "milk and and and and and and and and and and and and and and and and and and and and bread",
+      "localeHints": [
+        "en"
+      ],
+      "expect": [
+        {
+          "name": "milk",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "milk",
+          "ambiguity": null
+        },
+        {
+          "name": "bread",
+          "qty": null,
+          "unit": null,
+          "canonicalId": "bread",
+          "ambiguity": null
+        }
+      ]
+    }
+  ],
+  "matchKey": [
+    {
+      "text": "حليب",
+      "turkish": false,
+      "key": "حليب",
+      "aliasId": "efd3aeab5885d3ddd4c203a9d8da9e32"
+    },
+    {
+      "text": "بَندورة",
+      "turkish": false,
+      "key": "بندوره",
+      "aliasId": "3020863b7105fb9012a2ef7ef508289d"
+    },
+    {
+      "text": "الخبز",
+      "turkish": false,
+      "key": "الخبز",
+      "aliasId": "9e31e6db40d30c88045506a1f953ba72"
+    },
+    {
+      "text": "إبريق",
+      "turkish": false,
+      "key": "ابريق",
+      "aliasId": "1a50181cdfe345d8b3ff18d697c8516d"
+    },
+    {
+      "text": "مستشفى",
+      "turkish": false,
+      "key": "مستشفي",
+      "aliasId": "c69593dcba42c57bc06d2b373b5437d5"
+    },
+    {
+      "text": "طماطة",
+      "turkish": false,
+      "key": "طماطه",
+      "aliasId": "4dff1bf01ff33075ca7c2ec501f0fbb9"
+    },
+    {
+      "text": "ـحليبـ",
+      "turkish": false,
+      "key": "حليب",
+      "aliasId": "efd3aeab5885d3ddd4c203a9d8da9e32"
+    },
+    {
+      "text": "٢٫٥",
+      "turkish": false,
+      "key": "2.5",
+      "aliasId": "b8736b999909049671d0ea075a42b308"
+    },
+    {
+      "text": "۱۲",
+      "turkish": false,
+      "key": "12",
+      "aliasId": "6b51d431df5d7f141cbececcf79edf3d"
+    },
+    {
+      "text": "SÜT",
+      "turkish": true,
+      "key": "süt",
+      "aliasId": "afa1e3919581e5951126150bf0e11036"
+    },
+    {
+      "text": "İNCİR",
+      "turkish": true,
+      "key": "incir",
+      "aliasId": "7fa82b8d587bae2b4b203d45e369ec0a"
+    },
+    {
+      "text": "ISPANAK",
+      "turkish": true,
+      "key": "ıspanak",
+      "aliasId": "27a811c1ba648c33d8ec6cd695dbb076"
+    },
+    {
+      "text": "ISPANAK",
+      "turkish": false,
+      "key": "ispanak",
+      "aliasId": "97c50d340600f0443b9ac5fc16817757"
+    },
+    {
+      "text": "1,5 KG",
+      "turkish": true,
+      "key": "1.5 kg",
+      "aliasId": "8c3755d81c72f8dd680549fab303d119"
+    },
+    {
+      "text": "  çok   boşluk  ",
+      "turkish": true,
+      "key": "çok boşluk",
+      "aliasId": "92b85e0a69295b448ca896d7e05ac496"
+    },
+    {
+      "text": "Milk  Chocolate",
+      "turkish": false,
+      "key": "milk chocolate",
+      "aliasId": "7073ba391f6781ee969ea9b37004effb"
+    },
+    {
+      "text": "‏حليب",
+      "turkish": false,
+      "key": "حليب",
+      "aliasId": "efd3aeab5885d3ddd4c203a9d8da9e32"
+    },
+    {
+      "text": "‌نان",
+      "turkish": false,
+      "key": "نان",
+      "aliasId": "b454732c63ec2a1f30d62ea281b94ed2"
+    },
+    {
+      "text": "a  b",
+      "turkish": false,
+      "key": "a b",
+      "aliasId": "c8687a08aa5d6ed2044328fa6a697ab8"
+    },
+    {
+      "text": "عيش",
+      "turkish": false,
+      "key": "عيش",
+      "aliasId": "37447b7cbcd51413431286dc9456b73c"
+    }
+  ]
+}
