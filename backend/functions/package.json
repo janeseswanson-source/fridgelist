@@ -11,8 +11,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "npm run test:unit && npm run test:rules",
+    "test:unit": "vitest run",
+    "test:rules": "firebase emulators:exec --config ../firebase.rules-test.json --only firestore --project demo-fridgelist-rules \"vitest run -c vitest.rules.config.ts\""
   },
   "dependencies": {
     "firebase-admin": "14.5.0",
@@ -21,8 +22,10 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@firebase/rules-unit-testing": "6.0.0",
     "@types/node": "22.20.5",
     "eslint": "10.13.0",
+    "firebase": "13.0.0",
     "prettier": "3.9.10",
     "typescript": "6.0.3",
     "typescript-eslint": "8.71.2",

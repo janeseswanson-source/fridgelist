@@ -24,5 +24,5 @@ android/captures/
 node_modules/
 backend/functions/lib/
 backend/functions/coverage/
-backend/*-debug.log
+backend/**/*-debug.log
 backend/.emulator-data/

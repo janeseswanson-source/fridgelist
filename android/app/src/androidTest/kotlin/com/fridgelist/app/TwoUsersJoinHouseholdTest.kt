@@ -51,7 +51,22 @@ class TwoUsersJoinHouseholdTest {
         assumeTrue("Functions emulator not running on $host:${EmulatorConfig.FUNCTIONS_PORT} (needs backend B3)", reachable(EmulatorConfig.FUNCTIONS_PORT))
         assumeTrue("Firestore emulator not running", reachable(EmulatorConfig.FIRESTORE_PORT))
         assumeTrue("Auth emulator not running", reachable(EmulatorConfig.AUTH_PORT))
+        assumeTrue("createHousehold not deployed on the Functions emulator (needs backend B3)", callableExists("createHousehold"))
     }
+
+    /** The Functions emulator answers 404 for a function that isn't loaded (e.g. B1/B2 only have `health`). */
+    private fun callableExists(name: String): Boolean = runCatching {
+        val url = java.net.URL("http://$host:${EmulatorConfig.FUNCTIONS_PORT}/${EmulatorConfig.DEMO_PROJECT_ID}/$FUNCTIONS_REGION/$name")
+        (url.openConnection() as java.net.HttpURLConnection).run {
+            requestMethod = "POST"
+            doOutput = true
+            setRequestProperty("Content-Type", "application/json")
+            connectTimeout = 2_000
+            readTimeout = 5_000
+            outputStream.use { it.write("""{"data":{}}""".toByteArray()) }
+            responseCode.also { disconnect() } != 404
+        }
+    }.getOrDefault(false)
 
     /** One independent Firebase app per user, so both can be signed in at once. */
     private inner class User(val name: String) {

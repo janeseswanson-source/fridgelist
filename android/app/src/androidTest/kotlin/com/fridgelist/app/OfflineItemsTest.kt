@@ -11,9 +11,12 @@ import com.fridgelist.core.data.items.ListItems
 import com.fridgelist.core.model.AddedVia
 import com.fridgelist.core.model.ItemStatus
 import com.fridgelist.core.model.ItemUnit
+import com.fridgelist.core.model.ListType
 import com.fridgelist.core.model.StatusRules
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.PersistentCacheSettings
@@ -35,6 +38,9 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
+ * Runs as the seeded owner "Mama" (`seed-owner` in `seed-home`, backend `npm run emulators`), so
+ * every write also passes the real security rules (backend B2).
+ *
  * A3 acceptance (prompt 02): "in airplane mode you can add, tick, undo and delete; back online
  * [it syncs]". Uses the same repository code as the app against the Firestore emulator, with the
  * network switched off in the SDK (the app's offline cache path).
@@ -52,9 +58,9 @@ class OfflineItemsTest {
         assumeTrue("Firestore emulator not running on $host:${EmulatorConfig.FIRESTORE_PORT}", up)
     }
 
-    private fun firestore(): FirebaseFirestore {
+    private fun app(): FirebaseApp {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val app = FirebaseApp.getApps(context).firstOrNull { it.name == "offline" } ?: FirebaseApp.initializeApp(
+        return FirebaseApp.getApps(context).firstOrNull { it.name == "offline" } ?: FirebaseApp.initializeApp(
             context,
             FirebaseOptions.Builder()
                 .setProjectId(EmulatorConfig.DEMO_PROJECT_ID)
@@ -62,7 +68,17 @@ class OfflineItemsTest {
                 .setApiKey(EmulatorConfig.DEMO_API_KEY)
                 .build(),
             "offline",
-        )
+        ).also { app -> runCatching { FirebaseAuth.getInstance(app).useEmulator(host, EmulatorConfig.AUTH_PORT) } }
+    }
+
+    /** The Android dev "test user" sign-in for "Mama"; the backend seed links it to `seed-owner`. */
+    private suspend fun signInAsSeededOwner(): String {
+        val token = """{"sub":"test-mama","email":"mama@test.fridgelist.invalid","email_verified":true,"name":"Mama"}"""
+        return FirebaseAuth.getInstance(app()).signInWithCredential(GoogleAuthProvider.getCredential(token, null)).await().user!!.uid
+    }
+
+    private fun firestore(): FirebaseFirestore {
+        val app = app()
         return FirebaseFirestore.getInstance(app).apply {
             runCatching {
                 firestoreSettings = FirebaseFirestoreSettings.Builder()
@@ -78,12 +94,14 @@ class OfflineItemsTest {
     }
 
     @Test
-    fun addTickUndoDeleteOfflineThenSync() = runBlocking {
+    fun addTickUndoDeleteOfflineThenSync(): Unit = runBlocking {
+        val uid = signInAsSeededOwner()
+        assumeTrue("backend seed not loaded (run `npm run emulators` in backend/)", uid == "seed-owner")
         val db = firestore()
         val data = FirestoreItemsData(db, noCallables)
-        val hid = "offline-" + UUID.randomUUID()
-        val lid = "groceries"
-        val uid = "u-offline"
+        val hid = "seed-home"
+        // A fresh list (owner may create lists), so the seeded items don't get in the way.
+        val lid = data.createList(hid, "Offline " + UUID.randomUUID().toString().take(6), ListType.GROCERY, null, 99.0)
 
         db.disableNetwork().await()
 
@@ -120,6 +138,10 @@ class OfflineItemsTest {
         assertEquals(uid, doc.getString("addedBy"))
         assertFalse(doc.contains("doneBy"), "Undo cleared the done fields")
         assertTrue(doc.getTimestamp("createdAt") != null, "server timestamp resolved after sync")
+
+        // Tidy up the seeded household (the owner may delete items and lists).
+        db.collection("households").document(hid).collection("lists").document(lid).collection("items").document(milk).delete().await()
+        db.collection("households").document(hid).collection("lists").document(lid).delete().await()
     }
 
     private suspend fun kotlinx.coroutines.flow.Flow<ListItems>.awaitUntil(predicate: (ListItems) -> Boolean): ListItems =

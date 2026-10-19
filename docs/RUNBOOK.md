@@ -41,7 +41,7 @@ npm run emulators             # builds functions, starts all emulators, seeds de
 - **Android dev build:** uses `10.0.2.2` from the Android emulator. On a physical phone, set the dev machine's LAN IP in Settings → For developers. Sign in with the "Test user" box: **Mama**, **Ayse** or **Maria** sign straight into the seeded household. Any other name creates a new user.
 - **iOS simulator:** `localhost` (I1).
 
-Until B2 the Firestore rules deny every client read and write, so the apps can sign in but cannot read data from these emulators. B2 replaces the placeholder rules.
+The emulators enforce the real `firestore.rules` (B2) and reload them when the file changes. A dev app signed in as Mama, Ayse or Maria sees the seeded household; any other test user sees nothing until they create or join a household (B3).
 
 ### Checks (CLAUDE.md)
 
@@ -49,6 +49,17 @@ Until B2 the Firestore rules deny every client read and write, so the apps can s
 cd backend/functions && npm ci && npm run lint && npm run typecheck && npm test
 cd backend && npm run typecheck   # seed and launcher scripts
 ```
+
+`npm test` = `test:unit` (vitest, no emulator) + `test:rules`. `test:rules` starts its own Firestore emulator on port **8180** (`firebase.rules-test.json`, project `demo-fridgelist-rules`) with `firebase emulators:exec`, so it runs alongside `npm run emulators` and never touches the seeded data. It needs Java 21 and the Firebase CLI.
+
+### Security rules (B2)
+
+- `backend/firestore.rules` implements CONTRACT §3 (Writer columns, §3.6 transitions) and ARCHITECTURE §3.3.
+- Tests: `functions/test/rules/`.
+  - `items-transitions.test.ts` checks every from → to status pair for every role, as claimer and not, against an independent copy of the §3.6 table.
+  - The other files cover every collection: members vs outsiders, field whitelists, server-only fields, validation and functions-only collections.
+- When the contract changes a writer or a transition, change the rules and these tests in the same commit.
+- Android's `OfflineItemsTest` (instrumented) signs in as the seeded owner and runs the app's real repository code against these rules on the dev emulators.
 
 Health check against a running emulator:
 

@@ -8,13 +8,14 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-18 | 1 | Initial contract | — | — | — |
 | 2026-10-19 | 2 | §5.1: `trip_heading`, `trip_arrived`, `item_missing` reach **Android** as data-only messages with `title` + `body` data keys (server-localized). Needed for the inline reply. | **to do (B6)** | done (A6) | no change |
-| 2026-10-19 | 3 | §4 `startTrip` refuses `kid` (`permission-denied`); §3.2 a user may delete their own device docs (sign-out). | **to do (B2 rules, B6 startTrip)** | done (QA pass) | to do |
+| 2026-10-19 | 3 | §4 `startTrip` refuses `kid` (`permission-denied`); §3.2 a user may delete their own device docs (sign-out). | device delete: done (B2); `startTrip`: to do (B6) | done (QA pass) | to do |
 
 ## Milestones
 
 | Workstream | Milestone | Status | Date | Notes |
 | --- | --- | --- | --- | --- |
-| Backend | B1 Scaffold | done | 2026-10-19 | `npm run emulators` builds, starts Auth/Firestore/Functions/Hosting/Storage/Pub/Sub and seeds; rules deny all until B2 |
+| Backend | B1 Scaffold | done | 2026-10-19 | `npm run emulators` builds, starts Auth/Firestore/Functions/Hosting/Storage/Pub/Sub and seeds |
+| Backend | B2 Security rules | done | 2026-10-19 | 144 rules tests (full §3.6 matrix); Android offline flow passes the real rules |
 | Android | A1 Scaffold | done | 2026-10-18 | core:i18n passes 28/28 fixture cases (18/18 split required) |
 | Android | A2 Sign-in, onboarding, household | done, E2E pending B3 | 2026-10-18 | two-user join test passes against a QA stand-in of the callables (2026-10-19); re-run on B3 |
 | Android | A3 Lists and items, offline-first | done, server part pending B4 | 2026-10-19 | offline add/tick/undo/delete → sync verified (instrumented test + device); categories/translations wait for B4 |
@@ -24,6 +25,31 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Backend B2 Security rules
+- Shipped: `backend/firestore.rules` from CONTRACT §3 and ARCHITECTURE §3.3, replacing the B1 deny-all placeholder.
+  - **users:** self reads; self creates/merges only `displayName`, `language`, `uiLanguage` (possibly before any callable, as Android does); `householdIds`/`createdAt` server-only; no client delete.
+  - **devices:** self only, whitelisted fields, server `updatedAt`, and self delete (contract v3).
+  - **households:** members read; the owner updates `name`/`defaultLanguage` only.
+  - **members:** members read; self edits `displayName`/`language`/`notify` only (validated); role, presence and joinedAt are functions'.
+  - **lists:** owner/adult create (server `createdAt`, field whitelist) and edit; only the owner deletes.
+  - **items:**
+    - create forces `open`, or `pending` for kids; `addedBy` must be the caller; `addedVia` is a client channel (not `guest_web`/`whatsapp`); a category needs `categorySource: user`; server timestamps.
+    - updates: client fields only, server `updatedAt`, rename by the creator only, the §3.6 transitions (same table as Android `StatusRules`), `claimedBy`/`doneBy` naming only the caller, server `doneAt`.
+    - deletes: `pending` by owner/adult, others by any member (matches Android `canDelete`).
+  - **aliases:** any member writes, `createdBy` = caller.
+  - trips/events/purchases: members read only; mealSuggestions, shareLinks, invites, catalogCandidates: closed; stores/catalog: signed-in read; anything unlisted: closed.
+- Tests (`@firebase/rules-unit-testing` 6 + `firebase` 13 JS SDK as its required peer, dev only): **144 passing**.
+  - The full transition matrix: 5 × 5 statuses × 4 roles × claimer/not = 100 cases.
+  - Every Writer-column row in §3.1–3.16.
+  - Validation edges: lengths, qty range, enums, server time.
+  - Mutation check: weakening the kid-create rule or the claimer rule makes 4 tests fail.
+  - `npm test` now runs unit + rules tests; rules use their own emulator on port 8180.
+- Android (test-only changes):
+  - `OfflineItemsTest` now signs in as the seeded owner "Mama" and creates its own list in `seed-home`; the app's real offline add/tick/undo/delete → sync **passes the real rules**.
+  - `TwoUsersJoinHouseholdTest` now skips until `createHousehold` exists (the B1 functions emulator only has `health`).
+- Contract changes: none (implements v3's device delete).
+- Next: B3 (`createHousehold`, `createInvite`, `joinHousehold`, `onMemberWritten`).
 
 ### 2026-10-19 — Backend B1 Scaffold
 - Shipped:

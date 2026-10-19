@@ -1,10 +1,288 @@
 rules_version = '2';
 
-// B1 placeholder: deny every client read and write. B2 replaces this with the rules from
-// CONTRACT §3 (Writer column, §3.6 status transitions) and ARCHITECTURE §3.3, with tests.
-// Functions and scripts use the Admin SDK and are not affected.
+// FridgeList security rules: CONTRACT §3 (Writer columns, §3.6 status transitions) and
+// ARCHITECTURE §3.3. Every rule has a test in functions/test/rules/. Functions and scripts use
+// the Admin SDK and bypass these rules.
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // ---------- helpers
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function me() {
+      return request.auth.uid;
+    }
+
+    function memberPath(hid) {
+      return /databases/$(database)/documents/households/$(hid)/members/$(me());
+    }
+
+    function isMember(hid) {
+      return signedIn() && exists(memberPath(hid));
+    }
+
+    function roleOf(hid) {
+      return get(memberPath(hid)).data.role;
+    }
+
+    // Owner and adult approve kids' requests and manage lists (PRODUCT_SPEC roles).
+    function isApprover(hid) {
+      return roleOf(hid) in ['owner', 'adult'];
+    }
+
+    function changed() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    // A key that is either absent or passes `check`.
+    function optString(data, key, max) {
+      return !(key in data) || (data[key] is string && data[key].size() <= max);
+    }
+
+    function nameOk(value, max) {
+      return value is string && value.size() >= 1 && value.size() <= max;
+    }
+
+    function serverTime(value) {
+      return value == request.time;
+    }
+
+    // ---------- enums (CONTRACT §2)
+
+    function itemLanguages() {
+      return ['ar', 'tr', 'en', 'fil', 'hi', 'ur'];
+    }
+
+    function uiLanguages() {
+      return ['ar', 'tr', 'en'];
+    }
+
+    function units() {
+      return ['piece', 'kg', 'g', 'l', 'ml', 'pack', 'can', 'bottle', 'bag', 'box', 'bunch', 'tray'];
+    }
+
+    function categories() {
+      return ['produce', 'bakery', 'dairy_eggs', 'meat_poultry', 'seafood', 'pantry',
+              'spices_condiments', 'breakfast', 'frozen', 'beverages', 'snacks_sweets', 'baby',
+              'household_cleaning', 'personal_care', 'pharmacy', 'pets', 'other'];
+    }
+
+    // `guest_web` and `whatsapp` come only from functions (they set `addedBy` to guest:/wa:).
+    function clientAddedVia() {
+      return ['app_text', 'app_voice', 'app_photo', 'widget', 'control', 'siri', 'qs_tile',
+              'notification_reply', 'nfc', 'meal_plan', 'usuals'];
+    }
+
+    // ---------- users (CONTRACT §3.1, §3.2)
+
+    match /users/{uid} {
+      function profileOk(data) {
+        return (!('displayName' in data) || nameOk(data.displayName, 40))
+          && (!('language' in data) || data.language in itemLanguages())
+          && (!('uiLanguage' in data) || data.uiLanguage in uiLanguages());
+      }
+
+      allow read: if signedIn() && me() == uid;
+      // The app writes its profile right after onboarding, possibly before any callable has
+      // created this doc: create and update are limited to the self-owned fields.
+      allow create: if signedIn() && me() == uid
+        && request.resource.data.keys().hasOnly(['displayName', 'language', 'uiLanguage'])
+        && profileOk(request.resource.data);
+      allow update: if signedIn() && me() == uid
+        && changed().hasOnly(['displayName', 'language', 'uiLanguage'])
+        && profileOk(request.resource.data);
+      allow delete: if false; // deleteMyAccount (B9)
+
+      match /devices/{deviceId} {
+        function deviceOk(data) {
+          return data.keys().hasOnly(['platform', 'fcmToken', 'apnsPushToStartToken', 'appVersion', 'locale', 'updatedAt'])
+            && data.platform in ['ios', 'android']
+            && data.fcmToken is string && data.fcmToken.size() <= 4096
+            && optString(data, 'apnsPushToStartToken', 4096)
+            && optString(data, 'appVersion', 40)
+            && optString(data, 'locale', 35)
+            && serverTime(data.updatedAt);
+        }
+
+        allow read: if signedIn() && me() == uid;
+        allow create, update: if signedIn() && me() == uid && deviceOk(request.resource.data);
+        // CONTRACT v3: sign-out removes this install's device doc so pushes stop.
+        allow delete: if signedIn() && me() == uid;
+      }
+    }
+
+    // ---------- households (CONTRACT §3.3–3.10, §3.16)
+
+    match /households/{hid} {
+      allow read: if isMember(hid);
+      allow create, delete: if false; // createHousehold / deleteMyAccount
+      allow update: if isMember(hid) && roleOf(hid) == 'owner'
+        && changed().hasOnly(['name', 'defaultLanguage'])
+        && nameOk(request.resource.data.name, 40)
+        && request.resource.data.defaultLanguage in uiLanguages();
+
+      match /members/{uid} {
+        function notifyOk(n) {
+          return n is map
+            && n.keys().hasOnly(['tripHeading', 'tripArrived', 'itemMissing', 'usuals'])
+            && (!('tripHeading' in n) || n.tripHeading is bool)
+            && (!('tripArrived' in n) || n.tripArrived is bool)
+            && (!('itemMissing' in n) || n.itemMissing is bool)
+            && (!('usuals' in n) || n.usuals is bool);
+        }
+
+        allow read: if isMember(hid);
+        allow create, delete: if false; // joinHousehold / deleteMyAccount
+        // A member edits only their own profile fields; role, presence, joinedAt are functions'.
+        allow update: if isMember(hid) && me() == uid
+          && changed().hasOnly(['displayName', 'language', 'notify'])
+          && nameOk(request.resource.data.displayName, 40)
+          && request.resource.data.language in itemLanguages()
+          && notifyOk(request.resource.data.notify);
+      }
+
+      match /lists/{lid} {
+        function listOk(data) {
+          return nameOk(data.name, 40)
+            && data.type in ['grocery', 'pharmacy', 'household', 'other']
+            && optString(data, 'emoji', 16) // one grapheme; rules cannot count graphemes
+            && data.order is number
+            && data.archived is bool;
+        }
+
+        allow read: if isMember(hid);
+        allow create: if isMember(hid) && isApprover(hid)
+          && request.resource.data.keys().hasOnly(['name', 'type', 'emoji', 'order', 'archived', 'createdAt'])
+          && listOk(request.resource.data)
+          && serverTime(request.resource.data.createdAt);
+        allow update: if isMember(hid) && isApprover(hid)
+          && changed().hasOnly(['name', 'type', 'emoji', 'order', 'archived'])
+          && listOk(request.resource.data);
+        allow delete: if isMember(hid) && roleOf(hid) == 'owner';
+
+        match /items/{iid} {
+          // Fields a client may write (CONTRACT §3.6 "members"/"creator"/"everyone").
+          function itemFieldsOk(data) {
+            return nameOk(data.name, 80)
+              && (!('qty' in data) || (data.qty is number && data.qty > 0 && data.qty <= 999))
+              && (!('unit' in data) || data.unit in units())
+              && optString(data, 'notes', 120)
+              && optString(data, 'photoUrl', 2048)
+              && (!('urgent' in data) || data.urgent is bool)
+              && (!('sortKey' in data) || data.sortKey is number)
+              && (!('category' in data) || data.category in categories())
+              && (!('categorySource' in data) || data.categorySource in ['auto', 'user']);
+          }
+
+          // CONTRACT §3.6 transition table; mirrors StatusRules (Android) / FridgeKit (iOS).
+          function canMove(from, to) {
+            return (from == 'pending' && to == 'open' && isApprover(hid))
+              || (from == 'open' && to in ['claimed', 'done', 'missing'])
+              || (from == 'claimed' && to == 'open' && (resource.data.get('claimedBy', null) == me() || isApprover(hid)))
+              || (from == 'claimed' && to in ['done', 'missing'])
+              || (from == 'done' && to == 'open')
+              || (from == 'missing' && to in ['open', 'done']);
+          }
+
+          // claimedBy / doneBy may only name the caller; doneAt is server time.
+          function actorFieldsOk() {
+            let data = request.resource.data;
+            let keys = changed();
+            return (!('claimedBy' in keys) || !('claimedBy' in data)
+                     || (data.claimedBy == me() && data.status == 'claimed'))
+              && (!('doneBy' in keys) || !('doneBy' in data) || data.doneBy == me())
+              && (!('doneAt' in keys) || !('doneAt' in data) || serverTime(data.doneAt))
+              && (!('doneTripId' in keys) || !('doneTripId' in data) || (data.doneTripId is string && data.doneTripId.size() <= 64));
+          }
+
+          // A member's category always comes with categorySource = user; the server never overwrites it.
+          function categoryOk() {
+            let keys = changed();
+            return !(keys.hasAny(['category', 'categorySource']))
+              || (request.resource.data.categorySource == 'user' && 'category' in request.resource.data);
+          }
+
+          allow read: if isMember(hid);
+
+          allow create: if isMember(hid)
+            && request.resource.data.keys().hasAll(['name', 'status', 'addedBy', 'addedVia', 'createdAt', 'updatedAt'])
+            && request.resource.data.keys().hasOnly(['name', 'qty', 'unit', 'notes', 'photoUrl', 'urgent', 'sortKey',
+                'category', 'categorySource', 'status', 'addedBy', 'addedVia', 'createdAt', 'updatedAt'])
+            && itemFieldsOk(request.resource.data)
+            && (!('category' in request.resource.data) || request.resource.data.categorySource == 'user')
+            && (!('categorySource' in request.resource.data) || 'category' in request.resource.data)
+            && request.resource.data.addedBy == me()
+            && request.resource.data.addedVia in clientAddedVia()
+            // Kids' items always start as requests; everyone else's as open.
+            && request.resource.data.status == (roleOf(hid) == 'kid' ? 'pending' : 'open')
+            && serverTime(request.resource.data.createdAt)
+            && serverTime(request.resource.data.updatedAt);
+
+          allow update: if isMember(hid)
+            && changed().hasOnly(['name', 'qty', 'unit', 'notes', 'photoUrl', 'urgent', 'sortKey', 'category',
+                'categorySource', 'status', 'claimedBy', 'doneBy', 'doneAt', 'doneTripId', 'updatedAt'])
+            && serverTime(request.resource.data.updatedAt)
+            && itemFieldsOk(request.resource.data)
+            // `name` is the creator's: exactly as typed (CONTRACT §1).
+            && (!('name' in changed()) || resource.data.addedBy == me())
+            && (!('status' in changed()) || canMove(resource.data.status, request.resource.data.status))
+            && categoryOk()
+            && actorFieldsOk();
+
+          // Requests are deleted (declined) by owner/adult; other items by any member.
+          allow delete: if isMember(hid)
+            && (resource.data.status != 'pending' || isApprover(hid));
+        }
+      }
+
+      match /aliases/{aliasId} {
+        function aliasOk(data) {
+          return data.keys().hasOnly(['text', 'canonicalId', 'createdBy', 'createdAt'])
+            && nameOk(data.text, 200)
+            && nameOk(data.canonicalId, 100)
+            && data.createdBy == me()
+            && serverTime(data.createdAt);
+        }
+
+        allow read, delete: if isMember(hid);
+        allow create, update: if isMember(hid) && aliasOk(request.resource.data);
+      }
+
+      // Functions only; members read (ARCHITECTURE §3.3).
+      match /trips/{tripId} {
+        allow read: if isMember(hid);
+        allow write: if false;
+      }
+      match /events/{eventId} {
+        allow read: if isMember(hid);
+        allow write: if false;
+      }
+      match /purchases/{pid} {
+        allow read: if isMember(hid);
+        allow write: if false;
+      }
+      match /mealSuggestions/{mealId} {
+        allow read, write: if false;
+      }
+    }
+
+    // ---------- shared, read-only reference data (CONTRACT §3.13, §3.14)
+
+    match /stores/{storeId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    match /catalog/{canonicalId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    // ---------- functions only (CONTRACT §3.11, §3.12, §3.15) and anything unlisted
+
     match /{document=**} {
       allow read, write: if false;
     }
