@@ -31,6 +31,7 @@ dependencies {
     api(libs.firebase.firestore)
     api(libs.firebase.functions)
     implementation(libs.firebase.messaging)
+    implementation(libs.firebase.config)
     implementation(libs.kotlinx.coroutines.play.services)
 
     implementation(libs.androidx.datastore.preferences)

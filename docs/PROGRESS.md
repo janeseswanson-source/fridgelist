@@ -25,6 +25,7 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | Backend | B6 Trips, notifications, live surfaces | done, real delivery needs the dev project | 2026-10-19 | every push type snapshot-tested in ar/tr/en; throttle, stale job; Android trip E2E |
 | Backend | B5 Stores | done, real import awaits owner OK | 2026-10-19 | UAE and Saudi dry runs on live OSM data; `nearbyStores`/`addStore` |
 | Backend | B4 Item pipeline | done, LLM/STT recordings pending a key | 2026-10-19 | golden 30/30 on catalog + dialect alone; LLM and STT behind interfaces, untested against the real services |
+| Android | A7 Store detection | done, field test per country pending | 2026-10-19 | real 2-min DWELL → auto trip → AUTO_LEFT → refresh verified on the emulator (`docs/test-geofence.md`) |
 | Android | A1 Scaffold | done | 2026-10-18 | core:i18n passes 28/28 fixture cases (18/18 split required) |
 | Android | A2 Sign-in, onboarding, household | done | 2026-10-18 | two-user join E2E passes against backend B3 (2026-10-19) |
 | Android | A3 Lists and items, offline-first | done | 2026-10-19 | server categories/translations now run (B4); | offline add/tick/undo/delete → sync verified (instrumented test + device); categories/translations wait for B4 |
@@ -34,6 +35,44 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Android A7 Store detection
+- Shipped:
+  - **Settings › Store detection:**
+    - the toggle walks through a rationale → precise location → the prominent disclosure (Play wording) → "Allow all the time", with the steps for Android 11+; Android 9 needs only precise location;
+    - the status line shows on / watching N stores / looking / needs "Allow all the time" (with Open settings) / paused by `store_detection_enabled`;
+    - the nearest watched stores, each with Mute; muted stores with Unmute; "Add a missing store" (`addStore` at the phone's position);
+    - "Store data © OpenStreetMap contributors";
+    - hidden for kids.
+  - **`StoreGeofenceManager`:**
+    - the nearest 90 unmuted stores as 120 m `DWELL` fences (120 s loitering, never expire, also `EXIT`), plus a 3 km `EXIT` refresh fence;
+    - refresh = a high-accuracy fix (falling back to the last location) → `nearbyStores` (10 km, 100) → replace;
+    - offline it keeps the saved set.
+  - **`GeofenceBroadcastReceiver` → expedited `DetectionWorker` → `StoreDetection`:**
+    - rules (`DetectionRules`, pure): detection on, kill switch on, signed in, not a kid, known store, not muted, 3 h cooldown per store, ≥ 1 open item;
+    - an "I'm going" trip arriving moves to `shopping` instead of starting a new one; a trip already running → skip.
+    - Fire = `startTrip(shopping, auto: true, storeId, storeName, listIds: [first list with open items])` → Shopping session → AUTO_ARRIVED "At Migros · 9 items" (Open list / Not shopping) → ongoing trip card.
+    - Offline: Shopping Mode still starts locally (A5 local mode) and AUTO_ARRIVED opens the app.
+    - Order: `startTrip` (≤ 10 s) runs before AUTO_ARRIVED so the notification can open that trip.
+  - **AUTO_LEFT** "Done shopping?" (Done shopping / Still here) when leaving the store of an auto trip that is still running. Not shopping → `updateTrip(cancelled)`; Done → `updateTrip(done)`, both through `TripEnder` (now with a status).
+    - Any trip end clears the detection notifications (found in the emulator run: the trip card's Done left them behind).
+  - **`LocationStateReceiver`** re-registers on boot, app update and location turned back on.
+  - **Sign-out** clears the fences and the detection state.
+  - **Firebase Remote Config** in `core:data` (`RemoteFlags`): fetch with a 3 s cap, the contract defaults otherwise; dev builds use the defaults (no emulator).
+    - `core:model` `Flags` mirrors CONTRACT §10; a test keeps it identical to `backend/remoteconfig.template.json`.
+  - **Dev-only debug screen** (Settings › Developer): the registered fences, Refresh, Dwell / Exit per store, and "Keep GPS on" for emulators.
+- Privacy: the watched stores, refresh point, cooldowns and muted stores live only in the `detection` DataStore; logs carry decisions only.
+- Tests: **app 253** (+12 detection screenshots in ar/tr/en light/dark, +17 `StoreDetectionTest`), core:model 26 (incl. flags parity), i18n 76, data 23; lint clean; `assembleDevDebug` OK.
+  - `StoreDetectionTest` (17): every rule and the cooldown edge; the 90-store selection; fence IDs and the 3 km check; fire / offline / skips / "I'm going" arrival / leave; the permission flow including denial and Android 9; mute, unmute, add store and its failures; kids; notification text in English and Arabic plurals.
+- Emulator run (`docs/test-geofence.md`, API 36, FridgeList in the background):
+  - walking into Migros fired after the native 2-min dwell → AUTO_ARRIVED "في Migros · 11 صنفاً" and an auto `shopping` trip on the server;
+  - leaving → AUTO_LEFT within 5 s; Done → trip `done`;
+  - A101 → Not shopping → trip `cancelled`, notifications cleared;
+  - leaving the 3 km circle rebuilt the fences around the Riyadh stores in 3 s.
+  - Gotcha documented: an emulator delivers `geo fix` only while some foreground app keeps GPS on (Maps), because Android drops a background app's GPS request.
+- Contract changes: none.
+- Next: A8 widgets, tile, shortcuts.
+- Owner, later: the field test in one store per country (F5); the Play background-location declaration and video (A11).
 
 ### 2026-10-19 — Ops: dev project on the free plan
 - `fridgelist-dev-yt` exists (Firebase added, Firestore at `me-central2`); live: Firestore rules and the Remote Config template.

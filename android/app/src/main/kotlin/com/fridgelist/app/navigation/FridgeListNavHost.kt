@@ -20,6 +20,7 @@ import com.fridgelist.app.feature.onboarding.NotificationsRoute
 import com.fridgelist.app.feature.onboarding.ProfileRoute
 import com.fridgelist.app.feature.onboarding.SignInRoute
 import com.fridgelist.app.feature.onboarding.WelcomeRoute
+import com.fridgelist.app.feature.settings.DetectionDebugRoute
 import com.fridgelist.app.feature.settings.SettingsRoute
 import com.fridgelist.core.data.session.OnboardingStep
 import kotlinx.serialization.Serializable
@@ -37,6 +38,7 @@ import kotlinx.serialization.Serializable
 @Serializable data class Shopping(val listId: String? = null, val tripId: String? = null)
 @Serializable data object Members
 @Serializable data object Settings
+@Serializable data object DetectionDebug
 
 private fun OnboardingStep.route(): Any = when (this) {
     OnboardingStep.WELCOME -> Welcome
@@ -118,7 +120,9 @@ fun FridgeListNavHost(start: OnboardingStep, app: AppViewModel) {
             SettingsRoute(
                 onBack = { nav.popIfCan() },
                 onSignedOut = { nav.goTo(OnboardingStep.WELCOME, null) },
+                onOpenDetectionDebug = { nav.navigate(DetectionDebug) { launchSingleTop = true } },
             )
         }
+        composable<DetectionDebug> { DetectionDebugRoute(onBack = { nav.popIfCan() }) }
     }
 }

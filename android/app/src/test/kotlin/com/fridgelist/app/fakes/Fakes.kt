@@ -133,8 +133,10 @@ class FakeTrips(
 
 class FakeTripEnder : com.fridgelist.app.work.TripEnder {
     val ended = mutableListOf<Pair<String, String>>()
-    override fun endTrip(householdId: String, tripId: String) {
+    val statuses = mutableListOf<com.fridgelist.core.model.TripStatus>()
+    override fun endTrip(householdId: String, tripId: String, status: com.fridgelist.core.model.TripStatus) {
         ended += householdId to tripId
+        statuses += status
     }
 }
 

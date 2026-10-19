@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="detect_arrived">
+        <item quantity="one">%1$s · %2$d ürün</item>
+        <item quantity="other">%1$s · %2$d ürün</item>
+    </plurals>
+    <string name="detect_arrived_text">Alışverişe başlamak için dokun.</string>
+    <string name="detect_action_open_list">Listeyi aç</string>
+    <string name="detect_action_not_shopping">Alışveriş yapmıyorum</string>
+    <string name="detect_left_title">Alışveriş bitti mi?</string>
+    <string name="detect_left_text">%1$s mağazasından çıktın.</string>
+    <string name="detect_action_done">Bitti</string>
+    <string name="detect_action_still_here">Hâlâ buradayım</string>
+
+    <string name="detect_header">Mağaza algılama</string>
+    <string name="detect_toggle">Mağazaları otomatik algıla</string>
+    <string name="detect_toggle_summary">Bir markette 2 dakika geçirdiğinde, listende ürün varsa Alışveriş Modu açılır ve hanen nerede alışveriş yaptığını görür.</string>
+    <string name="detect_rationale_title">Konumun kullanılsın mı?</string>
+    <string name="detect_rationale_text">Markette olduğunu anlamak için FridgeList hassas konumuna ihtiyaç duyar. Konumun bu telefonda kalır: hanen yalnızca hangi markette alışveriş yaptığını öğrenir.</string>
+    <string name="detect_disclosure_title">Konuma her zaman izin ver</string>
+    <string name="detect_disclosure_text">FridgeList, uygulama kapalıyken veya kullanılmıyorken bile bir markete vardığını algılamak için konum verisi toplar. Konumun bu telefonda kalır ve sunucularımıza asla gönderilmez.</string>
+    <string name="detect_background_steps">Sonraki ekranda “Her zaman izin ver”i seç. Uygulama ayarları açılırsa İzinler › Konum › Her zaman izin ver yolunu izle.</string>
+    <string name="detect_continue">Devam</string>
+    <string name="detect_not_now">Şimdi değil</string>
+    <plurals name="detect_status_watching">
+        <item quantity="one">Açık · yakında %1$d mağaza izleniyor</item>
+        <item quantity="other">Açık · yakında %1$d mağaza izleniyor</item>
+    </plurals>
+    <string name="detect_status_waiting">Açık · yakındaki mağazalar aranıyor…</string>
+    <string name="detect_status_needs_background">Konum için “Her zaman izin ver” gerekli.</string>
+    <string name="detect_status_paused">Mağaza algılama şimdilik durduruldu.</string>
+    <string name="detect_open_settings">Ayarları aç</string>
+    <string name="detect_nearby_header">Yakındaki mağazalar</string>
+    <string name="detect_mute">Sessize al</string>
+    <string name="detect_muted_header">Sessize alınan mağazalar</string>
+    <string name="detect_muted_none">Sessize alınan mağaza yok.</string>
+    <string name="detect_unmute">Sesi aç</string>
+    <string name="detect_add_store">Eksik bir mağaza ekle</string>
+    <string name="detect_add_store_hint">Mağazanın yanındayken adını yaz.</string>
+    <string name="detect_add_store_name">Mağaza adı</string>
+    <string name="detect_add_store_save">Mağazayı ekle</string>
+    <string name="detect_add_store_done">Eklendi. Hanen için hemen çalışır.</string>
+    <string name="detect_add_store_failed">Mağaza eklenemedi. Bağlantını kontrol edip tekrar dene.</string>
+    <string name="detect_add_store_no_location">Konumun alınamadı. Konumu açıp tekrar dene.</string>
+    <string name="detect_working">Yakındaki mağaza kontrol ediliyor…</string>
+    <string name="osm_attribution">Mağaza verileri © OpenStreetMap katkıda bulunanlar</string>
+</resources>

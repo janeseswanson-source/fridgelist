@@ -96,6 +96,13 @@ data class NearbyStore(val storeId: String, val name: String, val chainId: Strin
 @Serializable
 data class NearbyStoresResponse(val stores: List<NearbyStore> = emptyList())
 
+/** CONTRACT §4 `addStore`: a store missing from the database; works at once for this household. */
+@Serializable
+data class AddStoreRequest(val name: String, val lat: Double, val lng: Double, val chainId: String? = null)
+
+@Serializable
+data class AddStoreResponse(val storeId: String)
+
 /** Allowed `startTrip.lastCallMinutes` values (CONTRACT §4). */
 val LAST_CALL_MINUTES: List<Int> = listOf(0, 5, 10, 15)
 

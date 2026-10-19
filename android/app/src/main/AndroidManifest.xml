@@ -8,8 +8,12 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- Android 16 Live Update for the shopper's ongoing trip notification (ARCHITECTURE §6). -->
     <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
-    <!-- "I'm going": nearest stores, once, while the app is open. Background location comes in A7. -->
+    <!-- "I'm going": nearest stores, once, while the app is open. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- A7 store detection: geofences need precise + background location (ARCHITECTURE §5.4, §8.9). -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- Android 11+ package visibility: find the phone's speech recognizer (ARCHITECTURE §8.6). -->
     <queries>
@@ -77,6 +81,23 @@
         <receiver
             android:name=".notifications.TripActionReceiver"
             android:exported="false" />
+
+        <!-- A7 store detection. -->
+        <receiver
+            android:name=".location.GeofenceBroadcastReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".location.DetectionActionReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".location.LocationStateReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.location.PROVIDERS_CHANGED" />
+            </intent-filter>
+        </receiver>
 
         <meta-data
             android:name="firebase_messaging_auto_init_enabled"

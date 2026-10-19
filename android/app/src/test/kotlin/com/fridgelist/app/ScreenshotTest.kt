@@ -128,4 +128,37 @@ class ScreenshotTest(private val config: String, private val qualifiers: String)
             onShare = {},
         )
     }
+
+    @Test fun store_detection() = capture("store_detection") {
+        androidx.compose.material3.Surface {
+            com.fridgelist.app.feature.settings.DetectionSection(
+                state = com.fridgelist.app.feature.settings.DetectionUi(
+                    enabled = true,
+                    status = com.fridgelist.app.feature.settings.DetectionStatus.WATCHING,
+                    watchedCount = 9,
+                    nearby = listOf(
+                        com.fridgelist.core.model.NearbyStore("s1", "Panda", "panda", 0.0, 0.0, 120.0),
+                        com.fridgelist.core.model.NearbyStore("s2", "بقالة الحي", "other", 0.0, 0.0, 300.0),
+                        com.fridgelist.core.model.NearbyStore("s3", "Migros Jet", "migros", 0.0, 0.0, 450.0),
+                    ),
+                    muted = listOf(com.fridgelist.core.data.stores.MutedStore("s9", "Tamimi Markets")),
+                ),
+                onToggle = {}, onRationaleContinue = {}, onDisclosureContinue = {}, onDismiss = {}, onOpenAppSettings = {},
+                onMute = {}, onUnmute = {}, onStoreName = {}, onAddStore = {},
+            )
+        }
+    }
+
+    @Test fun store_detection_needs_background() = capture("store_detection_needs_background") {
+        androidx.compose.material3.Surface {
+            com.fridgelist.app.feature.settings.DetectionSection(
+                state = com.fridgelist.app.feature.settings.DetectionUi(
+                    enabled = true,
+                    status = com.fridgelist.app.feature.settings.DetectionStatus.NEEDS_BACKGROUND,
+                ),
+                onToggle = {}, onRationaleContinue = {}, onDisclosureContinue = {}, onDismiss = {}, onOpenAppSettings = {},
+                onMute = {}, onUnmute = {}, onStoreName = {}, onAddStore = {},
+            )
+        }
+    }
 }

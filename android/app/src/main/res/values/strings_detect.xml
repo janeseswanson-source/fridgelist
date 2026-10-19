@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A7 store detection (ARCHITECTURE §5.2, §5.4; CONTRACT §5.1 local notifications). -->
+<resources>
+    <plurals name="detect_arrived">
+        <item quantity="one">At %1$s · %2$d item</item>
+        <item quantity="other">At %1$s · %2$d items</item>
+    </plurals>
+    <string name="detect_arrived_text">Tap to start shopping.</string>
+    <string name="detect_action_open_list">Open list</string>
+    <string name="detect_action_not_shopping">Not shopping</string>
+    <string name="detect_left_title">Done shopping?</string>
+    <string name="detect_left_text">You left %1$s.</string>
+    <string name="detect_action_done">Done shopping</string>
+    <string name="detect_action_still_here">Still here</string>
+
+    <string name="detect_header">Store detection</string>
+    <string name="detect_toggle">Detect stores automatically</string>
+    <string name="detect_toggle_summary">After 2 minutes in a supermarket, if your list has items, Shopping Mode opens and your household sees where you are shopping.</string>
+    <string name="detect_rationale_title">Use your location?</string>
+    <string name="detect_rationale_text">To notice when you are at a supermarket, FridgeList needs your precise location. It stays on this phone: your household only learns which store you are shopping at.</string>
+    <string name="detect_disclosure_title">Location all the time</string>
+    <string name="detect_disclosure_text">FridgeList collects location data to detect when you arrive at a supermarket, even when the app is closed or not in use. Your location stays on this phone and is never sent to our servers.</string>
+    <string name="detect_background_steps">On the next screen choose “Allow all the time”. If you see the app settings instead, open Permissions › Location › Allow all the time.</string>
+    <string name="detect_continue">Continue</string>
+    <string name="detect_not_now">Not now</string>
+    <plurals name="detect_status_watching">
+        <item quantity="one">On · watching %1$d store near you</item>
+        <item quantity="other">On · watching %1$d stores near you</item>
+    </plurals>
+    <string name="detect_status_waiting">On · looking for stores near you…</string>
+    <string name="detect_status_needs_background">Needs location “Allow all the time”.</string>
+    <string name="detect_status_paused">Store detection is paused for now.</string>
+    <string name="detect_open_settings">Open settings</string>
+    <string name="detect_nearby_header">Stores near you</string>
+    <string name="detect_mute">Mute</string>
+    <string name="detect_muted_header">Muted stores</string>
+    <string name="detect_muted_none">No muted stores.</string>
+    <string name="detect_unmute">Unmute</string>
+    <string name="detect_add_store">Add a missing store</string>
+    <string name="detect_add_store_hint">Stand at the store, then enter its name.</string>
+    <string name="detect_add_store_name">Store name</string>
+    <string name="detect_add_store_save">Add store</string>
+    <string name="detect_add_store_done">Added. It works right away for your household.</string>
+    <string name="detect_add_store_failed">Couldn’t add the store. Check your connection and try again.</string>
+    <string name="detect_add_store_no_location">Couldn’t get your location. Turn on location and try again.</string>
+    <string name="detect_working">Checking the store near you…</string>
+    <string name="osm_attribution">Store data © OpenStreetMap contributors</string>
+
+    <!-- Dev-only debug screen (ARCHITECTURE §8.5). -->
+    <string name="debug_detect_open" translatable="false">Store detection debug</string>
+    <string name="debug_detect_refresh" translatable="false">Refresh fences now</string>
+    <string name="debug_detect_simulate" translatable="false">Dwell</string>
+    <string name="debug_detect_exit" translatable="false">Exit</string>
+    <string name="debug_detect_summary" translatable="false">Store fences: %1$d · refresh fence at %2$s</string>
+    <string name="debug_detect_result" translatable="false">Last result: %1$s</string>
+    <string name="debug_detect_gps_on" translatable="false">Keep GPS on (emulator)</string>
+    <string name="debug_detect_gps_off" translatable="false">Stop GPS</string>
+</resources>

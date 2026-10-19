@@ -38,7 +38,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fridgelist.app.R
 
 @Composable
-fun SettingsRoute(onBack: () -> Unit, onSignedOut: () -> Unit, viewModel: SettingsViewModel = hiltViewModel()) {
+fun SettingsRoute(
+    onBack: () -> Unit,
+    onSignedOut: () -> Unit,
+    onOpenDetectionDebug: () -> Unit = {},
+    viewModel: SettingsViewModel = hiltViewModel(),
+) {
     val dev by viewModel.dev.collectAsStateWithLifecycle()
     val signedOut by viewModel.signedOut.collectAsStateWithLifecycle()
     LaunchedEffect(signedOut) { if (signedOut) onSignedOut() }
@@ -51,6 +56,8 @@ fun SettingsRoute(onBack: () -> Unit, onSignedOut: () -> Unit, viewModel: Settin
         onSaveHost = viewModel::saveHost,
         onBack = onBack,
         onSignOut = viewModel::signOut,
+        detection = { DetectionRoute() },
+        onOpenDetectionDebug = if (viewModel.showDeveloper) onOpenDetectionDebug else null,
     )
 }
 
@@ -65,6 +72,9 @@ fun SettingsScreen(
     onSaveHost: () -> Unit,
     onBack: () -> Unit,
     onSignOut: (() -> Unit)? = null,
+    /** Store detection (A7); a slot so screenshot tests can leave it out. */
+    detection: (@Composable () -> Unit)? = null,
+    onOpenDetectionDebug: (() -> Unit)? = null,
 ) {
     Scaffold(
         topBar = {
@@ -90,6 +100,11 @@ fun SettingsScreen(
                     LanguageRow(option, selected = option == language, onClick = { onLanguageSelected(option) })
                 }
             }
+            if (detection != null) {
+                HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                SectionHeader(stringResource(R.string.detect_header))
+                detection()
+            }
             if (onSignOut != null) {
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
                 SectionHeader(stringResource(R.string.settings_account_header))
@@ -101,6 +116,11 @@ fun SettingsScreen(
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
                 SectionHeader(stringResource(R.string.settings_dev_header))
                 DeveloperSection(dev, onHostChange, onSaveHost)
+                if (onOpenDetectionDebug != null) {
+                    TextButton(onClick = onOpenDetectionDebug, modifier = Modifier.padding(horizontal = 8.dp).heightIn(min = 48.dp)) {
+                        Text(stringResource(R.string.debug_detect_open))
+                    }
+                }
             }
         }
     }

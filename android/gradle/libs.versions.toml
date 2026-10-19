@@ -72,6 +72,7 @@ firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 firebase-functions = { module = "com.google.firebase:firebase-functions" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
+firebase-config = { module = "com.google.firebase:firebase-config" }
 
 junit = { module = "junit:junit", version.ref = "junit" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

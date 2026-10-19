@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="detect_arrived">
+        <item quantity="zero">في %1$s · لا أصناف</item>
+        <item quantity="one">في %1$s · صنف واحد</item>
+        <item quantity="two">في %1$s · صنفان</item>
+        <item quantity="few">في %1$s · %2$d أصناف</item>
+        <item quantity="many">في %1$s · %2$d صنفاً</item>
+        <item quantity="other">في %1$s · %2$d صنف</item>
+    </plurals>
+    <string name="detect_arrived_text">اضغط لبدء التسوق.</string>
+    <string name="detect_action_open_list">افتح القائمة</string>
+    <string name="detect_action_not_shopping">لا أتسوق</string>
+    <string name="detect_left_title">انتهيت من التسوق؟</string>
+    <string name="detect_left_text">غادرت %1$s.</string>
+    <string name="detect_action_done">انتهيت</string>
+    <string name="detect_action_still_here">ما زلت هنا</string>
+
+    <string name="detect_header">اكتشاف المتاجر</string>
+    <string name="detect_toggle">اكتشاف المتاجر تلقائياً</string>
+    <string name="detect_toggle_summary">بعد دقيقتين داخل السوبرماركت، وإذا كانت في قائمتك أصناف، يُفتح وضع التسوق وتعرف أسرتك أين تتسوق.</string>
+    <string name="detect_rationale_title">استخدام موقعك؟</string>
+    <string name="detect_rationale_text">ليعرف التطبيق أنك في السوبرماركت، يحتاج إلى موقعك الدقيق. يبقى موقعك على هذا الهاتف: لا تعرف أسرتك إلا اسم المتجر الذي تتسوق فيه.</string>
+    <string name="detect_disclosure_title">الموقع طوال الوقت</string>
+    <string name="detect_disclosure_text">يجمع FridgeList بيانات الموقع لاكتشاف وصولك إلى السوبرماركت، حتى عندما يكون التطبيق مغلقاً أو غير مستخدم. يبقى موقعك على هذا الهاتف ولا يُرسل أبداً إلى خوادمنا.</string>
+    <string name="detect_background_steps">في الشاشة التالية اختر «السماح طوال الوقت». وإذا ظهرت إعدادات التطبيق، افتح الأذونات › الموقع › السماح طوال الوقت.</string>
+    <string name="detect_continue">متابعة</string>
+    <string name="detect_not_now">ليس الآن</string>
+    <plurals name="detect_status_watching">
+        <item quantity="zero">مفعّل · لا متاجر قريبة</item>
+        <item quantity="one">مفعّل · متجر واحد قريب</item>
+        <item quantity="two">مفعّل · متجران قريبان</item>
+        <item quantity="few">مفعّل · %1$d متاجر قريبة</item>
+        <item quantity="many">مفعّل · %1$d متجراً قريباً</item>
+        <item quantity="other">مفعّل · %1$d متجر قريب</item>
+    </plurals>
+    <string name="detect_status_waiting">مفعّل · جارٍ البحث عن متاجر قريبة…</string>
+    <string name="detect_status_needs_background">يحتاج إلى إذن الموقع «السماح طوال الوقت».</string>
+    <string name="detect_status_paused">اكتشاف المتاجر متوقف مؤقتاً.</string>
+    <string name="detect_open_settings">افتح الإعدادات</string>
+    <string name="detect_nearby_header">متاجر قريبة منك</string>
+    <string name="detect_mute">كتم</string>
+    <string name="detect_muted_header">متاجر مكتومة</string>
+    <string name="detect_muted_none">لا توجد متاجر مكتومة.</string>
+    <string name="detect_unmute">إلغاء الكتم</string>
+    <string name="detect_add_store">أضف متجراً غير موجود</string>
+    <string name="detect_add_store_hint">قف عند المتجر، ثم اكتب اسمه.</string>
+    <string name="detect_add_store_name">اسم المتجر</string>
+    <string name="detect_add_store_save">أضف المتجر</string>
+    <string name="detect_add_store_done">تمت الإضافة. يعمل فوراً لأسرتك.</string>
+    <string name="detect_add_store_failed">تعذّرت إضافة المتجر. تحقق من الاتصال وحاول مجدداً.</string>
+    <string name="detect_add_store_no_location">تعذّر تحديد موقعك. فعّل الموقع وحاول مجدداً.</string>
+    <string name="detect_working">جارٍ التحقق من المتجر القريب…</string>
+    <string name="osm_attribution">بيانات المتاجر © المساهمون في OpenStreetMap</string>
+</resources>

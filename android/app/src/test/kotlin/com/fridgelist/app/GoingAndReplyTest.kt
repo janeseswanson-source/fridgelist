@@ -65,13 +65,9 @@ class GoingAndReplyTest {
 
     // --- "I'm going"
 
-    private class FakeStores(private val stores: List<NearbyStore>) : StoreRepository {
-        override suspend fun nearby(request: NearbyStoresRequest) = NearbyStoresResponse(stores)
-    }
-
     private fun TestScope.going(trips: FakeTrips, notifier: FakeTripNotifier, session: FakeSession, here: Pair<Double, Double>? = 41.0 to 29.0): GoingViewModel {
         val stores = (1..7).map { NearbyStore("s$it", "Migros $it", "migros", 41.0, 29.0, it * 300.0) }
-        return GoingViewModel(SavedStateHandle(mapOf("listId" to "l1")), householdContext(Role.ADULT, session), FakeStores(stores), trips, session, notifier) { here }
+        return GoingViewModel(SavedStateHandle(mapOf("listId" to "l1")), householdContext(Role.ADULT, session), com.fridgelist.app.fakes.FakeStoreRepository(stores), trips, session, notifier) { here }
             .also { advanceUntilIdle() }
     }
 

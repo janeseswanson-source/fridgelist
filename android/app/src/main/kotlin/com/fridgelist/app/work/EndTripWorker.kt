@@ -2,6 +2,7 @@ package com.fridgelist.app.work
 
 import android.content.Context
 import android.util.Log
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
@@ -11,6 +12,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.fridgelist.app.location.DetectionNotifications
 import com.fridgelist.core.data.callable.ApiError
 import com.fridgelist.core.data.callable.ApiException
 import com.fridgelist.core.data.trips.TripRepository
@@ -24,17 +26,24 @@ import dagger.hilt.components.SingletonComponent
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-/** Ends a trip on the server (`updateTrip(done)`), now or once the phone is back online. */
+/** Ends a trip on the server (`updateTrip(done|cancelled)`), now or once the phone is back online. */
 fun interface TripEnder {
-    fun endTrip(householdId: String, tripId: String)
+    fun endTrip(householdId: String, tripId: String, status: TripStatus)
+
+    fun endTrip(householdId: String, tripId: String) = endTrip(householdId, tripId, TripStatus.DONE)
 }
 
 class WorkManagerTripEnder @Inject constructor(
     @param:ApplicationContext private val context: Context,
 ) : TripEnder {
-    override fun endTrip(householdId: String, tripId: String) {
+    override fun endTrip(householdId: String, tripId: String, status: TripStatus) {
+        // However the trip ends (Shopping Mode, the trip card, AUTO_LEFT), "At Migros" / "Done shopping?" are stale now.
+        NotificationManagerCompat.from(context).run {
+            cancel(DetectionNotifications.ARRIVED_ID)
+            cancel(DetectionNotifications.LEFT_ID)
+        }
         val request = OneTimeWorkRequestBuilder<EndTripWorker>()
-            .setInputData(workDataOf(KEY_HOUSEHOLD to householdId, KEY_TRIP to tripId))
+            .setInputData(workDataOf(KEY_HOUSEHOLD to householdId, KEY_TRIP to tripId, KEY_STATUS to status.wire))
             .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
             .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
             .build()
@@ -45,6 +54,7 @@ class WorkManagerTripEnder @Inject constructor(
     companion object {
         const val KEY_HOUSEHOLD = "householdId"
         const val KEY_TRIP = "tripId"
+        const val KEY_STATUS = "status"
     }
 }
 
@@ -59,9 +69,10 @@ class EndTripWorker(context: Context, params: WorkerParameters) : CoroutineWorke
     override suspend fun doWork(): Result {
         val householdId = inputData.getString(WorkManagerTripEnder.KEY_HOUSEHOLD) ?: return Result.failure()
         val tripId = inputData.getString(WorkManagerTripEnder.KEY_TRIP) ?: return Result.failure()
+        val status = if (inputData.getString(WorkManagerTripEnder.KEY_STATUS) == TripStatus.CANCELLED.wire) TripStatus.CANCELLED else TripStatus.DONE
         val trips = EntryPointAccessors.fromApplication(applicationContext, Deps::class.java).trips()
         return outcome {
-            trips.updateTrip(UpdateTripRequest(householdId, tripId, TripStatus.DONE.wire))
+            trips.updateTrip(UpdateTripRequest(householdId, tripId, status.wire))
         }.also { Log.i(TAG, "end trip: $it (attempt $runAttemptCount)") }
     }
 

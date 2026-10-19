@@ -25,6 +25,10 @@ import com.fridgelist.core.data.trips.TripRepository
 import com.fridgelist.core.data.user.UserRepository
 import com.fridgelist.core.data.voice.CallableTranscribeRepository
 import com.fridgelist.core.data.voice.TranscribeRepository
+import com.fridgelist.core.data.flags.FirebaseRemoteFlags
+import com.fridgelist.core.data.flags.RemoteFlags
+import com.fridgelist.core.data.stores.DataStoreDetectionStore
+import com.fridgelist.core.data.stores.DetectionStore
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -60,4 +64,8 @@ interface DataModule {
     @Binds fun trips(impl: FirebaseTripRepository): TripRepository
 
     @Binds fun stores(impl: CallableStoreRepository): StoreRepository
+
+    @Binds fun flags(impl: FirebaseRemoteFlags): RemoteFlags
+
+    @Binds fun detection(impl: DataStoreDetectionStore): DetectionStore
 }
