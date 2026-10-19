@@ -86,14 +86,6 @@
     <string name="edit_notes">ملاحظات</string>
     <string name="edit_category">الفئة</string>
     <string name="edit_qty_error">أدخل كمية أكبر من صفر ولا تتجاوز %1$s.</string>
-    <plurals name="unit_piece">
-        <item quantity="zero">%1$s حبة</item>
-        <item quantity="one">%1$s حبة</item>
-        <item quantity="two">%1$s حبة</item>
-        <item quantity="few">%1$s حبات</item>
-        <item quantity="many">%1$s حبة</item>
-        <item quantity="other">%1$s حبة</item>
-    </plurals>
     <plurals name="unit_pack">
         <item quantity="zero">%1$s علبة</item>
         <item quantity="one">%1$s علبة</item>

@@ -5,7 +5,7 @@ This file is the single source of truth for every data shape shared by the backe
 **Changing it:** update this file in the same commit as the code, bump `CONTRACT_VERSION`, add a line to the changelog at the bottom, and list the change in `docs/PROGRESS.md` under "Contract changes for other platforms".
 
 ```
-CONTRACT_VERSION = 2
+CONTRACT_VERSION = 3
 ```
 
 ---
@@ -74,6 +74,8 @@ Default category display order (used until a store has a learned aisle order): `
 | `appVersion` | string | self | |
 | `locale` | string | self | e.g. `ar-SA` |
 | `updatedAt` | timestamp | self | |
+
+The user may delete their own device docs (the apps do this on sign-out, before signing out, so pushes stop).
 
 ### 3.3 `households/{hid}`
 
@@ -244,7 +246,7 @@ All callables require Firebase Auth and App Check unless marked **public**. Publ
 | `createInvite` | `{ householdId, role }` | `{ code, url, expiresAt }` | owner or adult |
 | `joinHousehold` | `{ code, displayName, language }` | `{ householdId, role }` | |
 | `parseItems` | `{ householdId, text (≤ 500), localeHints: string[] }` | `{ items: ParsedItem[], detectedLang, source: "catalog" \| "llm" \| "mixed" }` | no writes; 30 calls/min/user |
-| `startTrip` | `{ householdId, status: "heading" \| "shopping", auto, storeId?, storeName?, lastCallMinutes?: 0 \| 5 \| 10 \| 15, listIds?, platform, deviceId }` | `{ tripId }` | one active trip per shopper; a new one ends the old |
+| `startTrip` | `{ householdId, status: "heading" \| "shopping", auto, storeId?, storeName?, lastCallMinutes?: 0 \| 5 \| 10 \| 15, listIds?, platform, deviceId }` | `{ tripId }` | owner, adult or helper (`kid` → `permission-denied`); one active trip per shopper; a new one ends the old |
 | `updateTrip` | `{ householdId, tripId, status: "shopping" \| "done" \| "cancelled" }` | `{ ok: true, summary?: { done, missing } }` | shopper only |
 | `registerLiveActivityToken` | `{ householdId, tripId, token }` | `{ ok: true }` | iOS only |
 | `nearbyStores` | `{ lat, lng, radiusM? (default 5000, max 10000), limit? (default 60, max 100) }` | `{ stores: [{ storeId, name, chainId, lat, lng, distanceM }] }` | sorted by distance |
@@ -436,3 +438,4 @@ Keep at most 12 items per list, in display order. `activeTrip` is present only w
 
 - **v1 (2026-10-18):** initial contract.
 - **v2 (2026-10-19):** §5.1 Android delivery: `trip_heading`, `trip_arrived`, `item_missing` go to Android as data-only messages with `title` and `body` data keys (server-localized), so the app can build the notification with the inline reply. Backend must change; iOS unaffected.
+- **v3 (2026-10-19):** §4 `startTrip` refuses `kid` with `permission-denied` (PRODUCT_SPEC roles: kids request, they don't shop). §3.2 the user may delete their own device docs (sign-out). Backend must implement both; Android already complies (A1–A6 QA); iOS: hide trip entry points for kids and delete the device doc on sign-out.

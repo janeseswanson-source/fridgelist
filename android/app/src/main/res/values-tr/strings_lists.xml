@@ -86,10 +86,6 @@
     <string name="edit_notes">Notlar</string>
     <string name="edit_category">Kategori</string>
     <string name="edit_qty_error">0’dan büyük ve en fazla %1$s olan bir miktar girin.</string>
-    <plurals name="unit_piece">
-        <item quantity="one">%1$s adet</item>
-        <item quantity="other">%1$s adet</item>
-    </plurals>
     <plurals name="unit_pack">
         <item quantity="one">%1$s paket</item>
         <item quantity="other">%1$s paket</item>

@@ -71,7 +71,8 @@ private fun ItemUnit?.format(): UnitFormat = when (this) {
     ItemUnit.G -> UnitFormat.Measured(R.string.unit_g)
     ItemUnit.L -> UnitFormat.Measured(R.string.unit_l)
     ItemUnit.ML -> UnitFormat.Measured(R.string.unit_ml)
-    ItemUnit.PIECE -> UnitFormat.Counted(R.plurals.unit_piece)
+    // Pieces read as a count: "×12 eggs", not "12 pieces eggs" (dozens become pieces).
+    ItemUnit.PIECE -> UnitFormat.Measured(R.string.unit_none)
     ItemUnit.PACK -> UnitFormat.Counted(R.plurals.unit_pack)
     ItemUnit.CAN -> UnitFormat.Counted(R.plurals.unit_can)
     ItemUnit.BOTTLE -> UnitFormat.Counted(R.plurals.unit_bottle)

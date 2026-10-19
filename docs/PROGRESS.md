@@ -8,6 +8,7 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-18 | 1 | Initial contract | — | — | — |
 | 2026-10-19 | 2 | §5.1: `trip_heading`, `trip_arrived`, `item_missing` reach **Android** as data-only messages with `title` + `body` data keys (server-localized). Needed for the inline reply. | **to do (B6)** | done (A6) | no change |
+| 2026-10-19 | 3 | §4 `startTrip` refuses `kid` (`permission-denied`); §3.2 a user may delete their own device docs (sign-out). | **to do (B2 rules, B6 startTrip)** | done (QA pass) | to do |
 
 ## Milestones
 
@@ -54,11 +55,10 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
   - Server trip → tick / missing → process death → restore (one trip) → Done → `updateTrip(done)` via WorkManager → missing back to `open`.
   - Inline reply writes `notification_reply` items.
 - Tests: 347 unit (model 25, i18n 75, data 23, app 224) + 2 instrumented, 0 failures; lint clean; 132 screenshots verified.
-- Open questions:
-  - **Backend:** should `startTrip` refuse `kid` (the app now never sends it)?
-  - **Backend:** Firestore rules must let a user delete their own `users/{uid}/devices/{deviceId}`.
-  - Polish: "12 pieces eggs" reads awkwardly for dozens.
-  - The dev test sign-in button does nothing, with no message, when the name is empty.
+- Open questions, resolved the same day:
+  - `startTrip` refuses `kid`, and a user may delete their own device docs: both are now **contract v3** (backend B2/B6 to implement).
+  - Pieces now read as a count ("×12 eggs" instead of "12 pieces eggs").
+  - The dev test sign-in button was already disabled for an empty name (a misread UI dump, not a bug).
 - Not covered (needs real hardware or the backend): real speech, real FCM delivery and the cross-phone 5 s reply, server categories and translations.
 
 ### 2026-10-19 — Android A6 "I'm going", notifications, inline reply, Live Updates
