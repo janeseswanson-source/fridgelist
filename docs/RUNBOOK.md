@@ -153,7 +153,7 @@ curl -s -X POST -H "Content-Type: application/json" -d '{"data":{}}' \
 
 ## 3. Projects and regions
 
-- `.firebaserc` aliases: `dev` → `fridgelist-dev-TODO`, `prod` → `fridgelist-prod-TODO`. These are placeholders until the owner creates the projects.
+- `.firebaserc` aliases: `dev` → `fridgelist-dev-yt` (created 2026-10-19, Firestore at `me-central2`), `prod` → `fridgelist-prod-TODO` (planned `fridgelist-prod-yt`).
 - Firestore location `me-central2`. Functions region `me-central2`, with the CLAUDE.md fallback order `me-central1`, then `europe-west1`. **Verify at the first dev deploy** that 2nd-gen functions deploy to `me-central2`; if not, change `REGION` in `functions/src/config.ts` and the apps' `FUNCTIONS_REGION` together.
 
 ## 4. Accounts and operations (B9)

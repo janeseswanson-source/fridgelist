@@ -16,8 +16,8 @@ The owner fills these in before the first session. If a value you need still con
 | `APPLE_TEAM_ID` | TODO |
 | `LINK_DOMAIN` | links.example.com |
 | `URL_SCHEME` | fridgelist |
-| `FIREBASE_PROJECT_DEV` | fridgelist-dev-TODO |
-| `FIREBASE_PROJECT_PROD` | fridgelist-prod-TODO |
+| `FIREBASE_PROJECT_DEV` | fridgelist-dev-yt |
+| `FIREBASE_PROJECT_PROD` | fridgelist-prod-TODO (planned: fridgelist-prod-yt) |
 | `FIRESTORE_LOCATION` | me-central2 |
 | `FUNCTIONS_REGION` | me-central2 if supported, else me-central1, else europe-west1 |
 | `SUPPORT_EMAIL` | TODO |
