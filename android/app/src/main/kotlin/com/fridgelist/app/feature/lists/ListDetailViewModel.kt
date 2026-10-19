@@ -18,7 +18,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -35,9 +34,6 @@ data class ListDetailUiState(
     val uid: String = "",
     val loaded: Boolean = false,
 )
-
-/** One pending undo; [id] makes repeated identical messages show again. */
-data class UndoUi(@param:StringRes val message: Int, val id: Long)
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -72,10 +68,8 @@ class ListDetailViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ListDetailUiState())
 
-    private val _undo = MutableStateFlow<UndoUi?>(null)
-    val undo: StateFlow<UndoUi?> = _undo.asStateFlow()
-    private var onUndo: (() -> Unit)? = null
-    private var onCommit: (() -> Unit)? = null
+    private val undoQueue = UndoQueue()
+    val undo: StateFlow<UndoUi?> = undoQueue.undo
 
     // --- Status changes (CONTRACT §3.6)
 
@@ -139,21 +133,10 @@ class ListDetailViewModel @Inject constructor(
 
     // --- Undo plumbing
 
-    private fun offerUndo(@StringRes message: Int, undo: () -> Unit, commit: () -> Unit) {
-        settle(undone = false) // a new action settles the previous one
-        onUndo = undo
-        onCommit = commit
-        _undo.value = UndoUi(message, System.nanoTime())
-    }
+    private fun offerUndo(@StringRes message: Int, undo: () -> Unit, commit: () -> Unit) = undoQueue.offer(message, undo, commit)
 
     /** Called when the snackbar closes: [undone] = the user pressed Undo. */
-    fun settle(undone: Boolean) {
-        val action = if (undone) onUndo else onCommit
-        onUndo = null
-        onCommit = null
-        _undo.value = null
-        action?.invoke()
-    }
+    fun settle(undone: Boolean) = undoQueue.settle(undone)
 
     override fun onCleared() {
         settle(undone = false) // leaving the screen commits a pending delete

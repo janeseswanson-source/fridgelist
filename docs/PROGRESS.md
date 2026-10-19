@@ -17,9 +17,47 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | Android | A2 Sign-in, onboarding, household | done, E2E pending B3 | 2026-10-18 | two-user join test written; skips until backend B3 callables run on the emulator |
 | Android | A3 Lists and items, offline-first | done, server part pending B4 | 2026-10-19 | offline add/tick/undo/delete → sync verified (instrumented test + device); categories/translations wait for B4 |
 | Android | A4 Voice add | done, real-speech run pending | 2026-10-19 | fallback chain verified on emulator (no mic audio there); `docs/test-voice.md` to run on real phones |
+| Android | A5 Shopping Mode | done, server trip pending B6 | 2026-10-19 | tick/undo/missing/finish UI-tested online and offline; local mode verified on device |
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Android A5 Shopping Mode
+- Shipped:
+  - Entry points: "Start shopping" on a list (shown when something is left to buy), `{URL_SCHEME}://shop?tripId=` (CONTRACT §6, for A6/A7 notification and Live Update taps), and a "Continue shopping" banner on Home while a session is open.
+  - Start: `startTrip(status: shopping, auto: false, listIds, platform: android, deviceId)` with an 8 s cap. If it fails, **local mode** (banner, everything still works). An open session resumes the same trip instead of starting another.
+  - Screen:
+    - big rows (≥ 72 dp, whole row toggles, haptic tick) in CONTRACT §2 aisle order
+    - a "couldn't find" button per row; Undo (long snackbar)
+    - sections: to buy, couldn't find, someone else is getting these (dimmed), in the cart (this trip's `doneTripId`, or this session's ticks in local mode)
+    - the screen stays on (`keepScreenOn`); moves follow the §3.6 table
+  - Ticks write `doneTripId` when there is a trip.
+  - Done:
+    - summary at once (bought, not found "stays on the list")
+    - "Send the rest" shares formatted text in the viewer's language (e.g. `• طماطم — 2 كغ`)
+    - with a trip: `updateTrip(done)` goes through WorkManager (unique per trip, network constraint, exponential backoff, gives up after 8 tries; already-ended/not-found count as success) and the server reopens missing items
+    - local mode: the app moves this session's missing items back to `open`
+  - A stale or unknown shop link shows "This shopping trip has already ended." It never starts a new trip.
+  - `UndoQueue` is shared by the list and shopping screens.
+  - New dependency from the approved stack: WorkManager 2.11.2 (`work-runtime-ktx`, `work-testing`). The worker gets its dependencies through a Hilt entry point, so no hilt-work library is needed.
+- Tests: `./gradlew lint testDevDebugUnitTest assembleDevDebug` → BUILD SUCCESSFUL, lint "No issues found", no compiler warnings.
+  - 296 unit tests, 0 failures (app 186), 126 screenshots (Shopping and the summary added).
+  - Prompt "done when": `ShoppingUiTest` drives the real screen and ViewModel over fakes: tick → in the cart → Undo → couldn't find → Done → summary (online, `updateTrip` queued), and offline (local banner, tick, Done, no trip call).
+  - `ShoppingTest` covers: trip request shape, `doneTripId`, Undo, others' claims, finish with and without a trip, resuming a trip, opening from a link, stale link, worker retry rules.
+  - Device (Arabic, Auth + Firestore emulators, no Functions):
+    - Start shopping → local mode
+    - `KEEP_SCREEN_ON` set on the window
+    - ticked bread, tomatoes "couldn't find", Done → summary 1 bought / 1 not found
+    - server: bread `done` without `doneTripId`, tomatoes back to `open`
+    - "Send the rest" share text checked
+    - the `fridgelist://shop?tripId=t-gone` link → "trip has ended"
+- Changed along the way: **firebase-messaging 26.0.0 deprecates `getToken()`/`onNewToken`** in favour of `register()` + `FirebaseMessagingService.onRegistered`. The app now calls `register()` and saves tokens from `onRegistered`; the saved token survives sign-out because it belongs to the device. It also still handles `onNewToken` (same code) until rotation is confirmed to reach `onRegistered` on a real project.
+- Notes for the backend session (B6):
+  - `startTrip` is called with `storeId`/`storeName` absent for manual shopping from a list; please accept that (CONTRACT marks them optional).
+  - `updateTrip(done)` may arrive minutes after Done (retry when back online) and possibly twice. The worker treats `failed-precondition` (already ended) as success.
+- Next: A6 ("I'm going", notifications, inline reply, Live Updates).
+- Open questions for the owner: unchanged. Once real Firebase config exists, I need to confirm FCM token delivery via `onRegistered` on a real device.
+- Contract changes: none.
 
 ### 2026-10-19 — Android A4 Voice add
 - Shipped:

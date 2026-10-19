@@ -25,6 +25,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,6 +60,7 @@ fun ListDetailScreen(
     snackbar: SnackbarHostState,
     onAdd: () -> Unit,
     onBack: () -> Unit,
+    onStartShopping: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -67,6 +69,14 @@ fun ListDetailScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(painterResource(R.drawable.ic_arrow_back), stringResource(R.string.action_back))
+                    }
+                },
+                actions = {
+                    if (state.sections.toBuyCount > 0) {
+                        TextButton(onClick = onStartShopping) {
+                            Icon(painterResource(R.drawable.ic_cart), contentDescription = null, modifier = Modifier.padding(end = 4.dp))
+                            Text(stringResource(R.string.shop_start))
+                        }
                     }
                 },
             )
@@ -170,7 +180,7 @@ private fun EmptyList(modifier: Modifier) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListDetailRoute(onBack: () -> Unit, vm: ListDetailViewModel = hiltViewModel()) {
+fun ListDetailRoute(onBack: () -> Unit, onStartShopping: (listId: String) -> Unit = {}, vm: ListDetailViewModel = hiltViewModel()) {
     val state by vm.state.collectAsStateWithLifecycle()
     val undo by vm.undo.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
@@ -204,7 +214,7 @@ fun ListDetailRoute(onBack: () -> Unit, vm: ListDetailViewModel = hiltViewModel(
         }
     }
 
-    ListDetailScreen(state, actions, snackbar, onAdd = { adding = true }, onBack = onBack)
+    ListDetailScreen(state, actions, snackbar, onAdd = { adding = true }, onBack = onBack, onStartShopping = { onStartShopping(vm.listId) })
 
     editing?.let { row ->
         ModalBottomSheet(onDismissRequest = { editing = null }) {

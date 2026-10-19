@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated for A5 from one table so en/ar/tr stay aligned. -->
+<resources>
+    <string name="shop_start">Start shopping</string>
+    <string name="shop_title">Shopping</string>
+    <string name="shop_in_cart">In the cart</string>
+    <string name="shop_claimed_by_others">Someone else is getting these</string>
+    <string name="shop_done">Done</string>
+    <string name="shop_resume">Continue shopping: %1$s</string>
+    <string name="shop_local_mode">Offline: your ticks are saved on this phone and sync later.</string>
+    <string name="shop_all_done">Everything is in the cart</string>
+    <string name="shop_tap_hint">Tap an item when it’s in your cart.</string>
+    <string name="summary_title">Shopping done</string>
+    <string name="summary_send_rest">Send the rest</string>
+    <string name="summary_close">Back to the list</string>
+    <string name="summary_missing_note">Items you couldn’t find stay on the list.</string>
+    <string name="share_rest_header">Still to buy (%1$s):</string>
+    <plurals name="summary_bought">
+        <item quantity="one">%1$d item bought</item>
+        <item quantity="other">%1$d items bought</item>
+    </plurals>
+    <plurals name="summary_missing">
+        <item quantity="one">%1$d not found</item>
+        <item quantity="other">%1$d not found</item>
+    </plurals>
+    <string name="shop_trip_gone">This shopping trip has already ended.</string>
+</resources>

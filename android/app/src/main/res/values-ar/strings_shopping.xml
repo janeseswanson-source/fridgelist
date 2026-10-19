@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated for A5 from one table so en/ar/tr stay aligned. -->
+<resources>
+    <string name="shop_start">ابدأ التسوق</string>
+    <string name="shop_title">التسوق</string>
+    <string name="shop_in_cart">في السلة</string>
+    <string name="shop_claimed_by_others">يحضرها شخص آخر</string>
+    <string name="shop_done">انتهيت</string>
+    <string name="shop_resume">متابعة التسوق: %1$s</string>
+    <string name="shop_local_mode">دون اتصال: علاماتك محفوظة على هذا الهاتف وستُزامَن لاحقاً.</string>
+    <string name="shop_all_done">كل شيء في السلة</string>
+    <string name="shop_tap_hint">اضغط على الصنف عندما تضعه في السلة.</string>
+    <string name="summary_title">انتهى التسوق</string>
+    <string name="summary_send_rest">أرسل الباقي</string>
+    <string name="summary_close">العودة إلى القائمة</string>
+    <string name="summary_missing_note">الأصناف التي لم تجدها تبقى في القائمة.</string>
+    <string name="share_rest_header">ما زال للشراء (%1$s):</string>
+    <plurals name="summary_bought">
+        <item quantity="zero">لم يُشترَ أي صنف</item>
+        <item quantity="one">اشتريت صنفاً واحداً</item>
+        <item quantity="two">اشتريت صنفين</item>
+        <item quantity="few">اشتريت %1$d أصناف</item>
+        <item quantity="many">اشتريت %1$d صنفاً</item>
+        <item quantity="other">اشتريت %1$d صنف</item>
+    </plurals>
+    <plurals name="summary_missing">
+        <item quantity="zero">لا شيء مفقود</item>
+        <item quantity="one">صنف واحد لم يُعثر عليه</item>
+        <item quantity="two">صنفان لم يُعثر عليهما</item>
+        <item quantity="few">%1$d أصناف لم يُعثر عليها</item>
+        <item quantity="many">%1$d صنفاً لم يُعثر عليها</item>
+        <item quantity="other">%1$d صنف لم يُعثر عليها</item>
+    </plurals>
+    <string name="shop_trip_gone">انتهت رحلة التسوق هذه.</string>
+</resources>

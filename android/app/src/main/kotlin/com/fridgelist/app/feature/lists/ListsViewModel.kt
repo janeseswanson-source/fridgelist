@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fridgelist.core.data.household.HouseholdRepository
 import com.fridgelist.core.data.items.ListRepository
+import com.fridgelist.core.data.session.SessionStore
 import com.fridgelist.core.model.HouseholdDoc
 import com.fridgelist.core.model.Limits
 import com.fridgelist.core.model.ListDoc
@@ -28,6 +29,8 @@ data class ListsUiState(
     val lists: List<ListRowUi> = emptyList(),
     val canCreate: Boolean = false,
     val loaded: Boolean = false,
+    /** Shopping Mode left open on this phone: Home offers to continue it. */
+    val shoppingList: ListDoc? = null,
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -36,6 +39,7 @@ class ListsViewModel @Inject constructor(
     private val contextSource: HouseholdContextSource,
     private val households: HouseholdRepository,
     private val listsRepo: ListRepository,
+    private val session: SessionStore,
 ) : ViewModel() {
 
     /** Latest context, not the first: the first emission comes before members load (least privilege). */
@@ -51,8 +55,18 @@ class ListsViewModel @Inject constructor(
                 }
             }
         }
-        combine(rows, households.household(ctx.householdId).onStart { emit(null) }.catch { emit(null) }) { r, h ->
-            ListsUiState(household = h, lists = r, canCreate = StatusRules.canApprove(ctx.role), loaded = true)
+        combine(
+            rows,
+            households.household(ctx.householdId).onStart { emit(null) }.catch { emit(null) },
+            session.session,
+        ) { r, h, s ->
+            ListsUiState(
+                household = h,
+                lists = r,
+                canCreate = StatusRules.canApprove(ctx.role),
+                loaded = true,
+                shoppingList = s.shopping?.let { active -> r.firstOrNull { it.list.id == active.listId }?.list },
+            )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ListsUiState())
 

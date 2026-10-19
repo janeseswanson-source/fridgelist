@@ -29,6 +29,13 @@ class AppViewModel @Inject constructor(
     /** Null until the stored session is read (a few ms); then where the app should open. */
     val startStep: StateFlow<OnboardingStep?> = _startStep.asStateFlow()
 
+    private val _pendingShopTrip = MutableStateFlow<String?>(null)
+
+    /** A `fridgelist://shop?tripId=` tap (Live Update / notification) waiting to be opened. */
+    val pendingShopTrip: StateFlow<String?> = _pendingShopTrip.asStateFlow()
+
+    fun consumeShopTrip(): String? = _pendingShopTrip.value.also { _pendingShopTrip.value = null }
+
     private val _pendingJoinCode = MutableStateFlow<String?>(null)
     val pendingJoinCode: StateFlow<String?> = _pendingJoinCode.asStateFlow()
 
@@ -40,9 +47,13 @@ class AppViewModel @Inject constructor(
 
     suspend fun currentStep(): OnboardingStep = steps.next()
 
-    /** Handles `https://{LINK_DOMAIN}/join/{code}` (CONTRACT §6). Other links arrive in A9. */
+    /** Handles `/join/{code}` and `{URL_SCHEME}://shop?tripId=` (CONTRACT §6). Other links arrive in A8/A9. */
     fun onLink(url: String?) {
         if (url == null) return
+        Links.shopTripId(url, BuildConfig.URL_SCHEME)?.let {
+            _pendingShopTrip.value = it
+            return
+        }
         Links.joinCode(url, environment.linkDomain)?.let { _pendingJoinCode.value = it }
     }
 

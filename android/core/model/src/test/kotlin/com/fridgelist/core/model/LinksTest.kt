@@ -53,6 +53,15 @@ class LinksTest {
     }
 
     @Test
+    fun shopLink() {
+        assertEquals("t_123", Links.shopTripId("fridgelist://shop?tripId=t_123", "fridgelist"))
+        assertNull(Links.shopTripId("fridgelist://add?listId=l1", "fridgelist"))
+        assertNull(Links.shopTripId("https://shop?tripId=t_1", "fridgelist"))
+        assertNull(Links.shopTripId("fridgelist://shop?tripId=a/b", "fridgelist"))
+        assertNull(Links.shopTripId("fridgelist://shop", "fridgelist"))
+    }
+
+    @Test
     fun callableShapesMatchContract() {
         val json = ContractJson.encodeToString(
             CreateHouseholdRequest.serializer(),

@@ -292,10 +292,11 @@ class ListsTest {
         }
         val vm = ListsViewModel(contextSource(Role.ADULT, items), FakeHouseholds().apply {
             households.value = mapOf("h1" to HouseholdDoc("h1", "Ev", "mom", "ar"))
-        }, items)
+        }, items, FakeSession(Session("Ayşe", "tr", "h1", true, com.fridgelist.core.data.session.ActiveShopping("l1"))))
         vm.state.launchIn(backgroundScope)
         runCurrent()
         assertEquals(1, vm.state.value.lists.single().openCount)
+        assertEquals("l1", vm.state.value.shoppingList?.id, "Home offers to continue shopping")
         assertTrue(vm.state.value.canCreate)
         assertEquals("l-new", vm.createList("  Eczane ", ListType.PHARMACY, "💊🧴"))
         assertEquals(Triple("Eczane", ListType.PHARMACY, "💊"), items.createdLists.single())

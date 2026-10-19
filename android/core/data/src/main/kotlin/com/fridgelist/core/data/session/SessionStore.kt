@@ -24,7 +24,12 @@ data class Session(
     val itemLanguage: String? = null,
     val householdId: String? = null,
     val notificationsAsked: Boolean = false,
+    /** Shopping Mode in progress on this device, so the app can resume it. */
+    val shopping: ActiveShopping? = null,
 )
+
+/** [tripId] is null in local mode (startTrip was unreachable). */
+data class ActiveShopping(val listId: String, val tripId: String? = null)
 
 interface SessionStore {
     val session: Flow<Session>
@@ -37,11 +42,20 @@ interface SessionStore {
 
     suspend fun markNotificationsAsked()
 
+    suspend fun startShopping(shopping: ActiveShopping)
+
+    suspend fun endShopping()
+
     /** Forget everything tied to the signed-in user (sign-out). The device ID survives. */
     suspend fun clear()
 
     /** Per-install UUID for `users/{uid}/devices/{deviceId}` (CONTRACT §3.2). Created once. */
     suspend fun deviceId(): String
+
+    /** Last FCM registration token this install received (kept across sign-out: it belongs to the device). */
+    suspend fun pushToken(): String? = null
+
+    suspend fun savePushToken(token: String) = Unit
 }
 
 private val Context.sessionDataStore: DataStore<Preferences> by preferencesDataStore(name = "session")
@@ -59,6 +73,7 @@ class DataStoreSessionStore @Inject constructor(
             itemLanguage = p[ITEM_LANGUAGE],
             householdId = p[HOUSEHOLD_ID],
             notificationsAsked = p[NOTIFICATIONS_ASKED] ?: false,
+            shopping = p[SHOPPING_LIST]?.let { ActiveShopping(it, p[SHOPPING_TRIP]) },
         )
     }
 
@@ -77,11 +92,27 @@ class DataStoreSessionStore @Inject constructor(
         store.edit { it[NOTIFICATIONS_ASKED] = true }
     }
 
+    override suspend fun startShopping(shopping: ActiveShopping) {
+        store.edit {
+            it[SHOPPING_LIST] = shopping.listId
+            if (shopping.tripId != null) it[SHOPPING_TRIP] = shopping.tripId else it.remove(SHOPPING_TRIP)
+        }
+    }
+
+    override suspend fun endShopping() {
+        store.edit {
+            it.remove(SHOPPING_LIST)
+            it.remove(SHOPPING_TRIP)
+        }
+    }
+
     override suspend fun clear() {
         store.edit { prefs ->
             val deviceId = prefs[DEVICE_ID]
+            val pushToken = prefs[PUSH_TOKEN]
             prefs.clear()
             if (deviceId != null) prefs[DEVICE_ID] = deviceId
+            if (pushToken != null) prefs[PUSH_TOKEN] = pushToken
         }
     }
 
@@ -94,11 +125,20 @@ class DataStoreSessionStore @Inject constructor(
         return id
     }
 
+    override suspend fun pushToken(): String? = store.data.first()[PUSH_TOKEN]
+
+    override suspend fun savePushToken(token: String) {
+        store.edit { it[PUSH_TOKEN] = token }
+    }
+
     private companion object {
         val PROFILE_NAME = stringPreferencesKey("profile_name")
         val ITEM_LANGUAGE = stringPreferencesKey("item_language")
         val HOUSEHOLD_ID = stringPreferencesKey("household_id")
         val NOTIFICATIONS_ASKED = booleanPreferencesKey("notifications_asked")
         val DEVICE_ID = stringPreferencesKey("device_id")
+        val SHOPPING_LIST = stringPreferencesKey("shopping_list_id")
+        val SHOPPING_TRIP = stringPreferencesKey("shopping_trip_id")
+        val PUSH_TOKEN = stringPreferencesKey("push_token")
     }
 }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated for A5 from one table so en/ar/tr stay aligned. -->
+<resources>
+    <string name="shop_start">Alışverişe başla</string>
+    <string name="shop_title">Alışveriş</string>
+    <string name="shop_in_cart">Sepette</string>
+    <string name="shop_claimed_by_others">Bunları başkası alıyor</string>
+    <string name="shop_done">Bitti</string>
+    <string name="shop_resume">Alışverişe devam: %1$s</string>
+    <string name="shop_local_mode">Çevrimdışı: işaretleriniz bu telefonda kayıtlı, sonra eşitlenecek.</string>
+    <string name="shop_all_done">Her şey sepette</string>
+    <string name="shop_tap_hint">Sepete koyduğunuz ürüne dokunun.</string>
+    <string name="summary_title">Alışveriş tamam</string>
+    <string name="summary_send_rest">Kalanları gönder</string>
+    <string name="summary_close">Listeye dön</string>
+    <string name="summary_missing_note">Bulamadığınız ürünler listede kalır.</string>
+    <string name="share_rest_header">Alınacaklar (%1$s):</string>
+    <plurals name="summary_bought">
+        <item quantity="one">%1$d ürün alındı</item>
+        <item quantity="other">%1$d ürün alındı</item>
+    </plurals>
+    <plurals name="summary_missing">
+        <item quantity="one">%1$d ürün bulunamadı</item>
+        <item quantity="other">%1$d ürün bulunamadı</item>
+    </plurals>
+    <string name="shop_trip_gone">Bu alışveriş zaten bitti.</string>
+</resources>

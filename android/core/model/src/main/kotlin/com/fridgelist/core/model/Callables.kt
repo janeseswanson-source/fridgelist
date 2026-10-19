@@ -55,6 +55,38 @@ data class TranscribeAudioRequest(
 @Serializable
 data class TranscribeAudioResponse(val text: String, val locale: String? = null, val confidence: Double = 0.0)
 
+@Serializable
+data class StartTripRequest(
+    val householdId: String,
+    /** `heading` | `shopping` */
+    val status: String,
+    val auto: Boolean,
+    val storeId: String? = null,
+    val storeName: String? = null,
+    /** 0 | 5 | 10 | 15 */
+    val lastCallMinutes: Int? = null,
+    val listIds: List<String>? = null,
+    val platform: String,
+    val deviceId: String,
+)
+
+@Serializable
+data class StartTripResponse(val tripId: String)
+
+@Serializable
+data class UpdateTripRequest(
+    val householdId: String,
+    val tripId: String,
+    /** `shopping` | `done` | `cancelled` */
+    val status: String,
+)
+
+@Serializable
+data class TripSummary(val done: Int = 0, val missing: Int = 0)
+
+@Serializable
+data class UpdateTripResponse(val ok: Boolean = true, val summary: TripSummary? = null)
+
 /** Limits from CONTRACT §3 that the UI validates before calling the server. */
 object Limits {
     const val DISPLAY_NAME_MAX = 40

@@ -65,6 +65,7 @@ fun HomeScreen(
     onNewList: () -> Unit,
     onOpenMembers: () -> Unit,
     onOpenSettings: () -> Unit,
+    onResumeShopping: (listId: String) -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -103,6 +104,9 @@ fun HomeScreen(
             EmptyState(Modifier.padding(padding).fillMaxSize())
         } else {
             LazyColumn(Modifier.padding(padding), contentPadding = PaddingValues(bottom = 96.dp)) {
+                state.shoppingList?.let { list ->
+                    item(key = "resume") { ResumeShopping(list.name) { onResumeShopping(list.id) } }
+                }
                 items(state.lists, key = { it.list.id }) { row ->
                     ListRow(row, onClick = { onOpenList(row) })
                     HorizontalDivider(Modifier.padding(start = 72.dp))
@@ -142,6 +146,26 @@ private fun ListRow(row: ListRowUi, onClick: () -> Unit) {
             style = MaterialTheme.typography.labelLarge,
             color = if (row.openCount > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
         )
+    }
+}
+
+@Composable
+private fun ResumeShopping(listName: String, onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        color = MaterialTheme.colorScheme.primaryContainer,
+        shape = MaterialTheme.shapes.large,
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
+    ) {
+        Row(Modifier.heightIn(min = 56.dp).padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(painterResource(R.drawable.ic_cart), contentDescription = null, tint = MaterialTheme.colorScheme.onPrimaryContainer)
+            Text(
+                stringResource(R.string.shop_resume, listName),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.padding(start = 12.dp),
+            )
+        }
     }
 }
 
@@ -213,13 +237,14 @@ fun NewListContent(onCreate: (name: String, type: ListType, emoji: String) -> Un
 @Composable
 fun HomeRoute(
     onOpenList: (listId: String) -> Unit,
+    onResumeShopping: (listId: String) -> Unit,
     onOpenMembers: () -> Unit,
     onOpenSettings: () -> Unit,
     vm: ListsViewModel = hiltViewModel(),
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     var creating by remember { mutableStateOf(false) }
-    HomeScreen(state, { onOpenList(it.list.id) }, { creating = true }, onOpenMembers, onOpenSettings)
+    HomeScreen(state, { onOpenList(it.list.id) }, { creating = true }, onOpenMembers, onOpenSettings, onResumeShopping)
     if (creating) {
         ModalBottomSheet(onDismissRequest = { creating = false }) {
             NewListContent { name, type, emoji ->

@@ -111,6 +111,7 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.play.services.code.scanner)
     implementation(libs.zxing.core)
+    implementation(libs.androidx.work.runtime)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
@@ -135,6 +136,7 @@ dependencies {
     testImplementation(libs.roborazzi.junit.rule)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
+    testImplementation(libs.androidx.work.testing)
     debugImplementation(libs.compose.ui.test.manifest)
 
     androidTestImplementation(libs.androidx.test.runner)

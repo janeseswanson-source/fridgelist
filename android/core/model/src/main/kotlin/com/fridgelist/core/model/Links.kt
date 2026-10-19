@@ -44,4 +44,14 @@ object Links {
     }
 
     fun joinUrl(code: String, linkDomain: String): String = "https://$linkDomain/join/$code"
+
+    /** `{URL_SCHEME}://shop?tripId={tid}` (CONTRACT §6): the trip to open in Shopping Mode. */
+    fun shopTripId(text: String, urlScheme: String): String? {
+        val uri = runCatching { URI(text.trim()) }.getOrNull() ?: return null
+        if (!uri.scheme.equals(urlScheme, ignoreCase = true) || uri.host != "shop") return null
+        return uri.rawQuery.orEmpty().split('&')
+            .map { it.substringBefore('=') to it.substringAfter('=', "") }
+            .firstOrNull { it.first == "tripId" }?.second
+            ?.takeIf { it.isNotEmpty() && it.all { c -> c.isLetterOrDigit() || c == '_' || c == '-' } }
+    }
 }

@@ -11,6 +11,9 @@ import com.fridgelist.app.feature.lists.ListRowUi
 import com.fridgelist.app.feature.lists.ListSectionsBuilder
 import com.fridgelist.app.feature.lists.ListsUiState
 import com.fridgelist.core.data.items.ListItems
+import com.fridgelist.app.feature.shopping.ShoppingActions
+import com.fridgelist.app.feature.shopping.ShoppingSummary
+import com.fridgelist.app.feature.shopping.ShoppingUiState
 import com.fridgelist.core.model.Category
 import com.fridgelist.core.model.HouseholdDoc
 import com.fridgelist.core.model.ItemDoc
@@ -87,6 +90,32 @@ object Samples {
             Chip(2, "حليب", null, null, "milk"),
         ),
     )
+
+    val shopping: ShoppingUiState
+        get() {
+            val sec = detail.sections
+            val rows = sec.groups.flatMap { it.second }
+            val others = rows.filter { it.claimedByOther != null && it.item.status == ItemStatus.CLAIMED }
+            return ShoppingUiState(
+                listName = "البقالة",
+                toBuy = sec.groups.map { (c, r) -> c to r.filterNot { it in others } }.filter { it.second.isNotEmpty() },
+                claimedByOthers = others,
+                inCart = sec.done,
+                missing = sec.missing,
+                localMode = true,
+                loaded = true,
+            )
+        }
+
+    val summary: ShoppingSummary
+        get() = ShoppingSummary(bought = detail.sections.done, missing = detail.sections.missing, rest = detail.sections.groups.flatMap { it.second })
+
+    val shoppingActions = object : ShoppingActions {
+        override fun canTick(row: ItemRowUi) = true
+        override fun canMiss(row: ItemRowUi) = row.item.status != ItemStatus.DONE
+        override fun tick(row: ItemRowUi) = Unit
+        override fun miss(row: ItemRowUi) = Unit
+    }
 
     val editRow: ItemRowUi get() = detail.sections.groups.first { it.first == Category.DAIRY_EGGS }.second.first()
 

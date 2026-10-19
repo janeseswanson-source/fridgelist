@@ -8,8 +8,6 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withTimeoutOrNull
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,17 +17,23 @@ interface PushTokenProvider {
     suspend fun token(): String?
 }
 
+/**
+ * firebase-messaging 26: `register()` asks FCM for a token and delivers it to
+ * `FirebaseMessagingService.onRegistered` (which saves it); `getToken()`/`onNewToken` are
+ * deprecated. This returns the last saved token and asks for a fresh registration.
+ */
 @Singleton
-class FirebasePushTokenProvider @Inject constructor() : PushTokenProvider {
-    override suspend fun token(): String? = withTimeoutOrNull(TIMEOUT_MS) {
-        runCatching { FirebaseMessaging.getInstance().token.await() }
-            .onFailure { Log.i(TAG, "FCM token unavailable: ${it.javaClass.simpleName}") }
-            .getOrNull()
+class FirebasePushTokenProvider @Inject constructor(
+    private val session: SessionStore,
+) : PushTokenProvider {
+    override suspend fun token(): String? {
+        runCatching { FirebaseMessaging.getInstance().register() }
+            .onFailure { Log.i(TAG, "FCM register unavailable: ${it.javaClass.simpleName}") }
+        return session.pushToken()
     }
 
     private companion object {
         const val TAG = "PushToken"
-        const val TIMEOUT_MS = 10_000L
     }
 }
 

@@ -57,7 +57,8 @@ object ItemPatches {
     }
 
     /** Moves an item to [to]; the caller checks `StatusRules.canTransition` first. */
-    fun status(to: ItemStatus, actorUid: String): Patch = buildMap {
+    /** @param tripId set on `done` while shopping, as `doneTripId` (CONTRACT §3.6). */
+    fun status(to: ItemStatus, actorUid: String, tripId: String? = null): Patch = buildMap {
         put("status", FieldPatch.Set(to.wire))
         put("updatedAt", FieldPatch.ServerTime)
         when (to) {
@@ -65,6 +66,7 @@ object ItemPatches {
             ItemStatus.DONE -> {
                 put("doneBy", FieldPatch.Set(actorUid))
                 put("doneAt", FieldPatch.ServerTime)
+                tripId?.let { put("doneTripId", FieldPatch.Set(it)) }
             }
             ItemStatus.OPEN -> {
                 put("claimedBy", FieldPatch.Delete)

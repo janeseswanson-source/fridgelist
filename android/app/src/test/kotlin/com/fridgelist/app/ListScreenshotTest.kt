@@ -8,6 +8,8 @@ import com.fridgelist.app.feature.lists.AddItemsContent
 import com.fridgelist.app.feature.lists.EditItemContent
 import com.fridgelist.app.feature.lists.ListDetailScreen
 import com.fridgelist.app.feature.lists.ListDetailUiState
+import com.fridgelist.app.feature.shopping.ShoppingScreen
+import com.fridgelist.app.feature.shopping.SummaryContent
 import com.fridgelist.app.ui.theme.FridgeListTheme
 import com.fridgelist.app.voice.VoiceState
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -54,6 +56,12 @@ class ListScreenshotTest(private val config: String, private val qualifiers: Str
     }
 
     @Test fun edit_item() = capture("edit_item") { EditItemContent(Samples.editRow, canRename = true, onSave = {}) }
+
+    @Test fun shopping() = capture("shopping") {
+        ShoppingScreen(Samples.shopping, Samples.shoppingActions, remember { SnackbarHostState() }, {}, {})
+    }
+
+    @Test fun shopping_summary() = capture("shopping_summary") { SummaryContent(Samples.summary, "البقالة") {} }
 
     @Test fun new_list() = capture("new_list") { NewListContent { _, _, _ -> } }
 }

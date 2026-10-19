@@ -12,6 +12,7 @@ import com.fridgelist.app.AppViewModel
 import com.fridgelist.app.feature.home.HomeRoute
 import com.fridgelist.app.feature.household.MembersRoute
 import com.fridgelist.app.feature.lists.ListDetailRoute
+import com.fridgelist.app.feature.shopping.ShoppingRoute
 import com.fridgelist.app.feature.onboarding.CreateHouseholdRoute
 import com.fridgelist.app.feature.onboarding.HouseholdChoiceScreen
 import com.fridgelist.app.feature.onboarding.JoinHouseholdRoute
@@ -33,6 +34,7 @@ import kotlinx.serialization.Serializable
 @Serializable data object Notifications
 @Serializable data object Home
 @Serializable data class ListDetail(val listId: String)
+@Serializable data class Shopping(val listId: String? = null, val tripId: String? = null)
 @Serializable data object Members
 @Serializable data object Settings
 
@@ -77,6 +79,14 @@ fun FridgeListNavHost(start: OnboardingStep, app: AppViewModel) {
         }
     }
 
+    // Live Update / notification tap: open Shopping Mode for that trip once set up.
+    val pendingShopTrip by app.pendingShopTrip.collectAsStateWithLifecycle()
+    LaunchedEffect(pendingShopTrip) {
+        if (pendingShopTrip != null && app.currentStep() == OnboardingStep.DONE) {
+            app.consumeShopTrip()?.let { nav.navigate(Shopping(tripId = it)) }
+        }
+    }
+
     NavHost(navController = nav, startDestination = start.route()) {
         composable<Welcome> { WelcomeRoute(onContinue = { nav.navigate(SignIn) }) }
         composable<SignIn> { SignInRoute(onNext = onNext, onBack = { nav.popIfCan() }) }
@@ -93,11 +103,15 @@ fun FridgeListNavHost(start: OnboardingStep, app: AppViewModel) {
         composable<Home> {
             HomeRoute(
                 onOpenList = { nav.navigate(ListDetail(it)) },
+                onResumeShopping = { nav.navigate(Shopping(listId = it)) },
                 onOpenMembers = { nav.navigate(Members) },
                 onOpenSettings = { nav.navigate(Settings) },
             )
         }
-        composable<ListDetail> { ListDetailRoute(onBack = { nav.popIfCan() }) }
+        composable<ListDetail> {
+            ListDetailRoute(onBack = { nav.popIfCan() }, onStartShopping = { nav.navigate(Shopping(listId = it)) })
+        }
+        composable<Shopping> { ShoppingRoute(onClose = { nav.popIfCan() }) }
         composable<Members> { MembersRoute(onBack = { nav.popIfCan() }) }
         composable<Settings> {
             SettingsRoute(

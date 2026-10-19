@@ -2,6 +2,7 @@ package com.fridgelist.app.fakes
 
 import com.fridgelist.core.data.callable.ApiError
 import com.fridgelist.core.data.callable.ApiException
+import com.fridgelist.core.data.firestore.FieldPatch
 import com.fridgelist.core.data.firestore.Patch
 import com.fridgelist.core.data.items.AliasRepository
 import com.fridgelist.core.data.items.ItemRepository
@@ -9,6 +10,7 @@ import com.fridgelist.core.data.items.ListItems
 import com.fridgelist.core.data.items.ListRepository
 import com.fridgelist.core.data.items.ParseRepository
 import com.fridgelist.core.model.ItemDoc
+import com.fridgelist.core.model.ItemStatus
 import com.fridgelist.core.model.ListDoc
 import com.fridgelist.core.model.ListType
 import com.fridgelist.core.model.ParseItemsRequest
@@ -42,8 +44,25 @@ class FakeItems : ListRepository, ItemRepository, AliasRepository, ParseReposito
         added += items
         return items.indices.map { "new-$it" }
     }
+    /** Records the write and applies status-related fields, like Firestore's local cache would. */
     override fun update(householdId: String, listId: String, itemId: String, patch: Patch) {
         updates += itemId to patch
+        fun str(key: String, old: String?): String? = when (val v = patch[key]) {
+            null -> old
+            is FieldPatch.Set -> v.value as String
+            else -> null
+        }
+        listItems.value = listItems.value.copy(
+            items = listItems.value.items.map { item ->
+                if (item.id != itemId) return@map item
+                item.copy(
+                    status = (patch["status"] as? FieldPatch.Set)?.let { ItemStatus.fromWire(it.value as String) } ?: item.status,
+                    claimedBy = str("claimedBy", item.claimedBy),
+                    doneBy = str("doneBy", item.doneBy),
+                    doneTripId = str("doneTripId", item.doneTripId),
+                )
+            },
+        )
     }
     override fun delete(householdId: String, listId: String, itemId: String) {
         deleted += itemId

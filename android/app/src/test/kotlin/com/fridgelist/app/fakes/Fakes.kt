@@ -6,6 +6,7 @@ import com.fridgelist.core.data.auth.AuthRepository
 import com.fridgelist.core.data.auth.AuthUser
 import com.fridgelist.core.data.device.DeviceRegistry
 import com.fridgelist.core.data.household.HouseholdRepository
+import com.fridgelist.core.data.session.ActiveShopping
 import com.fridgelist.core.data.session.Session
 import com.fridgelist.core.data.session.SessionStore
 import com.fridgelist.core.data.user.UserRepository
@@ -50,6 +51,8 @@ class FakeSession(initial: Session = Session()) : SessionStore {
     override suspend fun saveProfile(name: String, itemLanguage: String) = state.update { it.copy(profileName = name, itemLanguage = itemLanguage) }
     override suspend fun setHousehold(householdId: String) = state.update { it.copy(householdId = householdId) }
     override suspend fun markNotificationsAsked() = state.update { it.copy(notificationsAsked = true) }
+    override suspend fun startShopping(shopping: ActiveShopping) = state.update { it.copy(shopping = shopping) }
+    override suspend fun endShopping() = state.update { it.copy(shopping = null) }
     override suspend fun clear() = state.update { Session() }
     override suspend fun deviceId(): String = "device-1"
 }
@@ -103,3 +106,26 @@ class FakeDevices : DeviceRegistry {
 fun steps(auth: FakeAuth, session: FakeSession) = StepResolver(auth, session)
 
 fun uiLanguage(tag: String) = UiLanguageProvider { tag }
+
+/** startTrip succeeds with [tripId], or throws [failWith] (offline / no backend). */
+class FakeTrips(
+    private val tripId: String? = "t1",
+    private val failWith: Exception? = null,
+    private val tripLists: Map<String, List<String>> = emptyMap(),
+) : com.fridgelist.core.data.trips.TripRepository {
+    val started = mutableListOf<com.fridgelist.core.model.StartTripRequest>()
+    override suspend fun startTrip(request: com.fridgelist.core.model.StartTripRequest): com.fridgelist.core.model.StartTripResponse {
+        started += request
+        failWith?.let { throw it }
+        return com.fridgelist.core.model.StartTripResponse(checkNotNull(tripId))
+    }
+    override suspend fun updateTrip(request: com.fridgelist.core.model.UpdateTripRequest) = com.fridgelist.core.model.UpdateTripResponse()
+    override suspend fun tripListIds(householdId: String, tripId: String): List<String>? = tripLists[tripId]
+}
+
+class FakeTripEnder : com.fridgelist.app.work.TripEnder {
+    val ended = mutableListOf<Pair<String, String>>()
+    override fun endTrip(householdId: String, tripId: String) {
+        ended += householdId to tripId
+    }
+}

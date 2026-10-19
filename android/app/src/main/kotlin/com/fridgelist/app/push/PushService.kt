@@ -2,6 +2,7 @@ package com.fridgelist.app.push
 
 import com.fridgelist.core.data.auth.AuthRepository
 import com.fridgelist.core.data.device.DeviceRegistry
+import com.fridgelist.core.data.session.SessionStore
 import com.google.firebase.messaging.FirebaseMessagingService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -12,8 +13,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * FCM entry point. A2: keeps the device token current (CONTRACT §3.2 "refresh on every token
- * change"). Message handling for CONTRACT §5.1 arrives in A6.
+ * FCM entry point. Keeps the device token current (CONTRACT §3.2 "refresh on every token
+ * change"): firebase-messaging 26 delivers tokens to [onRegistered] (replacing `onNewToken`).
+ * Message handling for CONTRACT §5.1 arrives in A6.
  */
 @AndroidEntryPoint
 class PushService : FirebaseMessagingService() {
@@ -22,11 +24,25 @@ class PushService : FirebaseMessagingService() {
 
     @Inject lateinit var registrar: DeviceRegistry
 
+    @Inject lateinit var session: SessionStore
+
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    override fun onNewToken(token: String) {
-        val uid = auth.currentUser()?.uid ?: return
-        scope.launch { registrar.register(uid, token) }
+    override fun onRegistered(token: String) = saveToken(token)
+
+    /**
+     * Deprecated in firebase-messaging 26 in favour of [onRegistered], but kept until token
+     * rotation is confirmed to reach [onRegistered] on a real project: a duplicate write is a
+     * harmless merge, a missed rotation would silently stop notifications.
+     */
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun onNewToken(token: String) = saveToken(token)
+
+    private fun saveToken(token: String) {
+        scope.launch {
+            session.savePushToken(token)
+            auth.currentUser()?.uid?.let { registrar.register(it, token) }
+        }
     }
 
     override fun onDestroy() {

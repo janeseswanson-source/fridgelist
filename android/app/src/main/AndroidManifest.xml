@@ -37,6 +37,15 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- CONTRACT §6 internal links: {URL_SCHEME}://shop?tripId= (Live Update / notification taps). -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="shop"
+                    android:scheme="fridgelist" />
+            </intent-filter>
             <!-- CONTRACT §6 join link. Verification (assetlinks.json) is completed in A9. -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />

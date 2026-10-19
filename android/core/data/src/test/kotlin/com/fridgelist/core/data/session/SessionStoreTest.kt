@@ -22,8 +22,14 @@ class SessionStoreTest {
         store.markNotificationsAsked()
         assertEquals(Session("Ali", "ar", "h1", true), store.current())
 
+        store.savePushToken("fcm-token")
+        store.startShopping(ActiveShopping("l1", "t1"))
+        assertEquals(ActiveShopping("l1", "t1"), store.current().shopping)
+
         store.clear()
         assertNull(store.current().householdId)
+        assertNull(store.current().shopping)
+        assertEquals("fcm-token", store.pushToken(), "the push token belongs to the device, not the account")
         assertEquals(first, store.deviceId())
         assertTrue(first.length == 36, "UUID")
     }
