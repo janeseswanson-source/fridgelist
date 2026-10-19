@@ -156,17 +156,92 @@ curl -s -X POST -H "Content-Type: application/json" -d '{"data":{}}' \
 - `.firebaserc` aliases: `dev` → `fridgelist-dev-TODO`, `prod` → `fridgelist-prod-TODO`. These are placeholders until the owner creates the projects.
 - Firestore location `me-central2`. Functions region `me-central2`, with the CLAUDE.md fallback order `me-central1`, then `europe-west1`. **Verify at the first dev deploy** that 2nd-gen functions deploy to `me-central2`; if not, change `REGION` in `functions/src/config.ts` and the apps' `FUNCTIONS_REGION` together.
 
-## 4. Deploy
+## 4. Accounts and operations (B9)
 
-- **Never deploy to prod from a session.** Deploy to dev only when the owner writes "deploy dev".
-- `npm run deploy:dev` (from `backend/`) runs `firebase deploy --project dev`.
-- Rollback, secret rotation, budget alerts *(B9)*.
+- `exportMyData`: everything personal to the caller (profile, devices without push tokens, memberships, items they added, their aliases, purchases, trips and events) as one JSON file in Storage (`exports/{uid}/…`), returned as a **v4 signed URL valid 24 h**. 3 per day. In the emulator the link uses a download token instead, since the emulator can't sign.
+  - Signing needs the functions' service account to hold **Service Account Token Creator** on itself (owner action, IAM).
+- `deleteMyAccount`:
+  - an owner with other members must pass `transferOwnershipTo` (a member, not a kid), else nothing changes; a last member's household is deleted with its links and invites;
+  - other memberships are left; active trips are cancelled; the user's name is blanked in events and trips;
+  - `users/{uid}`, devices, rate-limit and throttle docs and exports are deleted, then the Auth user.
+  - Items and purchases stay with the household.
+- `cleanupLinks` (daily 03:00 Riyadh): revoked or expired share links, expired invites, exports older than 24 h.
+- **TTL:** `events.expireAt` (30 days) and `mealSuggestions.expireAt` (7 days) are declared in `firestore.indexes.json`. `firebase deploy --only firestore:indexes` creates the TTL policies; deletion happens within about 24 h of expiry.
+- **Remote Config:** defaults from CONTRACT §10 in `remoteconfig.template.json`; `test/ops.test.ts` keeps it identical to the contract. Deploy with `firebase deploy --only remoteconfig`; afterwards, change values in the console (e.g. turn on `ramadan_planner_enabled` from January 2027).
 
-## 5. Function code conventions
+## 5. Deploy
+
+**Never deploy to prod from a session.** Deploy to dev only when the owner writes "deploy dev".
+
+First time per project (owner):
+
+1. Create the Firebase project (Blaze plan), Firestore in Native mode at `me-central2`, Storage, Auth (Google provider), and Hosting with the custom domain `LINK_DOMAIN`.
+2. Put the project IDs in CLAUDE.md and `backend/.firebaserc`.
+3. `firebase functions:secrets:set ANTHROPIC_API_KEY --project dev`
+4. Enable the Cloud Speech-to-Text API, App Check (reCAPTCHA Enterprise for web, Play Integrity, App Attest), and upload the APNs key under Cloud Messaging.
+5. Set a **budget alert** (see below).
+
+Each deploy:
+
+```sh
+cd backend/functions && npm ci && npm run lint && npm run typecheck && npm test
+cd .. && npm run deploy:dev        # firebase deploy --project dev (functions, rules, indexes, hosting, remoteconfig)
+```
+
+Then check:
+
+- `curl -sI https://<LINK_DOMAIN>/.well-known/apple-app-site-association` → `content-type: application/json`.
+- The `health` callable answers in `me-central2`.
+- The Firebase console shows no function errors for 10 minutes.
+
+## 6. Rollback
+
+- **Functions and hosting:**
+  - Hosting: Firebase Console > Hosting > release history > "Roll back".
+  - Functions: check out the last good commit and deploy only them, e.g. `git checkout <good> -- backend && cd backend && firebase deploy --only functions --project dev`.
+  - Functions have no one-click rollback, so tag each prod deploy (`git tag deploy-prod-YYYYMMDD`).
+- **Rules:** Firestore Console > Rules > history > publish the previous version (or redeploy `firestore.rules` from the good commit).
+- **Remote Config:** Console > Remote Config > Change history > roll back. The kill switch `store_detection_enabled = false` takes effect in the apps within the fetch interval.
+- **Data:** enable Firestore point-in-time recovery (7 days) on prod (owner action); restore through a new database plus a copy, never in place.
+
+## 7. Secret rotation
+
+1. Create a new Anthropic key in the Anthropic console.
+2. `firebase functions:secrets:set ANTHROPIC_API_KEY --project <dev|prod>`, which creates a new version.
+3. Redeploy the functions that use it (`parseItems`, `onItemCreated`, `mealToItems`, `suggestMeals`) so they pick up `latest`.
+4. Revoke the old key in the Anthropic console, then `firebase functions:secrets:prune` to destroy unused versions.
+
+The same steps apply to the phase-2 WhatsApp secrets. Never put a key in the repo, `.env` or `.secret.local` of a real project.
+
+## 8. Budget alert (owner)
+
+Google Cloud Console > Billing > Budgets & alerts > Create budget:
+
+- scope: the prod project;
+- amount: the monthly cap you choose;
+- alerts at 50%, 90%, 100% and a forecasted 100%, sent to `SUPPORT_EMAIL`.
+
+Watch the main cost drivers:
+
+- LLM calls (`parseItems`/`onItemCreated` for non-catalog words, `suggestMeals`);
+- Speech-to-Text minutes;
+- Firestore reads from item listeners;
+- FCM is free.
+
+## 9. Emulator tips
+
+- `npm run emulators` waits for the functions before seeding and says whether the seed items were enriched. If not, run `npm run seed` again.
+- The Emulator UI (http://127.0.0.1:4000) shows Firestore documents, function logs and Auth users.
+- Changing a function's region or options needs an emulator restart; code changes reload after `npm --prefix functions run build`.
+- The emulator ignores Hosting `headers`, has no FCM (pushes are logged as `push_emulated`) and no App Check (public callables skip it there).
+- A dev phone on Wi-Fi: set the dev machine's LAN IP in the app's Settings > For developers.
+- Stuck ports after a crash (Windows): find the process with `Get-NetTCPConnection -LocalPort 8080` and stop it.
+
+## 10. Function code conventions
 
 - `src/setup.ts` must stay the **first import** of `src/index.ts`: it initializes the Admin SDK and sets the region before any function is defined. `test/regions.test.ts` fails if any export is not in `REGION`.
 - Each callable keeps its logic in a `*Core(db, uid, data, now?)` function that the integration tests call directly against the emulator; the `onCall` wrapper only adds auth.
 
-## 6. Privacy in logs
+## 11. Privacy in logs
 
 Functions log only through `functions/src/lib/log.ts`. It accepts IDs, codes, counts and flags; keys that look like user text (`name`, `text`, `title`, `body`, `notes`, `email`) are redacted. `console.*` is a lint error (CLAUDE.md rule 4).

@@ -17,6 +17,7 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | Backend | B1 Scaffold | done | 2026-10-19 | `npm run emulators` builds, starts Auth/Firestore/Functions/Hosting/Storage/Pub/Sub and seeds |
 | Backend | B2 Security rules | done | 2026-10-19 | 144 rules tests (full §3.6 matrix); Android offline flow passes the real rules |
 | Backend | B3 Households, invites, devices | done | 2026-10-19 | callables + `onMemberWritten`; Android two-user join passes against it |
+| Backend | B9 Accounts and operations | done | 2026-10-19 | export/delete, cleanup, TTL, Remote Config, RUNBOOK |
 | Backend | B8 Meals and the Ramadan planner | done, real recordings and dish review pending | 2026-10-19 | 43 seed dishes for owner review; LLM behind an interface, replay-tested |
 | Backend | B7 Share links, guest page, link hosting | done, placeholders for domain/fingerprints/team ID/App Check key | 2026-10-19 | guest E2E through the Hosting emulator; Lighthouse mobile 99/100/100 |
 | Backend | B6 Trips, notifications, live surfaces | done, real delivery needs the dev project | 2026-10-19 | every push type snapshot-tested in ar/tr/en; throttle, stale job; Android trip E2E |
@@ -31,6 +32,33 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Backend B9 Accounts and operations
+- Shipped:
+  - `exportMyData` → `{url}`:
+    - the caller's personal data as readable JSON (Timestamps → ISO): profile, devices **without push tokens**, memberships with household names, items they added, aliases they created, their purchases, trips (without the Live Activity token) and events;
+    - other members' items and purchases are not included;
+    - stored at `exports/{uid}/{millis}.json`; a **v4 signed URL valid 24 h** (CONTRACT §4); 3 per day.
+    - Behind an `ExportStore` interface; in the emulator, a download-token URL, because the Storage emulator can't sign and enforces the deny-all `storage.rules` on plain media URLs (found in the live check).
+  - `deleteMyAccount({transferOwnershipTo?})`:
+    - validates every household before changing anything;
+    - an owner with other members must name a non-kid member (else `failed-precondition`, nothing changed); a last member → the household is deleted recursively with its share links and invites; the new owner gets `ownerUid` and role `owner`;
+    - active trips are cancelled (live surfaces end); membership removed; the user's name blanked in events and trips;
+    - `users/{uid}` (+ devices), the per-user `rateLimits` and `pushThrottle` docs and the export files are deleted, then the Auth user.
+    - The household keeps items and purchases.
+  - `cleanupLinks`, daily 03:00 Asia/Riyadh: revoked and expired share links, expired invites, exports older than 24 h.
+  - TTL policies on `events.expireAt` and `mealSuggestions.expireAt` (`firestore.indexes.json` field overrides, unindexed).
+  - Remote Config defaults: `remoteconfig.template.json`, generated from CONTRACT §10 (all 6 flags) and deployed through `firebase.json`.
+  - `docs/RUNBOOK.md` completed: accounts and operations, first-time project setup, deploy and checks, rollback (hosting, functions by tagged commit, rules, Remote Config, point-in-time recovery), secret rotation, budget alert, emulator tips.
+- Tests: **266 unit** (+3 for the template == contract table, the firebase.json wiring, the TTL overrides; the meal recorder stays skipped without a key) + **228 emulator** (+7: the export holds only the caller's data with no tokens and a 24 h URL; 3 per day; deleting a household with everything; the hand-over validations leave nothing changed; the hand-over effects; a non-owner leaving; cleanup).
+- Live check on the dev emulators: Mama's export downloaded from the returned URL (household "بيت العائلة", 6 items she added, no device tokens).
+- Contract changes: none.
+- Owner actions:
+  - IAM "Service Account Token Creator" for signed URLs;
+  - Firestore point-in-time recovery on prod;
+  - the budget alert;
+  - Remote Config values over time.
+- Next: B10 (phase-2 stubs, off by Remote Config: `whatsappWebhook`, `linkWhatsApp`, `computeUsuals`, `learnAisleOrder`).
 
 ### 2026-10-19 — Backend B8 Meals and the Ramadan planner
 - Built without an API key (as with B4): the smart-model planner sits behind `MealPlanner` and is tested with fakes and a record/replay round trip. **No real model output has been produced or reviewed yet.**

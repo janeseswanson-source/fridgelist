@@ -1,0 +1,45 @@
+{
+  "parameters": {
+    "store_detection_enabled": {
+      "defaultValue": {
+        "value": "true"
+      },
+      "valueType": "BOOLEAN",
+      "description": "kill switch"
+    },
+    "ramadan_planner_enabled": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "valueType": "BOOLEAN",
+      "description": "on from Jan 2027"
+    },
+    "meal_planner_enabled": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "valueType": "BOOLEAN",
+      "description": "everyday meal ideas"
+    },
+    "whatsapp_enabled": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "valueType": "BOOLEAN",
+      "description": "phase 2"
+    },
+    "speech_analyzer_enabled": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "valueType": "BOOLEAN",
+      "description": "iOS 26+ speech API"
+    },
+    "max_last_call_minutes": {
+      "defaultValue": {
+        "value": "15"
+      },
+      "valueType": "NUMBER"
+    }
+  }
+}
