@@ -61,6 +61,7 @@ fun SettingsRoute(
         numbers = remember { NumberStyle.current() },
         onNumbers = viewModel::setNumbers,
         onForcePlanner = viewModel::setForcePlanner,
+        account = { AccountRoute(onDeleted = onSignedOut) },
         detection = { DetectionRoute() },
         onOpenDetectionDebug = if (viewModel.showDeveloper) onOpenDetectionDebug else null,
     )
@@ -80,6 +81,8 @@ fun SettingsScreen(
     numbers: NumberStyle = NumberStyle.SYSTEM,
     onNumbers: (NumberStyle) -> Unit = {},
     onForcePlanner: (Boolean) -> Unit = {},
+    /** Export, delete account, privacy policy (A11); a slot so screenshot tests can leave it out. */
+    account: (@Composable () -> Unit)? = null,
     /** Store detection (A7); a slot so screenshot tests can leave it out. */
     detection: (@Composable () -> Unit)? = null,
     onOpenDetectionDebug: (() -> Unit)? = null,
@@ -125,6 +128,7 @@ fun SettingsScreen(
                 TextButton(onClick = onSignOut, modifier = Modifier.padding(horizontal = 8.dp).heightIn(min = 48.dp)) {
                     Text(stringResource(R.string.settings_sign_out))
                 }
+                account?.invoke()
             }
             if (dev != null) {
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))

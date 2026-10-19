@@ -26,6 +26,7 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | Backend | B6 Trips, notifications, live surfaces | done, real delivery needs the dev project | 2026-10-19 | every push type snapshot-tested in ar/tr/en; throttle, stale job; Android trip E2E |
 | Backend | B5 Stores | done, real import awaits owner OK | 2026-10-19 | UAE and Saudi dry runs on live OSM data; `nearbyStores`/`addStore` |
 | Backend | B4 Item pipeline | done, LLM/STT recordings pending a key | 2026-10-19 | golden 30/30 on catalog + dialect alone; LLM and STT behind interfaces, untested against the real services |
+| Android | A11 Release readiness | done, owner items pending (upload key, google-services.json, IDs, policy URL, Play listing) | 2026-10-19 | `bundleProdRelease` builds (11 MB); R8 smoke-tested with `devMinified` |
 | Android | A10 Ramadan planner lite, localization, accessibility | done | 2026-10-19 | F11 at no AI cost (seed planner); 6-person 3-day plan → 14 items on the emulator; screenshots reviewed |
 | Android | A9 Fridge tags, QR, App Links | done, real-sticker run and App Links verification pending | 2026-10-19 | QR, member/guest links, NFC intent and `/l/` verified on the emulator; contract v5 |
 | Android | A8 Widgets, tile, shortcuts | done | 2026-10-19 | widget tick on the server in 0.7 s; `list_changed` refresh, Quick Add, tile, shortcuts verified on the emulator (`docs/test-widgets.md`) |
@@ -39,6 +40,43 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Android A11 Release readiness
+- Shipped:
+  - **Settings › Account:** "Download my data" (`exportMyData`, opens the 24 h link) and **"Delete my account"** (`deleteMyAccount`), as both stores require.
+    - The dialog explains what is deleted. An owner with other members must pick who takes over (not a kid; only one choice → preselected). An owner with only kids is told to make another adult owner first. The last member is told the household goes too.
+    - After deletion the phone signs out (device doc, session, notifications, widgets, detection).
+    - "Privacy policy" shows once `PRIVACY_POLICY_URL` is set (`privacyPolicyUrl` in `app/build.gradle.kts`, still TODO in CLAUDE.md).
+  - **App Check:** Play Integrity in `prod`, the debug provider in `dev` (flavor source sets), installed right after Firebase starts.
+  - **Crashlytics:** prod only, with collection off in dev. The google-services and Crashlytics Gradle plugins (mapping upload) apply automatically once `app/src/prod/google-services.json` exists; until then `bundleProdRelease` still builds.
+  - **R8:**
+    - release keeps `SourceFile`/`LineNumberTable` for readable crashes;
+    - new `minified` build type (R8 like release, debuggable) so `devMinified` can run against the emulators.
+    - The smoke test found **widget checkboxes broken by R8** (Glance creates `ToggleItemCallback` by reflection; its constructor was removed); fixed with a keep rule and re-tested.
+    - Every other path worked minified: Home, list, add, share link, planner, widget host.
+  - **Release builds never use emulators:** `useEmulators` now also requires a debuggable build (it followed only the flavor before; CLAUDE.md "Emulator mode").
+  - **Release signing** reads `upload.storeFile/storePassword/keyAlias/keyPassword` from `local.properties` (never committed); without them the bundle is unsigned.
+  - **Location privacy, made true:**
+    - the A6/A7 texts said the location "is never sent to our servers", but `nearbyStores` received the phone's coordinates;
+    - the app now rounds them to 2 decimals (about 1 km, `LocationPrivacy`) before sending, and the rationale, the prominent disclosure and the "I'm going" note say exactly that in ar/tr/en;
+    - the backend never logged or stored them.
+  - **Docs for the owner:**
+    - `docs/play-data-safety.md` (every Data safety answer, with reasons);
+    - `docs/play-background-location.md` (declaration text, disclosure, a 30-second video script, checklist);
+    - `docs/store-listing-android.md` (name, short and full description in ar/tr/en, graphics still needed).
+  - Remote Config defaults (A7) and OSM attribution (A7) were already in place.
+- Tests: **app 344** (+5 `AccountTest`: export and its daily limit; owner hand-over to an adult; owner with only kids; last member; adult leaving offline changes nothing), core:data 24 (+1 rounding); lint clean.
+- Builds: `bundleProdRelease` → `app-prod-release.aab` (11 MB, unsigned); `assembleDevMinified` smoke-tested on the emulator.
+- Emulator: Settings › حذف حسابي shows the hand-over choice (Ayşe, Maria); تنزيل بياناتي opens the export in the browser.
+- **Owner, to release:**
+  - the real `ANDROID_APPLICATION_ID` (it is `com.example.fridgelist`, and Play needs it for good);
+  - `app/src/prod/google-services.json` (needs the prod Firebase project, so billing);
+  - the upload key in `local.properties`;
+  - `PRIVACY_POLICY_URL`, `SUPPORT_EMAIL`, `LINK_DOMAIN` and the release/Play SHA-256 values;
+  - a Play developer account (US$25);
+  - the listing graphics; the forms from the three docs; the background-location video;
+  - an internal-testing upload.
+- Next: Android A1–A11 are done. iOS (I1–I13) needs a Mac.
 
 ### 2026-10-19 — Android A10 Ramadan planner lite, localization, accessibility (+ backend)
 - Committed together with A9, because their edits share files (navigation, Home, Settings, models).

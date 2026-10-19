@@ -171,6 +171,10 @@
         <meta-data
             android:name="firebase_messaging_auto_init_enabled"
             android:value="${fcmAutoInit}" />
+        <!-- Crashlytics only in prod (dev builds have no Crashlytics SDK at all). -->
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="${crashlyticsEnabled}" />
 
         <!-- Download the Google code scanner UI at install time so "Scan QR" opens instantly. -->
         <meta-data

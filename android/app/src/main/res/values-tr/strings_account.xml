@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A11 account: export, delete (PRODUCT_SPEC F12). -->
+<resources>
+    <string name="account_privacy">Gizlilik politikası</string>
+    <string name="account_export">Verilerimi indir</string>
+    <string name="account_delete">Hesabımı sil</string>
+    <string name="account_delete_title">Hesabın silinsin mi?</string>
+    <string name="account_delete_text">Profilin, cihazların ve kişisel verilerin silinir. Eklediğin ürünler hanenin listelerinde kalır. Bu geri alınamaz.</string>
+    <string name="account_delete_last">Tek üye sensin: hane ve tüm listeleri de silinir. Bu geri alınamaz.</string>
+    <string name="account_delete_choose">Haneyi kim devralacak?</string>
+    <string name="account_delete_confirm">Sil</string>
+    <string name="account_delete_no_successor">Önce başka bir yetişkini sahip yap: çocuklar hane sahibi olamaz.</string>
+    <string name="account_offline">Bunun için internet gerekli. Bağlanınca tekrar dene.</string>
+    <string name="account_export_limit">Verilerini günde 3 kez indirebilirsin.</string>
+</resources>

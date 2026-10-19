@@ -129,4 +129,11 @@ class DataLogicTest {
         assertEquals(OnboardingStep.NOTIFICATIONS, OnboardingStep.of(true, Session("Ali", "ar", "h")))
         assertEquals(OnboardingStep.DONE, OnboardingStep.of(true, Session("Ali", "ar", "h", notificationsAsked = true)))
     }
+
+    @Test
+    fun nearbyStoresGetsOnlyARoundedPosition() {
+        val sent = com.fridgelist.core.data.trips.LocationPrivacy.coarse(com.fridgelist.core.model.NearbyStoresRequest(40.991538, 29.031142, 10_000, 100))
+        kotlin.test.assertEquals(com.fridgelist.core.model.NearbyStoresRequest(40.99, 29.03, 10_000, 100), sent)
+        kotlin.test.assertEquals(-24.7, com.fridgelist.core.data.trips.LocationPrivacy.round(-24.6956))
+    }
 }

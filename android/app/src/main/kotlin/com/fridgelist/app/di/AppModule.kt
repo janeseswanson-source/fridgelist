@@ -11,11 +11,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-    /** `dev` flavor → emulators; `prod` → never (CLAUDE.md "Emulator mode"). */
+    /** `dev` debug builds → emulators; `prod`, and every release build, never (CLAUDE.md "Emulator mode"). */
     @Provides
     @Singleton
     fun environment(): AppEnvironment = AppEnvironment(
-        useEmulators = BuildConfig.USE_EMULATORS,
+        useEmulators = BuildConfig.USE_EMULATORS && BuildConfig.DEBUG,
         appVersion = BuildConfig.VERSION_NAME,
         linkDomain = BuildConfig.LINK_DOMAIN,
         googleWebClientId = BuildConfig.GOOGLE_WEB_CLIENT_ID,

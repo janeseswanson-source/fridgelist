@@ -16,9 +16,9 @@
     <string name="detect_toggle">Mağazaları otomatik algıla</string>
     <string name="detect_toggle_summary">Bir markette 2 dakika geçirdiğinde, listende ürün varsa Alışveriş Modu açılır ve hanen nerede alışveriş yaptığını görür.</string>
     <string name="detect_rationale_title">Konumun kullanılsın mı?</string>
-    <string name="detect_rationale_text">Markette olduğunu anlamak için FridgeList hassas konumuna ihtiyaç duyar. Konumun bu telefonda kalır: hanen yalnızca hangi markette alışveriş yaptığını öğrenir.</string>
+    <string name="detect_rationale_text">Markette olduğunu anlamak için FridgeList hassas konumuna ihtiyaç duyar. Konumun bu telefonda kullanılır: yakındaki mağazaları bulmak için yalnızca yuvarlanmış bir bölge (yaklaşık 1 km) gönderilir; hanen yalnızca hangi markette alışveriş yaptığını öğrenir.</string>
     <string name="detect_disclosure_title">Konuma her zaman izin ver</string>
-    <string name="detect_disclosure_text">FridgeList, uygulama kapalıyken veya kullanılmıyorken bile bir markete vardığını algılamak için konum verisi toplar. Konumun bu telefonda kalır ve sunucularımıza asla gönderilmez.</string>
+    <string name="detect_disclosure_text">FridgeList, uygulama kapalıyken veya kullanılmıyorken bile bir markete vardığını algılamak için konum verisi toplar. Tam konumun bu telefonda kalır; yakındaki mağazaları bulmak için yalnızca yuvarlanmış bir bölge (yaklaşık 1 km) gönderilir ve saklanmaz.</string>
     <string name="detect_background_steps">Sonraki ekranda “Her zaman izin ver”i seç. Uygulama ayarları açılırsa İzinler › Konum › Her zaman izin ver yolunu izle.</string>
     <string name="detect_continue">Devam</string>
     <string name="detect_not_now">Şimdi değil</string>

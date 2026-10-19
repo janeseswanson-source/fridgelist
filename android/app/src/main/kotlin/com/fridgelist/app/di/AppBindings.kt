@@ -9,7 +9,9 @@ import com.fridgelist.app.location.DetectionNotifications
 import com.fridgelist.app.location.DetectionNotifier
 import com.fridgelist.app.location.StoreFences
 import com.fridgelist.app.location.StoreGeofenceManager
+import com.fridgelist.app.widget.WidgetCleaner
 import com.fridgelist.app.widget.WidgetRefresher
+import com.fridgelist.app.widget.WidgetSnapshotWriter
 import com.fridgelist.app.widget.WorkManagerWidgetRefresher
 import com.fridgelist.app.feature.onboarding.UiLanguageProvider
 import com.fridgelist.app.notifications.TripNotifications
@@ -39,4 +41,6 @@ interface AppBindings {
     @Binds fun locationPermissions(impl: AndroidLocationPermissionState): LocationPermissionState
 
     @Binds fun widgetRefresher(impl: WorkManagerWidgetRefresher): WidgetRefresher
+
+    @Binds fun widgetCleaner(impl: WidgetSnapshotWriter): WidgetCleaner
 }

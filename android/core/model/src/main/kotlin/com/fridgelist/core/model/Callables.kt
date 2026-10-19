@@ -140,6 +140,20 @@ data class GuestAddItemRequest(val token: String, val text: String, val guestNam
 @Serializable
 data class GuestAddItemResponse(val added: Int = 0)
 
+/** CONTRACT §4 `exportMyData`: a signed URL to a JSON file, valid 24 h. 3 per day. */
+@Serializable
+data class ExportMyDataResponse(val url: String)
+
+/** CONTRACT §4 `deleteMyAccount`: an owner with other members names who takes over. */
+@Serializable
+data class DeleteMyAccountRequest(val transferOwnershipTo: String? = null)
+
+@Serializable
+data class OkResponse(val ok: Boolean = true)
+
+@Serializable
+class EmptyRequest
+
 /** CONTRACT §4 `suggestMeals` (10 calls/hour/household). */
 @Serializable
 data class SuggestMealsRequest(

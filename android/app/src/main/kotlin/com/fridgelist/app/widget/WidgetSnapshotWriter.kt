@@ -94,6 +94,11 @@ object SnapshotBuilder {
  * [refreshOnce] after a widget tap or a `list_changed` push. Each write updates the widgets and the
  * per-list shortcuts.
  */
+/** Sign-out seam: widgets and shortcuts forget the household. */
+fun interface WidgetCleaner {
+    suspend fun clear()
+}
+
 @Singleton
 class WidgetSnapshotWriter @Inject constructor(
     @param:ApplicationContext private val context: Context,
@@ -102,7 +107,7 @@ class WidgetSnapshotWriter @Inject constructor(
     private val items: ItemRepository,
     private val session: SessionStore,
     private val store: WidgetSnapshotStore,
-) {
+) : WidgetCleaner {
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun snapshots(): Flow<WidgetSnapshot> =
         contextSource.context.flatMapLatest { ctx ->
@@ -133,7 +138,7 @@ class WidgetSnapshotWriter @Inject constructor(
         store.current()?.let { write(SnapshotBuilder.withoutItem(it, listId, itemId)) }
     }
 
-    suspend fun clear() {
+    override suspend fun clear() {
         store.clear()
         Widgets.updateAll(context)
         Shortcuts.clear(context)

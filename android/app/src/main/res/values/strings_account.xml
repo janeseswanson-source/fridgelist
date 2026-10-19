@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A11 account: export, delete (PRODUCT_SPEC F12). -->
+<resources>
+    <string name="account_privacy">Privacy policy</string>
+    <string name="account_export">Download my data</string>
+    <string name="account_delete">Delete my account</string>
+    <string name="account_delete_title">Delete your account?</string>
+    <string name="account_delete_text">Your profile, devices and personal data are deleted. Items you added stay on the household’s lists. This can’t be undone.</string>
+    <string name="account_delete_last">You are the only member: the household and all its lists are deleted too. This can’t be undone.</string>
+    <string name="account_delete_choose">Who takes over the household?</string>
+    <string name="account_delete_confirm">Delete</string>
+    <string name="account_delete_no_successor">Make another adult the owner first: kids can’t own a household.</string>
+    <string name="account_offline">This needs the internet. Try again when you’re online.</string>
+    <string name="account_export_limit">You can download your data 3 times a day.</string>
+</resources>

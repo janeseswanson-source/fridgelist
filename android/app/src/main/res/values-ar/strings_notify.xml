@@ -28,7 +28,7 @@
     <string name="going_title">أنا ذاهب</string>
     <string name="going_where">إلى أين؟</string>
     <string name="going_use_location">اعرض المتاجر القريبة مني</string>
-    <string name="going_location_note">يُستخدم موقعك مرة واحدة على هذا الهاتف لعرض المتاجر القريبة، ولا تتم مشاركته أبداً.</string>
+    <string name="going_location_note">يُستخدم موقعك مرة واحدة على هذا الهاتف. لا يُرسل إلا نطاق تقريبي (نحو كيلومتر واحد) لعرض المتاجر القريبة، ولا يُخزَّن.</string>
     <string name="going_store_label">المتجر (اختياري)</string>
     <string name="going_last_call">النداء الأخير للأسرة</string>
     <string name="going_last_call_none">بدون</string>

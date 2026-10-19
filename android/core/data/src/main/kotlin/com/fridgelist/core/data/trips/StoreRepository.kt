@@ -9,6 +9,16 @@ import com.fridgelist.core.model.NearbyStoresResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * CLAUDE.md rule 4: the phone's position never leaves it precisely. `nearbyStores` gets it rounded to
+ * 2 decimals (about 1 km), plenty for "stores within 10 km"; the server neither logs nor stores it.
+ */
+object LocationPrivacy {
+    fun round(degrees: Double): Double = Math.round(degrees * 100) / 100.0
+
+    fun coarse(request: NearbyStoresRequest): NearbyStoresRequest = request.copy(lat = round(request.lat), lng = round(request.lng))
+}
+
 /** CONTRACT §4 `nearbyStores`: nearest stores, sorted by distance. Needs the network. */
 interface StoreRepository {
     suspend fun nearby(request: NearbyStoresRequest): NearbyStoresResponse
@@ -22,7 +32,7 @@ class CallableStoreRepository @Inject constructor(
     private val callables: CallableClient,
 ) : StoreRepository {
     override suspend fun nearby(request: NearbyStoresRequest): NearbyStoresResponse =
-        callables.call("nearbyStores", request, NearbyStoresRequest.serializer(), NearbyStoresResponse.serializer())
+        callables.call("nearbyStores", LocationPrivacy.coarse(request), NearbyStoresRequest.serializer(), NearbyStoresResponse.serializer())
 
     override suspend fun add(request: AddStoreRequest): AddStoreResponse =
         callables.call("addStore", request, AddStoreRequest.serializer(), AddStoreResponse.serializer())

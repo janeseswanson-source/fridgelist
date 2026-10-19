@@ -17,6 +17,16 @@ val localProperties = Properties().apply {
 /** LINK_DOMAIN from CLAUDE.md. Placeholder until the owner registers the real domain (A9). */
 val linkDomain = "links.example.com"
 
+/** PRIVACY_POLICY_URL from CLAUDE.md (TODO there): Settings hides the link while empty. */
+val privacyPolicyUrl = ""
+
+/** The prod Firebase config (owner, A11). Crashlytics and google-services need it; without it prod can't start. */
+val hasProdFirebaseConfig = file("src/prod/google-services.json").exists()
+if (hasProdFirebaseConfig) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
+}
+
 android {
     namespace = "com.fridgelist.app"
     compileSdk = 37
@@ -31,6 +41,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "URL_SCHEME", "\"fridgelist\"")
         buildConfigField("String", "LINK_DOMAIN", "\"$linkDomain\"")
+        buildConfigField("String", "PRIVACY_POLICY_URL", "\"$privacyPolicyUrl\"")
         manifestPlaceholders["linkDomain"] = linkDomain
         // OAuth Web client ID for Sign in with Google: `google.webClientId=...` in local.properties.
         val webClientId = localProperties.getProperty("google.webClientId", "")
@@ -46,11 +57,24 @@ android {
             buildConfigField("boolean", "USE_EMULATORS", "true")
             // The demo emulator project has no FCM sender; DeviceRegistrar asks for a token itself.
             manifestPlaceholders["fcmAutoInit"] = "false"
+            manifestPlaceholders["crashlyticsEnabled"] = "false"
         }
         create("prod") {
             dimension = "env"
             buildConfigField("boolean", "USE_EMULATORS", "false")
             manifestPlaceholders["fcmAutoInit"] = "true"
+            manifestPlaceholders["crashlyticsEnabled"] = "true"
+        }
+    }
+
+    // Release signing from local.properties (never committed): upload.storeFile, upload.storePassword,
+    // upload.keyAlias, upload.keyPassword. Without them the bundle is unsigned (the owner signs it).
+    val upload = localProperties.getProperty("upload.storeFile")?.let { path ->
+        signingConfigs.create("upload") {
+            storeFile = file(path)
+            storePassword = localProperties.getProperty("upload.storePassword")
+            keyAlias = localProperties.getProperty("upload.keyAlias")
+            keyPassword = localProperties.getProperty("upload.keyPassword")
         }
     }
 
@@ -59,6 +83,16 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            upload?.let { signingConfig = it }
+        }
+        // R8 exactly as release, but debuggable and debug-signed, so `devMinified` runs against the
+        // emulators to smoke-test shrinking (release builds never use emulators: CLAUDE.md).
+        create("minified") {
+            initWith(getByName("debug"))
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            matchingFallbacks += "debug"
         }
     }
 
@@ -115,6 +149,12 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.glance.appwidget)
     implementation(libs.glance.material3)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.appcheck)
+    "devImplementation"(libs.firebase.appcheck.debug)
+    "prodImplementation"(libs.firebase.appcheck.playintegrity)
+    // Crash reports in prod only (no names: CLAUDE.md rule 4; the app never logs user text).
+    "prodImplementation"(libs.firebase.crashlytics)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)

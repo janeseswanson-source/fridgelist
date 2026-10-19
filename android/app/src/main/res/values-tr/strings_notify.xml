@@ -28,7 +28,7 @@
     <string name="going_title">Gidiyorum</string>
     <string name="going_where">Nereye?</string>
     <string name="going_use_location">Yakınımdaki marketleri göster</string>
-    <string name="going_location_note">Konumunuz yalnızca bu telefonda, bir kez, yakındaki marketleri listelemek için kullanılır. Asla paylaşılmaz.</string>
+    <string name="going_location_note">Konumun bu telefonda bir kez kullanılır. Yakındaki marketleri listelemek için yalnızca yuvarlanmış bir bölge (yaklaşık 1 km) gönderilir ve saklanmaz.</string>
     <string name="going_store_label">Market (isteğe bağlı)</string>
     <string name="going_last_call">Hane için son çağrı</string>
     <string name="going_last_call_none">Yok</string>

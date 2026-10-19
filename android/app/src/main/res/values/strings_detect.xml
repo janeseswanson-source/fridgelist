@@ -17,9 +17,9 @@
     <string name="detect_toggle">Detect stores automatically</string>
     <string name="detect_toggle_summary">After 2 minutes in a supermarket, if your list has items, Shopping Mode opens and your household sees where you are shopping.</string>
     <string name="detect_rationale_title">Use your location?</string>
-    <string name="detect_rationale_text">To notice when you are at a supermarket, FridgeList needs your precise location. It stays on this phone: your household only learns which store you are shopping at.</string>
+    <string name="detect_rationale_text">To notice when you are at a supermarket, FridgeList needs your precise location. It is used on this phone: only a rounded area (about 1 km) is sent to find stores near you, and your household only learns which store you are shopping at.</string>
     <string name="detect_disclosure_title">Location all the time</string>
-    <string name="detect_disclosure_text">FridgeList collects location data to detect when you arrive at a supermarket, even when the app is closed or not in use. Your location stays on this phone and is never sent to our servers.</string>
+    <string name="detect_disclosure_text">FridgeList collects location data to detect when you arrive at a supermarket, even when the app is closed or not in use. Your exact location stays on this phone; only a rounded area (about 1 km) is sent to find stores near you, and it is not stored.</string>
     <string name="detect_background_steps">On the next screen choose “Allow all the time”. If you see the app settings instead, open Permissions › Location › Allow all the time.</string>
     <string name="detect_continue">Continue</string>
     <string name="detect_not_now">Not now</string>

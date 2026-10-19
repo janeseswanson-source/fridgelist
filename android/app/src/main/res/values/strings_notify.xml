@@ -28,7 +28,7 @@
     <string name="going_title">I’m going</string>
     <string name="going_where">Where to?</string>
     <string name="going_use_location">Show stores near me</string>
-    <string name="going_location_note">Your location is used once, on this phone, to list nearby stores. It is never shared.</string>
+    <string name="going_location_note">Your location is used once, on this phone. Only a rounded area (about 1 km) is sent to list nearby stores, and it isn’t stored.</string>
     <string name="going_store_label">Store (optional)</string>
     <string name="going_last_call">Last call for the household</string>
     <string name="going_last_call_none">None</string>

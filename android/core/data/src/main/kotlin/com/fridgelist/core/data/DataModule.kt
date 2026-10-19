@@ -35,6 +35,8 @@ import com.fridgelist.core.data.share.CallableShareLinkRepository
 import com.fridgelist.core.data.share.ShareLinkRepository
 import com.fridgelist.core.data.meals.CallableMealRepository
 import com.fridgelist.core.data.meals.MealRepository
+import com.fridgelist.core.data.account.AccountRepository
+import com.fridgelist.core.data.account.CallableAccountRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -80,4 +82,6 @@ interface DataModule {
     @Binds fun shareLinks(impl: CallableShareLinkRepository): ShareLinkRepository
 
     @Binds fun meals(impl: CallableMealRepository): MealRepository
+
+    @Binds fun account(impl: CallableAccountRepository): AccountRepository
 }

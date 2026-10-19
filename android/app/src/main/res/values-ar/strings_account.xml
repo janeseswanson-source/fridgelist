@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A11 account: export, delete (PRODUCT_SPEC F12). -->
+<resources>
+    <string name="account_privacy">سياسة الخصوصية</string>
+    <string name="account_export">تنزيل بياناتي</string>
+    <string name="account_delete">حذف حسابي</string>
+    <string name="account_delete_title">حذف حسابك؟</string>
+    <string name="account_delete_text">يُحذف ملفك الشخصي وأجهزتك وبياناتك الشخصية. الأصناف التي أضفتها تبقى في قوائم الأسرة. لا يمكن التراجع عن ذلك.</string>
+    <string name="account_delete_last">أنت العضو الوحيد: ستُحذف الأسرة وكل قوائمها أيضاً. لا يمكن التراجع عن ذلك.</string>
+    <string name="account_delete_choose">من يتولى إدارة الأسرة؟</string>
+    <string name="account_delete_confirm">حذف</string>
+    <string name="account_delete_no_successor">اجعل شخصاً بالغاً آخر مالكاً أولاً: لا يمكن للأطفال امتلاك أسرة.</string>
+    <string name="account_offline">هذا يحتاج إلى الإنترنت. حاول مجدداً عند الاتصال.</string>
+    <string name="account_export_limit">يمكنك تنزيل بياناتك ثلاث مرات في اليوم.</string>
+</resources>

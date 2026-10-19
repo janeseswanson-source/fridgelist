@@ -15,6 +15,7 @@ class FridgeListApp : Application() {
         super.onCreate()
         // Before any screen, widget or worker touches Firebase (emulators in dev).
         firebase.ensureInitialized()
+        AppCheck.install()
         Channels.create(this)
     }
 }
