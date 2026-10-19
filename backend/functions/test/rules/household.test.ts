@@ -168,13 +168,13 @@ describe("aliases (CONTRACT §3.16)", () => {
 
 describe("functions-only household collections", () => {
   beforeEach(async () => {
-    for (const c of ["trips", "events", "purchases", "mealSuggestions"]) {
+    for (const c of ["trips", "events", "purchases", "usuals", "mealSuggestions"]) {
       await put(env, `households/${HID}/${c}/x`, { v: 1 });
     }
   });
 
-  it("trips, events, purchases: members read, nobody writes (ARCHITECTURE §3.3)", async () => {
-    for (const c of ["trips", "events", "purchases"]) {
+  it("trips, events, purchases, usuals: members read, nobody writes (ARCHITECTURE §3.3, CONTRACT v4)", async () => {
+    for (const c of ["trips", "events", "purchases", "usuals"]) {
       await assertSucceeds(getDoc(ref(KID, `households/${HID}/${c}/x`)));
       await assertFails(getDoc(ref(OUTSIDER, `households/${HID}/${c}/x`)));
       await assertFails(setDoc(ref(OWNER, `households/${HID}/${c}/y`), { v: 1 }));

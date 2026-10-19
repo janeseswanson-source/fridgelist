@@ -14,5 +14,17 @@
   "liveStartTitle": "{store} alışverişi",
   "liveStartBody": {
     "other": "Listende {count} ürün var"
-  }
+  },
+  "waHelp": "Eklemek için ürünleri gönder, ör. \"süt, 2 ekmek\". Listeyi görmek için \"liste\", bir şeyi işaretlemek için \"aldım süt\" yaz.",
+  "waNotLinked": "Bu numara henüz bağlı değil. Uygulamada Ayarlar > WhatsApp > Bağla'yı aç, sonra kodu buraya gönder.",
+  "waLinked": "{household} ile bağlandı. Listeye eklemek için ürünleri gönder.",
+  "waLinkUnknown": "Bu kod artık geçerli değil. Uygulamadan yeni bir kod al.",
+  "waAdded": {
+    "other": "{count} ürün eklendi ✓"
+  },
+  "waListEmpty": "{list} şu an boş.",
+  "waGot": "Alındı: {item} ✓",
+  "waGotNone": "Listede \"{text}\" bulunamadı.",
+  "waVoiceFailed": "Sesli mesajı anlayamadım. Lütfen yazarak gönder.",
+  "waTooMany": "Çok fazla mesaj. Lütfen sonra tekrar dene."
 }

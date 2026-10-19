@@ -16,5 +16,18 @@
   "liveStartBody": {
     "one": "1 item on your list",
     "other": "{count} items on your list"
-  }
+  },
+  "waHelp": "Send items to add them, e.g. \"milk, 2 bread\". Send \"list\" to see the list and \"got milk\" to tick something off.",
+  "waNotLinked": "This number isn't linked yet. In the app open Settings > WhatsApp > Link, then send the code here.",
+  "waLinked": "Linked to {household}. Send items to add them to the list.",
+  "waLinkUnknown": "That code doesn't work any more. Get a new one in the app.",
+  "waAdded": {
+    "one": "Added 1 item ✓",
+    "other": "Added {count} items ✓"
+  },
+  "waListEmpty": "Nothing on {list} right now.",
+  "waGot": "Ticked off: {item} ✓",
+  "waGotNone": "Couldn't find \"{text}\" on the list.",
+  "waVoiceFailed": "I couldn't understand the voice note. Please type it.",
+  "waTooMany": "Too many messages. Please try again later."
 }

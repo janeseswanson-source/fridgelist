@@ -19,7 +19,10 @@ import { ACTIVE } from "../trips/live.js";
 export const EXPORT_VALID_MS = 24 * 60 * 60 * 1000;
 
 /** Rate-limit buckets keyed by user (suggestMeals is keyed by household). */
-const USER_BUCKETS = (Object.keys(LIMITS) as (keyof typeof LIMITS)[]).filter((b) => b !== "suggestMeals");
+// suggestMeals is per household and whatsapp per hashed number; the rest are per user.
+const USER_BUCKETS = (Object.keys(LIMITS) as (keyof typeof LIMITS)[]).filter(
+  (b) => b !== "suggestMeals" && b !== "whatsapp",
+);
 
 /** Timestamps → ISO strings so the export is plain, readable JSON. */
 function plain(value: unknown): unknown {
@@ -193,9 +196,16 @@ export async function deleteMyAccountCore(
     .where(FieldPath.documentId(), ">=", `${uid}_`)
     .where(FieldPath.documentId(), "<", `${uid}_~`)
     .get();
+  // Phase 2: the WhatsApp link (hashed number) and any unused link codes.
+  const [waNumbers, waCodes] = await Promise.all([
+    db.collection("whatsappNumbers").where("uid", "==", uid).get(),
+    db.collection("whatsappLinkCodes").where("uid", "==", uid).get(),
+  ]);
   await Promise.all([
     ...USER_BUCKETS.map((b) => db.doc(`rateLimits/${b}:${uid}`).delete()),
     ...throttles.docs.map((d) => d.ref.delete()),
+    ...waNumbers.docs.map((d) => d.ref.delete()),
+    ...waCodes.docs.map((d) => d.ref.delete()),
   ]);
   if (exports) await exports.deleteOlderThan(`${EXPORT_PREFIX}${uid}/`, 0);
   await deleteAuthUser(uid);

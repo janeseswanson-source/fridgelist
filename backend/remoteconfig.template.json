@@ -40,6 +40,20 @@
         "value": "15"
       },
       "valueType": "NUMBER"
+    },
+    "usuals_enabled": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "valueType": "BOOLEAN",
+      "description": "phase 2: `computeUsuals`"
+    },
+    "aisle_learning_enabled": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "valueType": "BOOLEAN",
+      "description": "phase 2: `learnAisleOrder`"
     }
   }
 }

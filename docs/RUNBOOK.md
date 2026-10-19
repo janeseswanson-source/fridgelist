@@ -169,6 +169,21 @@ curl -s -X POST -H "Content-Type: application/json" -d '{"data":{}}' \
 - **TTL:** `events.expireAt` (30 days) and `mealSuggestions.expireAt` (7 days) are declared in `firestore.indexes.json`. `firebase deploy --only firestore:indexes` creates the TTL policies; deletion happens within about 24 h of expiry.
 - **Remote Config:** defaults from CONTRACT §10 in `remoteconfig.template.json`; `test/ops.test.ts` keeps it identical to the contract. Deploy with `firebase deploy --only remoteconfig`; afterwards, change values in the console (e.g. turn on `ramadan_planner_enabled` from January 2027).
 
+## 4a. Phase 2 (B10): WhatsApp, usuals, aisle learning
+
+Everything is off until its Remote Config flag is `true` (`whatsapp_enabled`, `usuals_enabled`, `aisle_learning_enabled`). Functions read the flags with a 1-minute cache; when Remote Config can't be read (including in the emulator), the contract default (off) applies.
+
+- **WhatsApp setup (owner):**
+  1. Create a Meta Business app with the WhatsApp Cloud API and a phone number.
+  2. `firebase functions:secrets:set WHATSAPP_TOKEN` (a system-user token), `WHATSAPP_APP_SECRET` (App settings > Basic), `WHATSAPP_VERIFY_TOKEN` (any long random string), each with `--project <dev|prod>`.
+  3. Set `WHATSAPP_BOT_NUMBER` (e.g. `+9715…`) in `functions/.env.<project>`.
+  4. Deploy, then register `https://<region>-<project>.cloudfunctions.net/whatsappWebhook` in the Meta app with the verify token, and subscribe to `messages`.
+  5. Turn on `whatsapp_enabled`.
+- **How linking works:** in the app the user calls `linkWhatsApp` and sends `link <code>` to the bot within 15 minutes. Only the SHA-256 of the number is stored (`whatsappNumbers/{hash}`). Leaving the household or deleting the account removes the link.
+- **Usuals:** `computeUsuals` runs daily at 03:00 Riyadh and rewrites `households/{hid}/usuals`.
+- **Aisle learning:** `learnAisleOrder` runs daily at 02:00 Riyadh and needs the `trips (status, endedAt)` index. To reset a store, clear `aisleStats`, `aisleTrips` and `aisleOrder` on its doc.
+- **Locally:** Remote Config isn't emulated, so in the emulator the flags are the contract defaults unless overridden in `functions/.env.local` (e.g. `FLAG_WHATSAPP_ENABLED=true`, then restart the emulators). The emulator launcher fills missing secret lines in `functions/.secret.local` with empty values. To try the webhook, post a payload signed with the `WHATSAPP_APP_SECRET` you put there (see `test/integration/phase2.test.ts`).
+
 ## 5. Deploy
 
 **Never deploy to prod from a session.** Deploy to dev only when the owner writes "deploy dev".
@@ -211,7 +226,7 @@ Then check:
 3. Redeploy the functions that use it (`parseItems`, `onItemCreated`, `mealToItems`, `suggestMeals`) so they pick up `latest`.
 4. Revoke the old key in the Anthropic console, then `firebase functions:secrets:prune` to destroy unused versions.
 
-The same steps apply to the phase-2 WhatsApp secrets. Never put a key in the repo, `.env` or `.secret.local` of a real project.
+The same steps apply to the phase-2 WhatsApp secrets (`WHATSAPP_TOKEN`, `WHATSAPP_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN`; redeploy `whatsappWebhook`). Never put a key in the repo, `.env` or `.secret.local` of a real project.
 
 ## 8. Budget alert (owner)
 

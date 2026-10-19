@@ -1,7 +1,7 @@
 // Must stay the first import: sets the region and initializes the Admin SDK (see setup.ts).
 import "./setup.js";
 
-// Callables (CONTRACT §4). Phase 2 (B10): linkWhatsApp, whatsappWebhook.
+// Callables (CONTRACT §4).
 export { health } from "./callables/health.js";
 export { createHousehold } from "./callables/createHousehold.js";
 export { createInvite, joinHousehold } from "./callables/invites.js";
@@ -12,6 +12,8 @@ export { registerLiveActivityToken, startTrip, updateTrip } from "./callables/tr
 export { createShareLink, guestAddItem, resolveShareLink, revokeShareLink } from "./callables/shareLinks.js";
 export { mealToItems, suggestMeals } from "./callables/meals.js";
 export { deleteMyAccount, exportMyData } from "./callables/account.js";
+// Phase 2 (B10), off by Remote Config.
+export { linkWhatsApp, whatsappWebhook } from "./callables/whatsapp.js";
 
 export { onMemberWritten } from "./triggers/onMemberWritten.js";
 export { onItemCreated } from "./triggers/onItemCreated.js";
@@ -20,3 +22,5 @@ export { onItemWritten } from "./triggers/onItemWritten.js";
 
 export { closeStaleTrips } from "./scheduled/closeStaleTrips.js";
 export { cleanupLinks } from "./scheduled/cleanupLinks.js";
+export { computeUsuals } from "./scheduled/computeUsuals.js";
+export { learnAisleOrder } from "./scheduled/learnAisleOrder.js";

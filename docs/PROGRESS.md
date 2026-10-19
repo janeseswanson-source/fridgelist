@@ -9,6 +9,7 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | 2026-10-18 | 1 | Initial contract | — | — | — |
 | 2026-10-19 | 2 | §5.1: `trip_heading`, `trip_arrived`, `item_missing` reach **Android** as data-only messages with `title` + `body` data keys (server-localized). Needed for the inline reply. | done (B6) | done (A6) | no change |
 | 2026-10-19 | 3 | §4 `startTrip` refuses `kid` (`permission-denied`); §3.2 a user may delete their own device docs (sign-out). | done (B2 device delete, B6 `startTrip`) | done (QA pass) | to do |
+| 2026-10-19 | 4 | Phase 2 (off by default): flags `usuals_enabled`, `aisle_learning_enabled`; stores `aisleOrder?`/`aisleStats?`/`aisleTrips?`; trips `aisleLearned?`; functions-only `usuals` (members read), `whatsappLinkCodes`, `whatsappNumbers` (hashed). | done (B10) | no change yet (uses `aisleOrder` and usuals later) | no change yet |
 
 ## Milestones
 
@@ -17,6 +18,7 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | Backend | B1 Scaffold | done | 2026-10-19 | `npm run emulators` builds, starts Auth/Firestore/Functions/Hosting/Storage/Pub/Sub and seeds |
 | Backend | B2 Security rules | done | 2026-10-19 | 144 rules tests (full §3.6 matrix); Android offline flow passes the real rules |
 | Backend | B3 Households, invites, devices | done | 2026-10-19 | callables + `onMemberWritten`; Android two-user join passes against it |
+| Backend | B10 Phase-2 stubs | done, all off by Remote Config; WhatsApp needs a Meta app | 2026-10-19 | `whatsappWebhook`, `linkWhatsApp`, `computeUsuals`, `learnAisleOrder`; contract v4 |
 | Backend | B9 Accounts and operations | done | 2026-10-19 | export/delete, cleanup, TTL, Remote Config, RUNBOOK |
 | Backend | B8 Meals and the Ramadan planner | done, real recordings and dish review pending | 2026-10-19 | 43 seed dishes for owner review; LLM behind an interface, replay-tested |
 | Backend | B7 Share links, guest page, link hosting | done, placeholders for domain/fingerprints/team ID/App Check key | 2026-10-19 | guest E2E through the Hosting emulator; Lighthouse mobile 99/100/100 |
@@ -32,6 +34,44 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Backend B10 Phase-2 stubs (off by default)
+- Shipped (all gated by Remote Config flags that default to `false`; read server-side with a 1-minute cache, falling back to the contract default when Remote Config can't be read; in the emulator, defaults or `FLAG_<KEY>` from `functions/.env.local`, since Remote Config isn't emulated and the Admin SDK hung there in the live check):
+  - `whatsappWebhook` (HTTP):
+    - GET answers Meta's verification only with `WHATSAPP_VERIFY_TOKEN`;
+    - POST checks `X-Hub-Signature-256` (HMAC-SHA256 of the raw body with `WHATSAPP_APP_SECRET`, constant-time) → 401; flag off → 200 and nothing else.
+    - Commands in ar/tr/en: link `<code>`, list, got `<item>`, help; anything else is items, split by the local splitter (max 10).
+    - Voice notes: downloaded from the Graph API and run through `SpeechToText`; a failure gets a localized message.
+    - Adds: `addedBy: wa:<uid>`, `addedVia: whatsapp`, kids' adds `pending`, to the household's first unarchived list. "got" ticks the first open item whose name matches in any language.
+    - Replies in the linked user's `uiLanguage`; before linking, by script (Arabic/Turkish letters, else English).
+    - 30 messages per hour per number. Numbers are stored and rate-limited only as SHA-256 hashes, never logged.
+    - A member who left the household loses the link on their next message.
+  - `linkWhatsApp({householdId})` → `{code, botNumber}`: members only, flag required, an 8-character code valid 15 minutes, single use. `WHATSAPP_BOT_NUMBER` is a string param (empty until the owner has a number).
+  - `computeUsuals` (daily 03:00 Riyadh): purchases from 90 days, grouped by canonicalId or name hash; at least 3 purchase days; interval = median gap; due from one day early; skipped when on any list (open, claimed, pending, missing). Writes `usuals/{key}` and deletes the rest.
+  - `learnAisleOrder` (daily 02:00 Riyadh): `done` trips ended in the last 24 h at a known store; the order in which categories were first ticked (ranked 0…1; single-category trips say nothing) adds to `stores.aisleStats`; `aisleOrder` is published from 5 trips. Each trip is counted once (`trips.aisleLearned`, in a transaction). New collection-group index `trips (status, endedAt)`.
+  - `deleteMyAccount` now also deletes the user's WhatsApp link and unused link codes.
+  - Secrets `WHATSAPP_TOKEN`, `WHATSAPP_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN` via `defineSecret`. The emulator launcher adds any missing secret line to `functions/.secret.local`, empty.
+  - Rules: `usuals` readable by members, written only by functions; `whatsappLinkCodes` and `whatsappNumbers` closed to clients.
+- Tests:
+  - **282 unit** (+16: the emulator flag overrides; the flags default to off; signature, challenge, hashing, ar/tr/en command parsing, payload parsing; usual keys, intervals and due dates; tick ranks and aisle order).
+  - **238 emulator** (+10: link codes (flag, membership, expiry, single use, hash only); bad signature and flag off; unlinked replies by script; adds with wa:uid and kid pending; list and got; voice and its failures; leaving and account deletion unlink; the rate limit; usuals; aisle learning to 5 trips and counting each trip once).
+- Live check on the dev emulators, with `FLAG_WHATSAPP_ENABLED=true` and a throwaway app secret:
+  - `linkWhatsApp` for Mama returned a code;
+  - a signed "ربط <code>" linked the number (only the hash is stored);
+  - "طماطم، 2 خيار" added خيار ×2 (enriched to produce with ar/tr names) and merged طماطم into the seeded بندورة (`requestedBy` gained `wa:seed-owner`);
+  - unsigned → 401, wrong method → 405, unknown verify token → 403;
+  - replies failed at the Graph API with no token, logged as code only.
+  - It also found that the Admin SDK hangs on Remote Config in the emulator; fixed with the emulator override above.
+- Contract changes: v4 (see the table above), including `trips.aisleLearned?`.
+- Owner actions before turning anything on:
+  - **WhatsApp:**
+    - a Meta Business app with the WhatsApp Cloud API and a number;
+    - set the three secrets and `WHATSAPP_BOT_NUMBER`;
+    - register the webhook URL with the verify token;
+    - check the Graph API version (`GRAPH_VERSION`, v23.0);
+    - message templates are not needed (we only reply within the 24 h window).
+  - **Usuals and aisle learning:** just the flags, after the apps show them.
+- Next: backend B1–B10 are done. Waiting on the owner items listed under B4–B10. iOS I1 starts when the owner says so.
 
 ### 2026-10-19 — Backend B9 Accounts and operations
 - Shipped:

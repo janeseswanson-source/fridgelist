@@ -5,7 +5,7 @@ This file is the single source of truth for every data shape shared by the backe
 **Changing it:** update this file in the same commit as the code, bump `CONTRACT_VERSION`, add a line to the changelog at the bottom, and list the change in `docs/PROGRESS.md` under "Contract changes for other platforms".
 
 ```
-CONTRACT_VERSION = 3
+CONTRACT_VERSION = 4
 ```
 
 ---
@@ -173,6 +173,7 @@ When a trip ends, the server moves that trip's `missing` items back to `open`.
 | `liveActivityToken` | string? | iOS activity push token (hex) |
 | `counts` | map | `{ total, done, missing }` |
 | `lastLiveUpdateAt` | timestamp? | throttle marker |
+| `aisleLearned` | bool? | phase 2: set once `learnAisleOrder` has counted this trip |
 
 ### 3.8 `households/{hid}/events/{eventId}` — functions only
 
@@ -198,6 +199,8 @@ When a trip ends, the server moves that trip's `missing` items back to `open`.
 
 `storeId`: `osm_<node|way>_<id>` or `user_<autoId>`. Fields: `name`, `brand?`, `chainId` (see ARCHITECTURE §5.1; `other` when unknown), `lat`, `lng`, `geohash` (precision 9), `country` (`TR` \| `SA` \| `AE`), `source` (`osm` \| `user`), `verified: bool`, `addedByHousehold?`, `updatedAt`.
 
+Phase 2 (`aisle_learning_enabled`): `aisleOrder?: Category[]` — the category order learned from trips at this store (apps use it instead of the default order when present); `aisleStats?: map<Category, { sumRank, n }>` and `aisleTrips?: number` — the running statistics behind it (functions only).
+
 ### 3.14 `catalog/{canonicalId}` — functions and scripts only, readable by signed-in users
 
 `names: { ar, tr, en, fil?, hi?, ur? }`, `synonyms: { ar: string[], tr: string[], en: string[] }`, `category: Category`, `defaultUnit?: Unit`. Seeded from `fixtures/catalog_seed.json`.
@@ -218,6 +221,18 @@ A household's own meaning for an ambiguous word (for example `عيش` → `rice`
 | `createdAt` | timestamp | members (server time) |
 
 `parseItems` and `onItemCreated` check household aliases first, then dialect rules (`fixtures/catalog_seed.json`), then the catalog, then the LLM.
+
+### 3.17 `households/{hid}/usuals/{key}` — functions only, readable by members (phase 2, `usuals_enabled`)
+
+Items the household buys regularly that are due again and not on a list. `key`: the canonicalId, else `n_` + the first 32 hex characters of the SHA-256 of the normalized name. Fields: `canonicalId?`, `name`, `everyDays: number` (typical interval), `lastBoughtAt: timestamp`, `dueAt: timestamp`, `count: number` (purchases seen), `updatedAt`. Apps show them as suggestions; accepting one writes an item with `addedVia: usuals`.
+
+### 3.18 `whatsappLinkCodes/{code}` — functions only (phase 2, `whatsapp_enabled`)
+
+`code`: 8 characters from the invite alphabet. Fields: `uid`, `householdId`, `expiresAt` (15 minutes). Deleted when used.
+
+### 3.19 `whatsappNumbers/{phoneHash}` — functions only (phase 2, `whatsapp_enabled`)
+
+`phoneHash`: the SHA-256 (hex) of the number in E.164 without `+`. The number itself is never stored. Fields: `uid`, `householdId`, `linkedAt`. WhatsApp adds use `addedBy: wa:<uid>`, `addedVia: whatsapp`.
 
 ---
 
@@ -431,6 +446,8 @@ Keep at most 12 items per list, in display order. `activeTrip` is present only w
 | `whatsapp_enabled` | `false` | phase 2 |
 | `speech_analyzer_enabled` | `false` | iOS 26+ speech API |
 | `max_last_call_minutes` | `15` | |
+| `usuals_enabled` | `false` | phase 2: `computeUsuals` |
+| `aisle_learning_enabled` | `false` | phase 2: `learnAisleOrder` |
 
 ---
 
@@ -439,3 +456,4 @@ Keep at most 12 items per list, in display order. `activeTrip` is present only w
 - **v1 (2026-10-18):** initial contract.
 - **v2 (2026-10-19):** §5.1 Android delivery: `trip_heading`, `trip_arrived`, `item_missing` go to Android as data-only messages with `title` and `body` data keys (server-localized), so the app can build the notification with the inline reply. Backend must change; iOS unaffected.
 - **v3 (2026-10-19):** §4 `startTrip` refuses `kid` with `permission-denied` (PRODUCT_SPEC roles: kids request, they don't shop). §3.2 the user may delete their own device docs (sign-out). Backend must implement both; Android already complies (A1–A6 QA); iOS: hide trip entry points for kids and delete the device doc on sign-out.
+- **v4 (2026-10-19):** phase 2 (B10), all off by default: §10 flags `usuals_enabled` and `aisle_learning_enabled`; §3.13 stores gain `aisleOrder?`, `aisleStats?`, `aisleTrips?`; §3.7 trips gain `aisleLearned?`; new functions-only collections §3.17 `usuals` (members read), §3.18 `whatsappLinkCodes`, §3.19 `whatsappNumbers` (hashed numbers only). Apps: no change needed until they use usuals or learned aisle order.

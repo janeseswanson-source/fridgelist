@@ -114,7 +114,13 @@ describe("shared reference data (CONTRACT §3.13, §3.14)", () => {
 
 describe("functions-only top-level collections (CONTRACT §3.11, §3.12, §3.15)", () => {
   it("shareLinks, invites, catalogCandidates: no client access", async () => {
-    for (const path of ["shareLinks/tok", "invites/ABCD2345", "catalogCandidates/hash"]) {
+    for (const path of [
+      "shareLinks/tok",
+      "invites/ABCD2345",
+      "catalogCandidates/hash",
+      "whatsappLinkCodes/ABCD2345",
+      "whatsappNumbers/abc123",
+    ]) {
       await put(env, path, { householdId: "h1" });
       await assertFails(getDoc(ref(OWNER, path)));
       await assertFails(setDoc(ref(OWNER, path), { householdId: "h1" }));

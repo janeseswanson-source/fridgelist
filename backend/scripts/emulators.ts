@@ -3,7 +3,7 @@
  * project, waits until it is ready, then seeds it (scripts/emulator-seed.ts). Ctrl+C stops all.
  */
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
 const PROJECT = "demo-fridgelist";
 const HUB = "http://127.0.0.1:4400/emulators";
@@ -12,8 +12,15 @@ const shell = process.platform === "win32";
 // Secrets for the Functions emulator (git-ignored). An empty key means "no LLM": parseItems and
 // onItemCreated use the catalog and fallbacks, and the emulator doesn't try Secret Manager.
 // Put a real key here to use the LLM locally: ANTHROPIC_API_KEY=sk-ant-...
+// Every declared secret needs a line; missing ones are added empty (phase 2 stays off anyway).
 const secrets = "functions/.secret.local";
-if (!existsSync(secrets)) writeFileSync(secrets, `ANTHROPIC_API_KEY=${"\n"}`);
+const SECRET_KEYS = ["ANTHROPIC_API_KEY", "WHATSAPP_TOKEN", "WHATSAPP_APP_SECRET", "WHATSAPP_VERIFY_TOKEN"];
+const present = existsSync(secrets) ? readFileSync(secrets, "utf8") : "";
+const missing = SECRET_KEYS.filter((k) => !new RegExp(`^${k}=`, "m").test(present));
+if (missing.length > 0) {
+  const separator = present === "" || present.endsWith("\n") ? "" : "\n";
+  writeFileSync(secrets, present + separator + missing.map((k) => `${k}=\n`).join(""));
+}
 
 const build = spawnSync("npm", ["--prefix", "functions", "run", "build"], {
   stdio: "inherit",

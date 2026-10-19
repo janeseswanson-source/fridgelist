@@ -264,6 +264,11 @@ service cloud.firestore {
         allow read: if isMember(hid);
         allow write: if false;
       }
+      // Phase 2 (CONTRACT v4 §3.17): computeUsuals writes, members read.
+      match /usuals/{key} {
+        allow read: if isMember(hid);
+        allow write: if false;
+      }
       match /mealSuggestions/{mealId} {
         allow read, write: if false;
       }

@@ -5,6 +5,8 @@ import { HttpsError } from "firebase-functions/v2/https";
 export const LIMITS = {
   parseItems: { max: 30, windowSeconds: 60 },
   transcribeAudio: { max: 20, windowSeconds: 3_600 },
+  /** B10: per WhatsApp number (hashed). */
+  whatsapp: { max: 30, windowSeconds: 3_600 },
   /** B9: a full export is heavy; 3 per day. */
   exportMyData: { max: 3, windowSeconds: 86_400 },
   /** ARCHITECTURE §3.8: per household. */
