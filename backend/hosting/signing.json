@@ -1,0 +1,7 @@
+{
+  "howToUse": "SHA-256 signing-certificate fingerprints for /.well-known/assetlinks.json (public values, safe to commit). Debug: `cd android && ./gradlew signingReport`. Release: the upload key from the owner, plus the Google Play app-signing key from Play Console > Setup > App signing. Replace every TODO; hosting/build.ts warns while any remain.",
+  "androidSha256": ["TODO_DEBUG_SHA256", "TODO_RELEASE_SHA256", "TODO_PLAY_APP_SIGNING_SHA256"],
+  "webAppCheckSiteKey": "TODO_RECAPTCHA_ENTERPRISE_SITE_KEY",
+  "playStoreUrl": "TODO_PLAY_STORE_URL",
+  "appStoreUrl": "TODO_APP_STORE_URL"
+}

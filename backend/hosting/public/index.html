@@ -1,12 +1,177 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A shared household shopping list." />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#1b6b4a" />
     <title>FridgeList</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='14' y='4' width='36' height='56' rx='8' fill='%231b6b4a'/%3E%3Crect x='20' y='14' width='4' height='10' rx='2' fill='white'/%3E%3Crect x='20' y='34' width='4' height='10' rx='2' fill='white'/%3E%3Cpath d='M14 28h36' stroke='white' stroke-width='3'/%3E%3C/svg%3E"
+    />
+    <style>
+      :root {
+        --bg: #f6f8f6;
+        --fg: #16201b;
+        --muted: #5b6b62;
+        --card: #ffffff;
+        --line: #dfe6e1;
+        --accent: #1b6b4a;
+        --accent-fg: #ffffff;
+        color-scheme: light dark;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #101512;
+          --fg: #e6ece8;
+          --muted: #9db0a5;
+          --card: #18201b;
+          --line: #2b362f;
+          --accent: #6fd3a3;
+          --accent-fg: #0b1f15;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Arabic", sans-serif;
+      }
+      main {
+        max-width: 34rem;
+        margin: 0 auto;
+        padding: 1.5rem 1rem 2rem;
+      }
+      h1 {
+        font-size: 1.6rem;
+        margin: 0 0 1rem;
+      }
+      h2 {
+        font-size: 1.1rem;
+        margin: 1.5rem 0 0.5rem;
+      }
+      .muted {
+        color: var(--muted);
+        margin: 0;
+      }
+      .notice {
+        padding: 1rem;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+      }
+      .items {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+      }
+      .items li {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem 0.75rem;
+        align-items: baseline;
+        padding: 0.75rem 1rem;
+        border-block-end: 1px solid var(--line);
+      }
+      .items li:last-child {
+        border-block-end: 0;
+      }
+      .title {
+        font-weight: 600;
+      }
+      .sub,
+      .claimed {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .claimed {
+        margin-inline-start: auto;
+      }
+      /* "2 kg" inside Arabic text would otherwise display as "kg 2". */
+      .sub {
+        unicode-bidi: isolate;
+        direction: ltr;
+      }
+      .actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-block: 1rem;
+      }
+      .btn,
+      .badge {
+        min-height: 48px;
+        padding: 0.6rem 1.1rem;
+        border: 0;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--accent-fg);
+        font: inherit;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+      }
+      .secondary {
+        background: transparent;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+      }
+      .add {
+        display: grid;
+        gap: 0.5rem;
+      }
+      .add input {
+        min-height: 48px;
+        padding: 0.6rem 0.8rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--card);
+        color: var(--fg);
+        font: inherit;
+      }
+      .code {
+        font: 700 2rem/1.2 ui-monospace, Consolas, monospace;
+        letter-spacing: 0.15em;
+        direction: ltr;
+        text-align: center;
+        padding: 1rem;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+      }
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      .badges h2 {
+        flex-basis: 100%;
+      }
+      footer {
+        max-width: 34rem;
+        margin: 0 auto;
+        padding: 0 1rem 2rem;
+        font-size: 0.85rem;
+      }
+      footer a {
+        color: var(--muted);
+      }
+    </style>
   </head>
   <body>
-    <!-- B1 placeholder. B7 builds the guest page (/k/{token}) and the join page (/join/{code}). -->
-    <p>FridgeList</p>
+    <main></main>
+    <script src="/config.js"></script>
+    <script type="module" src="/app.js"></script>
   </body>
 </html>

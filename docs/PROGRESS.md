@@ -17,6 +17,7 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | Backend | B1 Scaffold | done | 2026-10-19 | `npm run emulators` builds, starts Auth/Firestore/Functions/Hosting/Storage/Pub/Sub and seeds |
 | Backend | B2 Security rules | done | 2026-10-19 | 144 rules tests (full §3.6 matrix); Android offline flow passes the real rules |
 | Backend | B3 Households, invites, devices | done | 2026-10-19 | callables + `onMemberWritten`; Android two-user join passes against it |
+| Backend | B7 Share links, guest page, link hosting | done, placeholders for domain/fingerprints/team ID/App Check key | 2026-10-19 | guest E2E through the Hosting emulator; Lighthouse mobile 99/100/100 |
 | Backend | B6 Trips, notifications, live surfaces | done, real delivery needs the dev project | 2026-10-19 | every push type snapshot-tested in ar/tr/en; throttle, stale job; Android trip E2E |
 | Backend | B5 Stores | done, real import awaits owner OK | 2026-10-19 | UAE and Saudi dry runs on live OSM data; `nearbyStores`/`addStore` |
 | Backend | B4 Item pipeline | done, LLM/STT recordings pending a key | 2026-10-19 | golden 30/30 on catalog + dialect alone; LLM and STT behind interfaces, untested against the real services |
@@ -29,6 +30,57 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Backend B7 Share links, guest page, link hosting
+- Built with placeholders (owner's choice): `LINK_DOMAIN`, the Android SHA-256 fingerprints, `APPLE_TEAM_ID`, the web App Check site key and the store URLs. `hosting/build.ts` lists every placeholder still in use on each build.
+- Shipped:
+  - `createShareLink`: owner/adult, list must exist, `scope` view|add, `kind` nfc|qr|link, optional `expiresInDays`. Token = 18 random bytes as base64url (24 URL-safe characters); link doc per CONTRACT §3.11.
+  - `revokeShareLink`: owner/adult of that household.
+  - `resolveShareLink` (**public**):
+    - only `open` and `claimed` items, titled by the display rule in the `lang` asked for, else the household default;
+    - a numbers-only subtitle ("2 kg", "×3"); aisle order;
+    - no member names, no `addedBy`, nothing else;
+    - revoked, expired or unknown → `not-found`.
+  - `guestAddItem` (**public**):
+    - scope `add` only (view → `permission-denied`); URLs and bare domains are stripped from the text and the guest name;
+    - split with the shared splitter (the household language as hint); at most 10 items per message;
+    - items are `addedBy: guest:<token>`, `addedVia: guest_web` (then translated and merged by `onItemCreated`);
+    - **20 items per hour per link**, counted in a transaction on the link doc's own `guestAddsWindowStart`/`guestAddsInWindow`;
+    - `guest_added` event with the guest's name.
+  - **App Check:** the two public callables set `enforceAppCheck`, except under the Functions emulator, which has no App Check and would reject every guest call. The member callables don't enforce it yet: the apps ship App Check with A11/I13, and enforcing now would lock out the current Android build.
+  - **Hosting:**
+    - `/api/resolveShareLink` and `/api/guestAddItem` are rewritten to the functions in `me-central2`, so the page calls its own origin (no CORS, no project ID in the page);
+    - `/k/**`, `/join/**` and `/l/**` serve the page;
+    - CSP (no inline script, only Google's App Check origins), `nosniff`, `no-referrer`, a Permissions-Policy, `noindex`;
+    - `.well-known/apple-app-site-association` served as `application/json`.
+  - `hosting/build.ts`: generates both `.well-known` files from the CLAUDE.md constants and `hosting/signing.json` (assetlinks covers the release and `.dev` packages), plus `config.js`, and transpiles `hosting/src/app.ts` with the existing `typescript` (no bundler). It runs on `npm run emulators` and as the hosting predeploy.
+  - **The page** (`index.html` + `app.ts`, ~4 KB of CSS, no framework or trackers):
+    - guest view (list, "someone is getting this", Copy, Share via the Web Share API or a WhatsApp fallback, Add form for `add` links), join page (big code, copy), list page;
+    - ar/tr/en with RTL, light and dark, 48 px targets;
+    - user content only through `textContent`; store badges ("coming soon" until the URLs exist); the OpenStreetMap attribution in the footer.
+- Fixed along the way:
+  - **Seed race on a cold start:** the launcher seeded as soon as the hub was up, before the Firestore triggers were registered, so seed items stayed untranslated (the B6 re-seed had hidden it). It now waits for `health`, plus a short grace period, then confirms an item was enriched and says so.
+  - **Arabic "2 kg" displayed as "kg 2"** (bidi reordering): the quantity is now an isolated LTR run. Counts read "1×" in Arabic, as in the Android app.
+- Tests: **250 unit** (incl. 4 hosting-config checks: association content type, CSP, nosniff and referrer, rewrites, App Check on outside the emulator) + **216 emulator** (12 share-link tests: token shape and doc, roles, revoke, open/claimed only and titles per language, default language, expired/unknown/malformed, guest add split and event, view-only, URL stripping, the 20/hour window and its reset; plus `stripUrls` cases).
+- End to end (the B7 acceptance): through the **Hosting emulator** on its own origin, a link created by seeded Mama resolved, and a guest add ("2 lemons and mint", from "Neighbour") wrote two `guest_web` items that `onItemCreated` enriched (`lang: en`, `produce`).
+- **Lighthouse mobile** (13.5, run once with `npx`, not a project dependency):
+
+  | Page | Performance | Accessibility | Best practices |
+  | --- | --- | --- | --- |
+  | Guest, Arabic | 99 | 100 | 100 |
+  | Guest, Turkish | 99 | 100 | 100 |
+  | Join, Arabic | 100 | 100 | 100 |
+
+  SEO scores 60 only because of the deliberate `noindex`: private household lists must not be indexed.
+- Known limit: the Hosting **emulator ignores `headers`** (checked with a minimal config), so CSP and the association Content-Type can only be seen on a real deploy. The unit test checks the config; the RUNBOOK has a `curl -I` check for the first deploy.
+- Contract changes: none.
+- Owner actions:
+  - the real `LINK_DOMAIN` (and DNS for it on Firebase Hosting);
+  - the SHA-256 fingerprints (debug, upload, Play app-signing);
+  - `APPLE_TEAM_ID`;
+  - a reCAPTCHA Enterprise site key registered for App Check (web);
+  - the store URLs once published.
+- Next: B8 (meals and the Ramadan planner). It uses `LLM_MODEL_SMART`, so with no API key the generation is tested with replayed responses only.
 
 ### 2026-10-19 — Backend B6 Trips, notifications, live surfaces
 - Shipped:

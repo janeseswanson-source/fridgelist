@@ -10,22 +10,127 @@
     {
       "source": "functions",
       "codebase": "default",
-      "ignore": ["node_modules", ".git", "test", "*.log", "coverage"],
-      "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"]
+      "ignore": [
+        "node_modules",
+        ".git",
+        "test",
+        "*.log",
+        "coverage"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
     }
   ],
   "hosting": {
     "public": "hosting/public",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    "ignore": [
+      "firebase.json",
+      "**/node_modules/**"
+    ],
+    "predeploy": [
+      "npm --prefix \"$PROJECT_DIR\" run build:hosting"
+    ],
+    "cleanUrls": true,
+    "rewrites": [
+      {
+        "source": "/api/resolveShareLink",
+        "function": {
+          "functionId": "resolveShareLink",
+          "region": "me-central2"
+        }
+      },
+      {
+        "source": "/api/guestAddItem",
+        "function": {
+          "functionId": "guestAddItem",
+          "region": "me-central2"
+        }
+      },
+      {
+        "source": "/k/**",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/join/**",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/l/**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/.well-known/apple-app-site-association",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ]
+      },
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Content-Security-Policy",
+            "value": "default-src 'self'; script-src 'self' https://www.gstatic.com https://www.google.com https://www.recaptcha.net; connect-src 'self' https://*.googleapis.com https://www.google.com; frame-src https://www.google.com https://www.recaptcha.net; img-src 'self' data:; style-src 'self' 'unsafe-inline'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
+          },
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "Referrer-Policy",
+            "value": "no-referrer"
+          },
+          {
+            "key": "Permissions-Policy",
+            "value": "camera=(), microphone=(), geolocation=()"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(js|css)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=300"
+          }
+        ]
+      }
+    ]
   },
   "emulators": {
-    "auth": { "host": "0.0.0.0", "port": 9099 },
-    "firestore": { "host": "0.0.0.0", "port": 8080 },
-    "functions": { "host": "0.0.0.0", "port": 5001 },
-    "hosting": { "host": "0.0.0.0", "port": 5000 },
-    "storage": { "host": "0.0.0.0", "port": 9199 },
-    "pubsub": { "host": "0.0.0.0", "port": 8085 },
-    "ui": { "enabled": true, "port": 4000 },
+    "auth": {
+      "host": "0.0.0.0",
+      "port": 9099
+    },
+    "firestore": {
+      "host": "0.0.0.0",
+      "port": 8080
+    },
+    "functions": {
+      "host": "0.0.0.0",
+      "port": 5001
+    },
+    "hosting": {
+      "host": "0.0.0.0",
+      "port": 5000
+    },
+    "storage": {
+      "host": "0.0.0.0",
+      "port": 9199
+    },
+    "pubsub": {
+      "host": "0.0.0.0",
+      "port": 8085
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
+    },
     "singleProjectMode": true
   }
 }

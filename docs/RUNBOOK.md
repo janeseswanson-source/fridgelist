@@ -127,6 +127,19 @@ curl -s -X POST -H "Content-Type: application/json" -d '{"data":{}}' \
   - Live Activities need iOS 17.2+ for push-to-start.
 - The **throttle** state lives on the trip (`lastLiveUpdateAt`). `list_changed` throttle docs are in `pushThrottle/{uid}_{deviceId}` (functions only).
 
+### Share links and hosting (B7)
+
+- **Callables:** `createShareLink`, `revokeShareLink` (members), and `resolveShareLink`, `guestAddItem` (public, App Check). Guest adds are capped at 20 items per hour per link.
+- **Hosting build:** `npm run build:hosting` (also run by `npm run emulators` and the hosting predeploy) writes `hosting/public/.well-known/*`, `config.js` and `app.js` (all git-ignored). Values come from CLAUDE.md and `hosting/signing.json`; the build prints any placeholders still in use.
+- **Locally:** the guest page is at `http://127.0.0.1:5000/k/<token>` (add `?lang=ar|tr|en`). Create a token as a seeded user with `createShareLink`. The Hosting emulator **ignores `headers`**, so CSP and Content-Type can't be checked locally.
+- **First deploy checks:**
+  ```sh
+  curl -sI https://<LINK_DOMAIN>/.well-known/apple-app-site-association | grep -i content-type   # application/json
+  curl -sI https://<LINK_DOMAIN>/k/x | grep -iE "content-security-policy|nosniff"
+  ```
+  Then verify with Google's Statement List Tester and Apple's AASA validator.
+- **App Check (owner):** register the web app with reCAPTCHA Enterprise in Firebase Console > App Check, put the site key in `hosting/signing.json`, then enforce App Check for Cloud Functions. Android (Play Integrity) and iOS (App Attest) come with A11/I13.
+
 ## 3. Projects and regions
 
 - `.firebaserc` aliases: `dev` → `fridgelist-dev-TODO`, `prod` → `fridgelist-prod-TODO`. These are placeholders until the owner creates the projects.

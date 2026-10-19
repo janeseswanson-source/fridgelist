@@ -28,3 +28,6 @@ backend/**/*-debug.log
 backend/.emulator-data/
 backend/functions/src/generated/
 backend/functions/.secret.local
+backend/hosting/public/.well-known/
+backend/hosting/public/config.js
+backend/hosting/public/app.js
