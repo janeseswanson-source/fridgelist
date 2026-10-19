@@ -157,7 +157,7 @@ describe.runIf(process.env.RECORD === "1")("record one real meal plan per occasi
     const dir = join(import.meta.dirname, "recordings");
     const planner = new LlmMealPlanner(
       new RecordingTransport(new AnthropicTransport(process.env.ANTHROPIC_API_KEY ?? ""), dir),
-      process.env.LLM_MODEL_SMART ?? "claude-sonnet-5-5",
+      process.env.LLM_MODEL_SMART ?? "claude-haiku-5-5",
       catalogIds,
     );
     const review: Record<string, unknown> = {};

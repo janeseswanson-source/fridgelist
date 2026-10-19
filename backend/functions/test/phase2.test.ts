@@ -4,6 +4,7 @@ import { defaultFlag, emulatorFlag, StaticFlags } from "../src/lib/flags.js";
 import { dueUsuals, usualKey, usualsFrom, type Purchase } from "../src/scheduled/computeUsuals.js";
 import { addTrip, aisleOrder, tripRanks } from "../src/scheduled/learnAisleOrder.js";
 import { CATEGORIES } from "../src/lib/categories.js";
+import { configured } from "../src/lib/secrets.js";
 import {
   inboundMessages,
   parseCommand,
@@ -28,6 +29,15 @@ describe("flags", () => {
     expect(emulatorFlag("whatsapp_enabled", {})).toBe(false);
     expect(emulatorFlag("whatsapp_enabled", { FLAG_WHATSAPP_ENABLED: "true" })).toBe(true);
     expect(emulatorFlag("usuals_enabled", { FLAG_WHATSAPP_ENABLED: "true" })).toBe(false);
+  });
+});
+
+describe("secrets", () => {
+  it("the deploy placeholder counts as not configured", () => {
+    expect(configured("none")).toBe("");
+    expect(configured(" NONE ")).toBe("");
+    expect(configured("")).toBe("");
+    expect(configured("sk-ant-x")).toBe("sk-ant-x");
   });
 });
 

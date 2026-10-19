@@ -192,7 +192,7 @@ First time per project (owner):
 
 1. Create the Firebase project (Blaze plan), Firestore in Native mode at `me-central2`, Storage, Auth (Google provider), and Hosting with the custom domain `LINK_DOMAIN`.
 2. Put the project IDs in CLAUDE.md and `backend/.firebaserc`.
-3. `firebase functions:secrets:set ANTHROPIC_API_KEY --project dev`
+3. Every secret must exist before the first deploy. Without a real value, store the placeholder `none` (the code treats it as not configured, so there is no LLM cost and WhatsApp stays unusable): `echo none | firebase functions:secrets:set <NAME> --data-file=- --project dev` for `ANTHROPIC_API_KEY`, `WHATSAPP_TOKEN`, `WHATSAPP_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN`. Replace one later with a real value and redeploy the functions that use it.
 4. Enable the Cloud Speech-to-Text API, App Check (reCAPTCHA Enterprise for web, Play Integrity, App Attest), and upload the APNs key under Cloud Messaging.
 5. Set a **budget alert** (see below).
 

@@ -4,6 +4,7 @@ import { HttpsError, onCall, onRequest } from "firebase-functions/v2/https";
 import { z } from "zod";
 import { inviteCode } from "../lib/ids.js";
 import { remoteFlags, type Flags } from "../lib/flags.js";
+import { configured } from "../lib/secrets.js";
 import { parse, requireMember, requireUid } from "../lib/requests.js";
 import { id } from "../lib/schemas.js";
 import { GoogleSpeechToText } from "../stt/speechToText.js";
@@ -59,7 +60,7 @@ export const whatsappWebhook = onRequest(
   { secrets: [WHATSAPP_TOKEN, WHATSAPP_APP_SECRET, WHATSAPP_VERIFY_TOKEN], timeoutSeconds: 60 },
   async (req, res) => {
     if (req.method === "GET") {
-      const result = verifyChallenge(req.query, WHATSAPP_VERIFY_TOKEN.value());
+      const result = verifyChallenge(req.query, configured(WHATSAPP_VERIFY_TOKEN.value()));
       res.status(result.status).send(result.body);
       return;
     }
@@ -71,9 +72,9 @@ export const whatsappWebhook = onRequest(
       {
         db: getFirestore(),
         flags: remoteFlags,
-        client: new GraphWhatsAppClient(WHATSAPP_TOKEN.value()),
+        client: new GraphWhatsAppClient(configured(WHATSAPP_TOKEN.value())),
         stt: new GoogleSpeechToText(process.env.GCLOUD_PROJECT ?? ""),
-        appSecret: WHATSAPP_APP_SECRET.value(),
+        appSecret: configured(WHATSAPP_APP_SECRET.value()),
         now: new Date(),
       },
       req.rawBody,

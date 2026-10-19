@@ -6,15 +6,19 @@ import { Catalog } from "./lib/catalog.js";
 import { LlmMealPlanner, NO_MEALS, type MealPlanner } from "./meals/planner.js";
 import type { CachedCandidate, CandidateCache } from "./lib/resolve.js";
 import { createHash } from "node:crypto";
+import { configured } from "./lib/secrets.js";
 
-/** Secrets and params (prompt 01 stack). The key is empty locally until the owner adds one. */
+/**
+ * Secrets and params (prompt 01 stack). No key (empty locally, `none` when deployed) means no LLM:
+ * the catalog and fallbacks only, at no cost. Both models default to Haiku to keep costs low.
+ */
 export const ANTHROPIC_API_KEY = defineSecret("ANTHROPIC_API_KEY");
 export const LLM_MODEL_FAST = defineString("LLM_MODEL_FAST", { default: "claude-haiku-5-5" });
-export const LLM_MODEL_SMART = defineString("LLM_MODEL_SMART", { default: "claude-sonnet-5-5" });
+export const LLM_MODEL_SMART = defineString("LLM_MODEL_SMART", { default: "claude-haiku-5-5" });
 
 /** The fast model for parsing, classification and translation; NO_LLM without a key. */
 export function fastLlm(): LlmProvider {
-  const key = ANTHROPIC_API_KEY.value();
+  const key = configured(ANTHROPIC_API_KEY.value());
   if (!key) return NO_LLM;
   return new ClassifyingLlm(
     new AnthropicTransport(key),
@@ -25,7 +29,7 @@ export function fastLlm(): LlmProvider {
 
 /** The smart model for meal plans (prompt B8); no key → every plan is `unavailable`. */
 export function smartMealPlanner(): MealPlanner {
-  const key = ANTHROPIC_API_KEY.value();
+  const key = configured(ANTHROPIC_API_KEY.value());
   if (!key) return NO_MEALS;
   return new LlmMealPlanner(
     new AnthropicTransport(key),

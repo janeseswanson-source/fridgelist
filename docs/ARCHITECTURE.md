@@ -110,7 +110,7 @@ Every callable validates input with zod, checks membership and role, and returns
 
 ### 3.5 LLM and speech
 
-- **`LlmProvider`** interface with one implementation on the Anthropic SDK. Models come from params: `LLM_MODEL_FAST` (default `claude-haiku-5-5`) for parsing, classification and translation; `LLM_MODEL_SMART` (default `claude-sonnet-5-5`) for meal plans.
+- **`LlmProvider`** interface with one implementation on the Anthropic SDK. Models come from params: `LLM_MODEL_FAST` (default `claude-haiku-5-5`) for parsing, classification and translation; `LLM_MODEL_SMART` (default `claude-haiku-5-5` to keep costs low; Sonnet is a param change away) for meal plans. With no key (`none` in Secret Manager), the backend runs on the catalog and fallbacks at no LLM cost.
 - Every LLM call asks for JSON that matches a schema (structured outputs, or a forced tool call), then validates with zod. Invalid output → one retry → fall back (local splitter for parsing, skip for translation, error for meals).
 - Prompts live in `llm/prompts/*.md` with few-shot examples taken from `fixtures/parse_cases.json`. Temperature 0 for parsing.
 - Golden tests replay recorded LLM responses (`test/recordings/`), so CI never calls the API. A `RECORD=1` run refreshes recordings against the real API on demand.
