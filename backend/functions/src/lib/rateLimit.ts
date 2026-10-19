@@ -5,6 +5,8 @@ import { HttpsError } from "firebase-functions/v2/https";
 export const LIMITS = {
   parseItems: { max: 30, windowSeconds: 60 },
   transcribeAudio: { max: 20, windowSeconds: 3_600 },
+  /** Not in ARCHITECTURE §3: added with B5 so one account cannot flood `stores`. */
+  addStore: { max: 20, windowSeconds: 86_400 },
 } as const;
 
 /**

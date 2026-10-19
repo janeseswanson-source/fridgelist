@@ -17,6 +17,7 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | Backend | B1 Scaffold | done | 2026-10-19 | `npm run emulators` builds, starts Auth/Firestore/Functions/Hosting/Storage/Pub/Sub and seeds |
 | Backend | B2 Security rules | done | 2026-10-19 | 144 rules tests (full §3.6 matrix); Android offline flow passes the real rules |
 | Backend | B3 Households, invites, devices | done | 2026-10-19 | callables + `onMemberWritten`; Android two-user join passes against it |
+| Backend | B5 Stores | done, real import awaits owner OK | 2026-10-19 | UAE and Saudi dry runs on live OSM data; `nearbyStores`/`addStore` |
 | Backend | B4 Item pipeline | done, LLM/STT recordings pending a key | 2026-10-19 | golden 30/30 on catalog + dialect alone; LLM and STT behind interfaces, untested against the real services |
 | Android | A1 Scaffold | done | 2026-10-18 | core:i18n passes 28/28 fixture cases (18/18 split required) |
 | Android | A2 Sign-in, onboarding, household | done | 2026-10-18 | two-user join E2E passes against backend B3 (2026-10-19) |
@@ -27,6 +28,41 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Backend B5 Stores
+- Shipped:
+  - `scripts/import-stores.ts`:
+    - dry run by default, with counts per country and chain;
+    - Overpass for AE/SA (nodes and ways with centres, the five shop types), retrying on 429/502/503/504;
+    - Turkey through Geofabrik + `osmium` GeoJSON (FeatureCollection or geojsonseq);
+    - writes are idempotent `osm_<type>_<id>` in batches of 400, into the emulators or `--live <projectId>`;
+    - `--prune` for monthly re-runs.
+    - Parsing lives in `functions/src/stores/osm.ts` and is unit-tested.
+  - Chain mapping (`lib/chains.ts`): the ARCHITECTURE §5.1 table matched on `brand`, then the names; restricted to the countries each chain operates in; CarrefourSA before Carrefour.
+    - Unicode-aware whole-word matching: JavaScript `\b` is ASCII-only, so "Yeni Şok" failed with it.
+    - Both Turkish and plain lowercasing: Turkish rules turn "MIGROS" into "mıgros".
+  - `nearbyStores`:
+    - geohash query bounds plus an exact distance filter, nearest first, de-duplicated across cells;
+    - defaults 5 km / 60, maxima 10 km / 100;
+    - unverified stores show only to the adder's households;
+    - **the location is never stored or logged** (rule 4).
+  - `addStore`:
+    - `user_<id>`, `verified: false`, `addedByHousehold` = the caller's first household, country from coordinates (TR/SA/AE only), a known `chainId` or `other`;
+    - the same normalized name within 50 m returns the existing store;
+    - 20 per day per user (a new rate-limit bucket; ARCHITECTURE §3 listed none for it).
+  - `docs/ATTRIBUTION.md`: the ODbL attribution text in en/ar/tr and where it must appear. It isn't yet shown in the apps or the guest page.
+- Live dry runs (public Overpass, read-only):
+  - **UAE:** 4,984 shops, 4,478 named stores; chains mapped as listed in RUNBOOK.
+  - **Saudi Arabia:** 3,207 / 2,650.
+  - Turkey not run (needs the ~600 MB PBF and osmium; steps in RUNBOOK).
+- Tests: **38 unit** (chain mapping incl. look-alikes such as "Kibim", "Şokella", "Pandas Toys", "Profile"; country boxes; Overpass and GeoJSON parsing) + **7 emulator** (ordering and distances, radius/limit/validation, cell edges without duplicates, household-only unverified stores, `addStore` creation, de-duplication, validation, rate limit).
+- End to end: imported the UAE into the **local** emulators (4,478 stores); `nearbyStores` for Dubai Marina over HTTP returned real OSM stores nearest first (Wmart 21 m, Marina Grocery 52 m, Al Maya 156 m, West Zone 157 m…). The log holds only the count and radius.
+- Suggestion for the owner (not done; it changes ARCHITECTURE §5.1's table): large UAE groups currently land in `other`. Sharjah Coop (35), Al Madina (~80 across spellings), West Zone (36), Zoom (~47) and ADNOC Oasis (~100). Adding chain IDs would group them for chips and aisle learning.
+- Contract changes: none.
+- Owner actions:
+  - approve the first **real** import (needs the dev project);
+  - for Turkey, run the osmium steps or let me run them once osmium is installed.
+- Next: B6 (trips, notifications, live surfaces). It needs FCM, so pushes can be built and snapshot-tested against the emulators, and real delivery waits for the dev project.
 
 ### 2026-10-19 — Backend B4 Item pipeline
 - The owner chose to build without an API key for now: the LLM and Speech-to-Text sit behind interfaces, are fully tested with fakes, and are **not yet run against the real services**.

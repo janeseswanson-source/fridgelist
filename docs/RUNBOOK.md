@@ -90,6 +90,32 @@ curl -s -X POST -H "Content-Type: application/json" -d '{"data":{}}' \
   - The emulator has no STT, so it returns `unavailable` locally, and the apps show their offline message.
 - **Rate limits:** counters in `rateLimits/{bucket}:{uid}` (functions only; the rules close it). Limits: `parseItems` 30/min/user, `transcribeAudio` 20/hour/user.
 
+### Stores (B5)
+
+- **Callables:**
+  - `nearbyStores` (geohash ranges + exact distance, nearest first, radius 5 km default/10 km max, limit 60/100). The caller's location is used for that one answer only: never stored or logged.
+  - `addStore`: `user_<id>`, unverified, visible only to the adder's household; the same name within 50 m returns the existing store; 20 per day per user.
+- **Import** (`npm run import:stores`): dry run by default; it prints counts per chain.
+  ```sh
+  npm run import:stores -- --country AE                 # dry run (public Overpass API)
+  npm run import:stores -- --country SA --write         # into the running emulators
+  npm run import:stores -- --country AE --write --live <projectId> --prune   # real project: owner only
+  ```
+  - Overpass sometimes answers 429/502/503/504 under load; the script waits and retries 4 times.
+  - Writes are idempotent (`osm_<node|way>_<id>`), in batches of 400. `--prune` removes this country's `osm_` stores that disappeared from OSM.
+  - Re-run monthly.
+- **Turkey** is too large for the public Overpass API. Use Geofabrik and osmium (`osmium-tool`, installable with conda, apt or brew):
+  ```sh
+  curl -LO https://download.geofabrik.de/europe/turkey-latest.osm.pbf        # ~600 MB
+  osmium tags-filter turkey-latest.osm.pbf nw/shop=supermarket,convenience,greengrocer,butcher,bakery -o tr-shops.osm.pbf
+  osmium export tr-shops.osm.pbf --attributes type,id -f geojsonseq -o tr-shops.geojsonseq
+  npm run import:stores -- --country TR --geojson tr-shops.geojsonseq        # dry run first
+  ```
+- Dry runs on 2026-10-19:
+  - UAE: 4,984 shops, 4,478 named. Carrefour 90, Spinneys 69, LuLu 63, Viva 32, Al Maya 28, Nesto 23, Union Coop 18, Choithrams 17, Waitrose 11, other 4,126.
+  - Saudi Arabia: 3,207 shops, 2,650 named. Panda 119, Othaim 88, Tamimi 44, LuLu 31, Danube 30, Carrefour 15, Nesto 6, other 2,317.
+- **Attribution:** "Store data © OpenStreetMap contributors" (ODbL), shown in Settings and on the guest page; see `docs/ATTRIBUTION.md`.
+
 ## 3. Projects and regions
 
 - `.firebaserc` aliases: `dev` → `fridgelist-dev-TODO`, `prod` → `fridgelist-prod-TODO`. These are placeholders until the owner creates the projects.
