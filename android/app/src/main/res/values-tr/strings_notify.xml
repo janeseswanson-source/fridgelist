@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated for A6 from one table so en/ar/tr stay aligned. -->
+<resources>
+    <string name="channel_trip">Süren alışveriş</string>
+    <string name="channel_trip_desc">Kendi alışverişiniz: ilerleme ve sıradakiler.</string>
+    <string name="channel_last_call">Son çağrı</string>
+    <string name="channel_last_call_desc">Biri markete gidiyor: ihtiyacınızı şimdi ekleyin.</string>
+    <string name="channel_household">Hane</string>
+    <string name="channel_household_desc">Markete varışlar ve bulunamayan ürünler.</string>
+    <string name="channel_suggestions">Öneriler</string>
+    <string name="channel_suggestions_desc">Genelde aldığınız şeyler.</string>
+    <string name="notif_reply_label">Listeye ekle</string>
+    <string name="notif_reply_hint">ör. süt, ekmek</string>
+    <string name="notif_added">Eklendi ✓</string>
+    <string name="trip_heading_to">Gidiliyor: %1$s</string>
+    <string name="trip_at">Şu an: %1$s</string>
+    <string name="trip_store_unknown">market</string>
+    <string name="trip_progress">%2$s üründen %1$s tanesi sepette</string>
+    <string name="trip_next">Sıradaki: %1$s</string>
+    <string name="trip_last_call">Son çağrı</string>
+    <string name="trip_latest_add">%1$s ekledi: %2$s</string>
+    <string name="trip_left">%1$s kaldı</string>
+    <string name="action_open">Aç</string>
+    <string name="action_at_store">Markete vardım</string>
+    <string name="going_title">Gidiyorum</string>
+    <string name="going_where">Nereye?</string>
+    <string name="going_use_location">Yakınımdaki marketleri göster</string>
+    <string name="going_location_note">Konumunuz yalnızca bu telefonda, bir kez, yakındaki marketleri listelemek için kullanılır. Asla paylaşılmaz.</string>
+    <string name="going_store_label">Market (isteğe bağlı)</string>
+    <string name="going_last_call">Hane için son çağrı</string>
+    <string name="going_last_call_none">Yok</string>
+    <string name="going_minutes">%1$s dk</string>
+    <string name="going_send">Herkese haber ver</string>
+    <string name="going_offline">Haneye haber vermek internet gerektirir. Çevrimiçi olunca tekrar deneyin ya da doğrudan alışverişe başlayın.</string>
+    <string name="going_no_stores">Yakında market bulunamadı. Market adını yazın.</string>
+    <string name="going_distance_m">%1$s m</string>
+    <string name="going_distance_km">%1$s km</string>
+</resources>

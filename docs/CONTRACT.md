@@ -5,7 +5,7 @@ This file is the single source of truth for every data shape shared by the backe
 **Changing it:** update this file in the same commit as the code, bump `CONTRACT_VERSION`, add a line to the changelog at the bottom, and list the change in `docs/PROGRESS.md` under "Contract changes for other platforms".
 
 ```
-CONTRACT_VERSION = 1
+CONTRACT_VERSION = 2
 ```
 
 ---
@@ -280,6 +280,8 @@ Server text is localized to the recipient's `uiLanguage`. Every push carries `da
 | `trip_update` | the Android shopper's device, data-only | none | see §5.3 | — | `trip` |
 | `list_changed` | other members' devices, data-only (iOS: `content-available`), at most 1 per device per minute | none | `listId` | — | — |
 
+**Android delivery (v2):** to Android devices, `trip_heading`, `trip_arrived` and `item_missing` are sent **data-only** (no FCM `notification` block, Android priority `high`) with two extra data keys, `title` and `body`, holding the server-localized visible text (in the recipient's `uiLanguage`). The app builds the notification itself, which is the only way to attach the inline reply on Android. iOS delivery is unchanged (`aps.alert` + category).
+
 **Inline reply:** `TRIP_HEADING` and `TRIP_ARRIVED` carry a text-input action with identifier `ADD_ITEM`. On Android the `RemoteInput` result key is `item_text`. The reply is split locally and written as items with `addedVia: notification_reply`.
 
 **Local notifications** (created on the device, never pushed):
@@ -433,3 +435,4 @@ Keep at most 12 items per list, in display order. `activeTrip` is present only w
 ## 11. Changelog
 
 - **v1 (2026-10-18):** initial contract.
+- **v2 (2026-10-19):** §5.1 Android delivery: `trip_heading`, `trip_arrived`, `item_missing` go to Android as data-only messages with `title` and `body` data keys (server-localized), so the app can build the notification with the inline reply. Backend must change; iOS unaffected.

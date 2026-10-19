@@ -119,7 +119,11 @@ class FakeTrips(
         failWith?.let { throw it }
         return com.fridgelist.core.model.StartTripResponse(checkNotNull(tripId))
     }
-    override suspend fun updateTrip(request: com.fridgelist.core.model.UpdateTripRequest) = com.fridgelist.core.model.UpdateTripResponse()
+    val updates = mutableListOf<com.fridgelist.core.model.UpdateTripRequest>()
+    override suspend fun updateTrip(request: com.fridgelist.core.model.UpdateTripRequest): com.fridgelist.core.model.UpdateTripResponse {
+        updates += request
+        return com.fridgelist.core.model.UpdateTripResponse()
+    }
     override suspend fun tripListIds(householdId: String, tripId: String): List<String>? = tripLists[tripId]
 }
 
@@ -127,5 +131,16 @@ class FakeTripEnder : com.fridgelist.app.work.TripEnder {
     val ended = mutableListOf<Pair<String, String>>()
     override fun endTrip(householdId: String, tripId: String) {
         ended += householdId to tripId
+    }
+}
+
+class FakeTripNotifier : com.fridgelist.app.notifications.TripNotifier {
+    val shown = mutableListOf<com.fridgelist.app.notifications.TripNotice>()
+    var cancelled = 0
+    override fun show(notice: com.fridgelist.app.notifications.TripNotice) {
+        shown += notice
+    }
+    override fun cancel() {
+        cancelled++
     }
 }

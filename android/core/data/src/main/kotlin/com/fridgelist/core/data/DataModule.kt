@@ -18,7 +18,9 @@ import com.fridgelist.core.data.items.ParseRepository
 import com.fridgelist.core.data.session.DataStoreSessionStore
 import com.fridgelist.core.data.session.SessionStore
 import com.fridgelist.core.data.user.FirestoreUserRepository
+import com.fridgelist.core.data.trips.CallableStoreRepository
 import com.fridgelist.core.data.trips.FirebaseTripRepository
+import com.fridgelist.core.data.trips.StoreRepository
 import com.fridgelist.core.data.trips.TripRepository
 import com.fridgelist.core.data.user.UserRepository
 import com.fridgelist.core.data.voice.CallableTranscribeRepository
@@ -56,4 +58,6 @@ interface DataModule {
     @Binds fun transcribe(impl: CallableTranscribeRepository): TranscribeRepository
 
     @Binds fun trips(impl: FirebaseTripRepository): TripRepository
+
+    @Binds fun stores(impl: CallableStoreRepository): StoreRepository
 }

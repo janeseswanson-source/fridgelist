@@ -49,6 +49,7 @@ import androidx.core.os.ConfigurationCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fridgelist.app.R
+import com.fridgelist.app.feature.going.GoingRoute
 import com.fridgelist.core.model.ItemStatus
 import java.util.Locale
 
@@ -61,6 +62,7 @@ fun ListDetailScreen(
     onAdd: () -> Unit,
     onBack: () -> Unit,
     onStartShopping: () -> Unit = {},
+    onGoing: () -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -73,9 +75,9 @@ fun ListDetailScreen(
                 },
                 actions = {
                     if (state.sections.toBuyCount > 0) {
-                        TextButton(onClick = onStartShopping) {
-                            Icon(painterResource(R.drawable.ic_cart), contentDescription = null, modifier = Modifier.padding(end = 4.dp))
-                            Text(stringResource(R.string.shop_start))
+                        TextButton(onClick = onGoing) { Text(stringResource(R.string.going_title)) }
+                        IconButton(onClick = onStartShopping) {
+                            Icon(painterResource(R.drawable.ic_cart), contentDescription = stringResource(R.string.shop_start))
                         }
                     }
                 },
@@ -186,6 +188,7 @@ fun ListDetailRoute(onBack: () -> Unit, onStartShopping: (listId: String) -> Uni
     val snackbar = remember { SnackbarHostState() }
     var editing by remember { mutableStateOf<ItemRowUi?>(null) }
     var adding by rememberSaveable { mutableStateOf(false) }
+    var going by rememberSaveable { mutableStateOf(false) }
 
     val undoLabel = stringResource(R.string.action_undo)
     val undoMessage = undo?.let { stringResource(it.message) }
@@ -214,11 +217,16 @@ fun ListDetailRoute(onBack: () -> Unit, onStartShopping: (listId: String) -> Uni
         }
     }
 
-    ListDetailScreen(state, actions, snackbar, onAdd = { adding = true }, onBack = onBack, onStartShopping = { onStartShopping(vm.listId) })
+    ListDetailScreen(state, actions, snackbar, onAdd = { adding = true }, onBack = onBack, onStartShopping = { onStartShopping(vm.listId) }, onGoing = { going = true })
 
     editing?.let { row ->
         ModalBottomSheet(onDismissRequest = { editing = null }) {
             EditItemContent(row, canRename = vm.canRename(row), onSave = { edit -> vm.edit(row, edit); editing = null })
+        }
+    }
+    if (going) {
+        ModalBottomSheet(onDismissRequest = { going = false }) {
+            GoingRoute(onDone = { going = false })
         }
     }
     if (adding) {

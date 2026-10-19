@@ -3,7 +3,9 @@ package com.fridgelist.app.push
 import com.fridgelist.core.data.auth.AuthRepository
 import com.fridgelist.core.data.device.DeviceRegistry
 import com.fridgelist.core.data.session.SessionStore
+import com.fridgelist.app.notifications.PushRouter
 import com.google.firebase.messaging.FirebaseMessagingService
+import com.google.firebase.messaging.RemoteMessage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +17,7 @@ import javax.inject.Inject
 /**
  * FCM entry point. Keeps the device token current (CONTRACT §3.2 "refresh on every token
  * change"): firebase-messaging 26 delivers tokens to [onRegistered] (replacing `onNewToken`).
- * Message handling for CONTRACT §5.1 arrives in A6.
+ * Every CONTRACT §5.1 message goes through [PushRouter].
  */
 @AndroidEntryPoint
 class PushService : FirebaseMessagingService() {
@@ -25,6 +27,14 @@ class PushService : FirebaseMessagingService() {
     @Inject lateinit var registrar: DeviceRegistry
 
     @Inject lateinit var session: SessionStore
+
+    @Inject lateinit var router: PushRouter
+
+    override fun onMessageReceived(message: RemoteMessage) {
+        val data = message.data
+        // FCM gives ~10 s here; routing only builds notifications.
+        scope.launch { router.route(data) }
+    }
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 

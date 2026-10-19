@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated for A6 from one table so en/ar/tr stay aligned. -->
+<resources>
+    <string name="channel_trip">Shopping in progress</string>
+    <string name="channel_trip_desc">Your own trip: progress and what’s next.</string>
+    <string name="channel_last_call">Last call</string>
+    <string name="channel_last_call_desc">Someone is heading to the store: add what you need now.</string>
+    <string name="channel_household">Household</string>
+    <string name="channel_household_desc">Store arrivals and items that couldn’t be found.</string>
+    <string name="channel_suggestions">Suggestions</string>
+    <string name="channel_suggestions_desc">Things you usually buy.</string>
+    <string name="notif_reply_label">Add to the list</string>
+    <string name="notif_reply_hint">e.g. milk, bread</string>
+    <string name="notif_added">Added ✓</string>
+    <string name="trip_heading_to">Heading to %1$s</string>
+    <string name="trip_at">At %1$s</string>
+    <string name="trip_store_unknown">the store</string>
+    <string name="trip_progress">%1$s of %2$s in the cart</string>
+    <string name="trip_next">Next: %1$s</string>
+    <string name="trip_last_call">Last call</string>
+    <string name="trip_latest_add">%1$s added %2$s</string>
+    <string name="trip_left">%1$s left</string>
+    <string name="action_open">Open</string>
+    <string name="action_at_store">I’m at the store</string>
+    <string name="going_title">I’m going</string>
+    <string name="going_where">Where to?</string>
+    <string name="going_use_location">Show stores near me</string>
+    <string name="going_location_note">Your location is used once, on this phone, to list nearby stores. It is never shared.</string>
+    <string name="going_store_label">Store (optional)</string>
+    <string name="going_last_call">Last call for the household</string>
+    <string name="going_last_call_none">None</string>
+    <string name="going_minutes">%1$s min</string>
+    <string name="going_send">Let everyone know</string>
+    <string name="going_offline">Telling the household needs the internet. Try again when you’re online, or just start shopping.</string>
+    <string name="going_no_stores">No stores found nearby. Type the store name instead.</string>
+    <string name="going_distance_m">%1$s m</string>
+    <string name="going_distance_km">%1$s km</string>
+</resources>

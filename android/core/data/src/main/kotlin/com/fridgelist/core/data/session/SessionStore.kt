@@ -28,8 +28,16 @@ data class Session(
     val shopping: ActiveShopping? = null,
 )
 
-/** [tripId] is null in local mode (startTrip was unreachable). */
-data class ActiveShopping(val listId: String, val tripId: String? = null)
+/**
+ * [tripId] is null in local mode (startTrip was unreachable). [heading] = started with
+ * "I'm going" and not yet at the store. [storeName] may be empty (shopping without a store).
+ */
+data class ActiveShopping(
+    val listId: String,
+    val tripId: String? = null,
+    val heading: Boolean = false,
+    val storeName: String = "",
+)
 
 interface SessionStore {
     val session: Flow<Session>
@@ -73,7 +81,9 @@ class DataStoreSessionStore @Inject constructor(
             itemLanguage = p[ITEM_LANGUAGE],
             householdId = p[HOUSEHOLD_ID],
             notificationsAsked = p[NOTIFICATIONS_ASKED] ?: false,
-            shopping = p[SHOPPING_LIST]?.let { ActiveShopping(it, p[SHOPPING_TRIP]) },
+            shopping = p[SHOPPING_LIST]?.let {
+                ActiveShopping(it, p[SHOPPING_TRIP], p[SHOPPING_HEADING] ?: false, p[SHOPPING_STORE].orEmpty())
+            },
         )
     }
 
@@ -96,6 +106,8 @@ class DataStoreSessionStore @Inject constructor(
         store.edit {
             it[SHOPPING_LIST] = shopping.listId
             if (shopping.tripId != null) it[SHOPPING_TRIP] = shopping.tripId else it.remove(SHOPPING_TRIP)
+            it[SHOPPING_HEADING] = shopping.heading
+            it[SHOPPING_STORE] = shopping.storeName
         }
     }
 
@@ -103,6 +115,8 @@ class DataStoreSessionStore @Inject constructor(
         store.edit {
             it.remove(SHOPPING_LIST)
             it.remove(SHOPPING_TRIP)
+            it.remove(SHOPPING_HEADING)
+            it.remove(SHOPPING_STORE)
         }
     }
 
@@ -140,5 +154,7 @@ class DataStoreSessionStore @Inject constructor(
         val SHOPPING_LIST = stringPreferencesKey("shopping_list_id")
         val SHOPPING_TRIP = stringPreferencesKey("shopping_trip_id")
         val PUSH_TOKEN = stringPreferencesKey("push_token")
+        val SHOPPING_HEADING = booleanPreferencesKey("shopping_heading")
+        val SHOPPING_STORE = stringPreferencesKey("shopping_store")
     }
 }

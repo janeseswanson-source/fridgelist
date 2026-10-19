@@ -87,6 +87,18 @@ data class TripSummary(val done: Int = 0, val missing: Int = 0)
 @Serializable
 data class UpdateTripResponse(val ok: Boolean = true, val summary: TripSummary? = null)
 
+@Serializable
+data class NearbyStoresRequest(val lat: Double, val lng: Double, val radiusM: Int? = null, val limit: Int? = null)
+
+@Serializable
+data class NearbyStore(val storeId: String, val name: String, val chainId: String? = null, val lat: Double, val lng: Double, val distanceM: Double)
+
+@Serializable
+data class NearbyStoresResponse(val stores: List<NearbyStore> = emptyList())
+
+/** Allowed `startTrip.lastCallMinutes` values (CONTRACT §4). */
+val LAST_CALL_MINUTES: List<Int> = listOf(0, 5, 10, 15)
+
 /** Limits from CONTRACT §3 that the UI validates before calling the server. */
 object Limits {
     const val DISPLAY_NAME_MAX = 40

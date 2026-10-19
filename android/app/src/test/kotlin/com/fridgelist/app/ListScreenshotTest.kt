@@ -3,7 +3,10 @@ package com.fridgelist.app
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import com.fridgelist.app.feature.going.GoingContent
+import com.fridgelist.app.feature.going.GoingUiState
 import com.fridgelist.app.feature.home.NewListContent
+import com.fridgelist.core.model.NearbyStore
 import com.fridgelist.app.feature.lists.AddItemsContent
 import com.fridgelist.app.feature.lists.EditItemContent
 import com.fridgelist.app.feature.lists.ListDetailScreen
@@ -62,6 +65,21 @@ class ListScreenshotTest(private val config: String, private val qualifiers: Str
     }
 
     @Test fun shopping_summary() = capture("shopping_summary") { SummaryContent(Samples.summary, "البقالة") {} }
+
+    @Test fun going() = capture("going") {
+        GoingContent(
+            GoingUiState(
+                nearby = listOf(
+                    NearbyStore("s1", "Migros Kadıköy", "migros", 40.99, 29.03, 350.0),
+                    NearbyStore("s2", "BİM Moda", "bim", 40.98, 29.02, 900.0),
+                ),
+                storeId = "s1",
+                storeName = "Migros Kadıköy",
+                lastCallMinutes = 10,
+            ),
+            {}, {}, {}, {}, {}, {},
+        )
+    }
 
     @Test fun new_list() = capture("new_list") { NewListContent { _, _, _ -> } }
 }

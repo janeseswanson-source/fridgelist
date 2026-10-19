@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated for A6 from one table so en/ar/tr stay aligned. -->
+<resources>
+    <string name="channel_trip">التسوق الجاري</string>
+    <string name="channel_trip_desc">رحلتك: التقدم والأصناف التالية.</string>
+    <string name="channel_last_call">النداء الأخير</string>
+    <string name="channel_last_call_desc">أحدهم في طريقه إلى المتجر: أضف ما تحتاجه الآن.</string>
+    <string name="channel_household">الأسرة</string>
+    <string name="channel_household_desc">الوصول إلى المتجر والأصناف التي لم يُعثر عليها.</string>
+    <string name="channel_suggestions">اقتراحات</string>
+    <string name="channel_suggestions_desc">أشياء تشتريها عادةً.</string>
+    <string name="notif_reply_label">أضف إلى القائمة</string>
+    <string name="notif_reply_hint">مثلاً: حليب، خبز</string>
+    <string name="notif_added">تمت الإضافة ✓</string>
+    <string name="trip_heading_to">في الطريق إلى %1$s</string>
+    <string name="trip_at">في %1$s</string>
+    <string name="trip_store_unknown">المتجر</string>
+    <string name="trip_progress">%1$s من %2$s في السلة</string>
+    <string name="trip_next">التالي: %1$s</string>
+    <string name="trip_last_call">النداء الأخير</string>
+    <string name="trip_latest_add">%1$s أضاف %2$s</string>
+    <string name="trip_left">باقٍ %1$s</string>
+    <string name="action_open">فتح</string>
+    <string name="action_at_store">وصلت إلى المتجر</string>
+    <string name="going_title">أنا ذاهب</string>
+    <string name="going_where">إلى أين؟</string>
+    <string name="going_use_location">اعرض المتاجر القريبة مني</string>
+    <string name="going_location_note">يُستخدم موقعك مرة واحدة على هذا الهاتف لعرض المتاجر القريبة، ولا تتم مشاركته أبداً.</string>
+    <string name="going_store_label">المتجر (اختياري)</string>
+    <string name="going_last_call">النداء الأخير للأسرة</string>
+    <string name="going_last_call_none">بدون</string>
+    <string name="going_minutes">%1$s د</string>
+    <string name="going_send">أعلِم الجميع</string>
+    <string name="going_offline">إعلام الأسرة يحتاج إلى الإنترنت. حاول مجدداً عند الاتصال، أو ابدأ التسوق مباشرة.</string>
+    <string name="going_no_stores">لم نجد متاجر قريبة. اكتب اسم المتجر بدلاً من ذلك.</string>
+    <string name="going_distance_m">%1$s م</string>
+    <string name="going_distance_km">%1$s كم</string>
+</resources>

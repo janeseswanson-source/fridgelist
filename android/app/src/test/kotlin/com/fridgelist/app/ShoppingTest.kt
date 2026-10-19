@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.fridgelist.app.fakes.FakeItems
 import com.fridgelist.app.fakes.FakeSession
 import com.fridgelist.app.fakes.FakeTripEnder
+import com.fridgelist.app.fakes.FakeTripNotifier
 import com.fridgelist.app.fakes.FakeTrips
 import com.fridgelist.app.fakes.MainDispatcherRule
 import com.fridgelist.app.fakes.householdContext
@@ -47,7 +48,7 @@ class ShoppingTest {
         )
     }
 
-    private class Setup(val vm: ShoppingViewModel, val items: FakeItems, val trips: FakeTrips, val ender: FakeTripEnder, val session: FakeSession)
+    private class Setup(val vm: ShoppingViewModel, val items: FakeItems, val trips: FakeTrips, val ender: FakeTripEnder, val session: FakeSession, val notifier: FakeTripNotifier)
 
     private fun TestScope.setup(
         trips: FakeTrips = FakeTrips(),
@@ -56,10 +57,11 @@ class ShoppingTest {
     ): Setup {
         val items = items()
         val ender = FakeTripEnder()
-        val vm = ShoppingViewModel(SavedStateHandle(args), householdContext(Role.HELPER, session), items, items, trips, session, ender)
+        val notifier = FakeTripNotifier()
+        val vm = ShoppingViewModel(SavedStateHandle(args), householdContext(Role.HELPER, session), items, items, trips, session, ender, notifier)
         vm.state.launchIn(backgroundScope)
         advanceUntilIdle()
-        return Setup(vm, items, trips, ender, session)
+        return Setup(vm, items, trips, ender, session, notifier)
     }
 
     private fun Setup.row(id: String) =
@@ -83,6 +85,30 @@ class ShoppingTest {
         assertEquals(FieldPatch.Set("done"), patch["status"])
         assertEquals(FieldPatch.Set("t1"), patch["doneTripId"])
         assertEquals(listOf("milk"), s.vm.state.value.inCart.map { it.item.id })
+    }
+
+    @Test
+    fun ongoingNotificationFollowsTheCart() = runTest(main.dispatcher) {
+        val s = setup()
+        val first = s.notifier.shown.last()
+        assertEquals("t1", first.tripId)
+        assertEquals(3, first.total)
+        assertEquals(0, first.done)
+        assertEquals(listOf("ekmek", "süt"), first.nextItems, "next items in aisle order, others' claims left out")
+        s.vm.tick(s.row("milk"))
+        runCurrent()
+        assertEquals(1, s.notifier.shown.last().done)
+        s.vm.finish()
+        advanceUntilIdle()
+        assertTrue(s.notifier.cancelled > 0)
+    }
+
+    @Test
+    fun arrivingOnAHeadingTripSwitchesItToShopping() = runTest(main.dispatcher) {
+        val s = setup(session = FakeSession(Session("Ayşe", "tr", "h1", true, ActiveShopping("l1", "t-going", heading = true, storeName = "Migros"))))
+        assertEquals(listOf("t-going" to "shopping"), s.trips.updates.map { it.tripId to it.status })
+        assertEquals(ActiveShopping("l1", "t-going", heading = false, storeName = "Migros"), s.session.state.value.shopping)
+        assertEquals("Migros", s.notifier.shown.last().storeName)
     }
 
     @Test

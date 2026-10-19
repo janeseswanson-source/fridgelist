@@ -10,6 +10,8 @@ import com.fridgelist.app.feature.lists.ItemRowUi
 import com.fridgelist.app.feature.lists.ListSectionsBuilder
 import com.fridgelist.app.feature.lists.UndoQueue
 import com.fridgelist.app.feature.lists.UndoUi
+import com.fridgelist.app.notifications.TripNotice
+import com.fridgelist.app.notifications.TripNotifier
 import com.fridgelist.app.work.TripEnder
 import com.fridgelist.core.data.firestore.ItemPatches
 import com.fridgelist.core.data.items.ItemRepository
@@ -24,6 +26,7 @@ import com.fridgelist.core.model.Platform
 import com.fridgelist.core.model.StartTripRequest
 import com.fridgelist.core.model.StatusRules
 import com.fridgelist.core.model.TripStatus
+import com.fridgelist.core.model.UpdateTripRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -75,7 +78,10 @@ class ShoppingViewModel @Inject constructor(
     private val trips: TripRepository,
     private val session: SessionStore,
     private val tripEnder: TripEnder,
+    private val tripNotifications: TripNotifier,
 ) : ViewModel() {
+
+    private var storeName: String = ""
 
     private val context = contextSource.context.stateIn(viewModelScope, SharingStarted.Eagerly, null)
     private val listId = MutableStateFlow(savedState.get<String>("listId"))
@@ -121,10 +127,41 @@ class ShoppingViewModel @Inject constructor(
             }
         }
         val lid = checkNotNull(listId.value)
-        if (tripId.value == null && saved?.listId == lid) tripId.value = saved.tripId
+        if (saved?.listId == lid) {
+            if (tripId.value == null) tripId.value = saved.tripId
+            storeName = saved.storeName
+            // "I'm going" trip and now at the store: heading → shopping (best effort, never blocks).
+            val trip = saved.tripId
+            if (saved.heading && trip != null) {
+                viewModelScope.launch {
+                    runCatching { trips.updateTrip(UpdateTripRequest(ctx.householdId, trip, TripStatus.SHOPPING.wire)) }
+                }
+            }
+        }
         if (tripId.value == null) tripId.value = startTrip(ctx, lid)
-        session.startShopping(ActiveShopping(lid, tripId.value))
+        session.startShopping(ActiveShopping(lid, tripId.value, heading = false, storeName = storeName))
         started.value = true
+        // Keep the ongoing trip notification (Live Update on Android 16+) in step with the list.
+        viewModelScope.launch {
+            state.collect { s -> syncNotification(ctx, s) }
+        }
+    }
+
+    private fun syncNotification(ctx: HouseholdContext, s: ShoppingUiState) {
+        val trip = tripId.value ?: return
+        if (!s.loaded || s.summary != null) return
+        val toBuy = s.toBuy.flatMap { it.second }
+        tripNotifications.show(
+            TripNotice(
+                householdId = ctx.householdId,
+                tripId = trip,
+                status = TripStatus.SHOPPING,
+                storeName = storeName,
+                total = toBuy.size + s.claimedByOthers.size + s.inCart.size + s.missing.size,
+                done = s.inCart.size,
+                nextItems = toBuy.take(4).map { it.title },
+            ),
+        )
     }
 
     /** null when the server can't be reached quickly: Shopping Mode runs locally instead. */
@@ -219,6 +256,7 @@ class ShoppingViewModel @Inject constructor(
         val rest = s.toBuy.flatMap { it.second } + s.claimedByOthers + s.missing
         summary.value = ShoppingSummary(bought = s.inCart, missing = s.missing, rest = rest)
         val trip = tripId.value
+        tripNotifications.cancel()
         if (trip != null) {
             tripEnder.endTrip(ctx.householdId, trip)
         } else {

@@ -7,6 +7,7 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | Date | Version | Change | Backend | Android | iOS |
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-18 | 1 | Initial contract | — | — | — |
+| 2026-10-19 | 2 | §5.1: `trip_heading`, `trip_arrived`, `item_missing` reach **Android** as data-only messages with `title` + `body` data keys (server-localized). Needed for the inline reply. | **to do (B6)** | done (A6) | no change |
 
 ## Milestones
 
@@ -18,9 +19,57 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | Android | A3 Lists and items, offline-first | done, server part pending B4 | 2026-10-19 | offline add/tick/undo/delete → sync verified (instrumented test + device); categories/translations wait for B4 |
 | Android | A4 Voice add | done, real-speech run pending | 2026-10-19 | fallback chain verified on emulator (no mic audio there); `docs/test-voice.md` to run on real phones |
 | Android | A5 Shopping Mode | done, server trip pending B6 | 2026-10-19 | tick/undo/missing/finish UI-tested online and offline; local mode verified on device |
+| Android | A6 "I'm going", notifications, inline reply, Live Updates | done, cross-phone run pending B6 | 2026-10-19 | contract v2; reply + Live Update verified on emulators via the dev push simulator |
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Android A6 "I'm going", notifications, inline reply, Live Updates
+- **Contract v2** (see the table at the top): `trip_heading`, `trip_arrived` and `item_missing` reach Android as data-only messages with server-localized `title`/`body` data keys. Android can only attach the inline reply when the app builds the notification itself. **Backend B6 must send them this way**; iOS is unchanged.
+- Shipped:
+  - **"I'm going" sheet** (list screen):
+    - "show stores near me" reads coarse location once, only after a tap, explained in the sheet; ACCESS_COARSE_LOCATION only, background location is A7. Then `nearbyStores` → nearest 5 with distances in the UI language.
+    - Otherwise chain chips for the phone's country (TR/SA/AE), and a free-text store.
+    - Last call 0/5/10/15 → `startTrip(status: heading)`. Offline: a clear message, nothing started.
+  - **Push handling** (`PushRouter`, used by `FirebaseMessagingService`):
+    - every CONTRACT §5.1 type
+    - unknown or malformed payloads are ignored, never crash
+    - `trip_update` drives the shopper's notification; `done`/`cancelled` clear it and end the session
+    - `list_changed` is left for A8
+  - **Channels** `trip` (low, silent), `last_call` (high), `household` (default), `suggestions` (low), names in the app language.
+  - **Inline reply** on `trip_heading` (last-call countdown) and `trip_arrived`:
+    - `RemoteInput` key `item_text`, semantic action REPLY
+    - `AddFromNotificationReceiver` splits locally (household aliases first) and writes offline-first with `addedVia: notification_reply`; kids' replies become requests
+    - the notification turns into "Added ✓" with the reply in its history
+  - **Ongoing trip notification / Live Update** (`TripNotifications`):
+    - title "Heading to / At {store}"
+    - the latest add by someone else, "5 of 12 in the cart", next 3 items
+    - `ProgressStyle` with one segment per item (one bar above 30), progress = in the cart
+    - `setRequestPromotedOngoing`, short critical text "7 left", last-call chronometer countdown
+    - actions Open (`fridgelist://shop?tripId=`) and Done (`TripActionReceiver` → WorkManager `updateTrip(done)`), or "I'm at the store" while heading
+    - kept in step by Shopping Mode; arriving on a heading trip sends `updateTrip(shopping)`
+  - `POST_PROMOTED_NOTIFICATIONS` and `ACCESS_COARSE_LOCATION` in the manifest.
+  - **dev-only push simulator** `DebugPushReceiver` (dev manifest, guarded by `DUMP` so only `adb shell` can call it) feeds §5 payloads to the real router; see `docs/test-notifications.md`.
+  - New dependency from the approved stack: Play services location 21.4.0.
+- Tests: `./gradlew lint testDevDebugUnitTest assembleDevDebug` → BUILD SUCCESSFUL, lint "No issues found", no compiler warnings.
+  - 322 unit tests, 0 failures (app 208), 132 screenshots ("I'm going" sheet added).
+  - Robolectric, as prompt A6 asks:
+    - channels
+    - shopper notification (ongoing, title, progress 5/12, next items, Open/Done, promotion requested)
+    - heading countdown and "I'm at the store"
+    - inline reply (`item_text`, REPLY), arrived/missing channels, "Added ✓" with reply history
+    - router: household post, `trip_update` show and end, unknown or broken ignored
+  - The reply handler (`notification_reply`, kids → pending, other household ignored), the "I'm going" ViewModel (nearest 5, request shape, free text, offline) and the Shopping notification sync are unit-tested; push payload parsing is in core:model.
+  - Devices:
+    - API 36 emulator: `trip_heading` → reply typed in the shade ("2 ayran and jam") → "تمت الإضافة ✓", and Firestore got ayran qty 2 + jam with `addedVia: notification_reply`.
+    - Done on the ongoing notification cancelled it and scheduled the WorkManager job. "I'm going" offline message checked.
+    - New AVD `fridgelist_api36_1` (Android 16 QPR1): the trip notification is posted with `PROMOTED_ONGOING`, status-bar chip "🛒 باقٍ 7", progress bar, Arabic text, Open/Done.
+    - The first Android 16 image has the API but does not promote; `POST_PROMOTED_NOTIFICATIONS` isn't granted there.
+- Not done yet: the prompt's cross-phone check (a lock-screen reply reaches another phone within 5 s) needs backend `startTrip` and real pushes. `docs/test-notifications.md` has the checklist.
+- Notes for the backend session (B6): follow contract v2 for Android. `trip_update` goes only to the shopper's Android device. `startTrip(heading)` can carry `storeId` from `nearbyStores`, a chain name without `storeId`, or free text.
+- Next: A7 (store detection).
+- Open questions for the owner: unchanged.
+- Contract changes: **v2** (above).
 
 ### 2026-10-19 — Android A5 Shopping Mode
 - Shipped:

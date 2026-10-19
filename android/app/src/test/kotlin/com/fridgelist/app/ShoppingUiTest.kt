@@ -15,6 +15,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.fridgelist.app.fakes.FakeItems
 import com.fridgelist.app.fakes.FakeSession
 import com.fridgelist.app.fakes.FakeTripEnder
+import com.fridgelist.app.fakes.FakeTripNotifier
 import com.fridgelist.app.fakes.FakeTrips
 import com.fridgelist.app.fakes.householdContext
 import com.fridgelist.app.feature.shopping.ShoppingRoute
@@ -50,10 +51,11 @@ class ShoppingUiTest {
         )
     }
     private val ender = FakeTripEnder()
+    private val notifier = FakeTripNotifier()
 
     private fun show(trips: FakeTrips): ShoppingViewModel {
         val session = FakeSession(Session("Ayşe", "tr", "h1", true))
-        val vm = ShoppingViewModel(SavedStateHandle(mapOf("listId" to "l1")), householdContext(Role.HELPER, session), items, items, trips, session, ender)
+        val vm = ShoppingViewModel(SavedStateHandle(mapOf("listId" to "l1")), householdContext(Role.HELPER, session), items, items, trips, session, ender, notifier)
         compose.setContent { FridgeListTheme { ShoppingRoute(onClose = {}, vm = vm) } }
         compose.waitUntil(5_000) { compose.onAllNodesWithText("süt").fetchSemanticsNodes().isNotEmpty() }
         return vm
