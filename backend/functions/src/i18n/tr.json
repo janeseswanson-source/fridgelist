@@ -1,3 +1,18 @@
 {
-  "defaultListName": "Market listesi"
+  "defaultListName": "Market listesi",
+  "unknownStore": "market",
+  "tripHeadingTitle": "{name} alışverişe çıktı: {store}",
+  "tripHeadingTitleNoStore": "{name} alışverişe çıktı",
+  "tripHeadingBody": {
+    "other": "{minutes} dakika içinde ekleyebilirsin"
+  },
+  "addAnything": "İhtiyacın olanı ekle",
+  "tripArrivedTitle": "{name} markette: {store}",
+  "tripArrivedTitleNoStore": "{name} markette",
+  "itemMissingTitle": "{item} bulunamadı",
+  "itemMissingBody": "Listede kalıyor",
+  "liveStartTitle": "{store} alışverişi",
+  "liveStartBody": {
+    "other": "Listende {count} ürün var"
+  }
 }

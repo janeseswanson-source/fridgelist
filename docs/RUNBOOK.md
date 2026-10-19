@@ -116,6 +116,17 @@ curl -s -X POST -H "Content-Type: application/json" -d '{"data":{}}' \
   - Saudi Arabia: 3,207 shops, 2,650 named. Panda 119, Othaim 88, Tamimi 44, LuLu 31, Danube 30, Carrefour 15, Nesto 6, other 2,317.
 - **Attribution:** "Store data © OpenStreetMap contributors" (ODbL), shown in Settings and on the guest page; see `docs/ATTRIBUTION.md`.
 
+### Trips and pushes (B6)
+
+- **Callables:** `startTrip`, `updateTrip`, `registerLiveActivityToken`. Triggers: `onItemWritten` (live fan-out). Scheduled: `closeStaleTrips` (every 30 min; needs the `trips` collection-group index, deployed with `firebase deploy --only firestore:indexes`).
+- **Templates:** `functions/src/i18n/{ar,tr,en}.json`. Every key must exist in all three with the same placeholders (`test/push.test.ts` checks). Change text there and update the snapshots on purpose: `npx vitest run test/push.test.ts -u`, then review the snapshot diff.
+- **Locally** there is no FCM: the functions log `push_emulated {kind, count}` instead of sending. Test phones in the emulator have no FCM token, so they have no device docs and receive nothing.
+- **Real delivery** needs the dev project (owner action):
+  - FCM works for Android with `google-services.json`.
+  - For iOS, upload the APNs auth key in Firebase Console > Project settings > Cloud Messaging.
+  - Live Activities need iOS 17.2+ for push-to-start.
+- The **throttle** state lives on the trip (`lastLiveUpdateAt`). `list_changed` throttle docs are in `pushThrottle/{uid}_{deviceId}` (functions only).
+
 ## 3. Projects and regions
 
 - `.firebaserc` aliases: `dev` → `fridgelist-dev-TODO`, `prod` → `fridgelist-prod-TODO`. These are placeholders until the owner creates the projects.

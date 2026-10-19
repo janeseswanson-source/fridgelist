@@ -1,3 +1,28 @@
 {
-  "defaultListName": "البقالة"
+  "defaultListName": "البقالة",
+  "unknownStore": "المتجر",
+  "tripHeadingTitle": "{name} في الطريق إلى {store}",
+  "tripHeadingTitleNoStore": "{name} في الطريق إلى المتجر",
+  "tripHeadingBody": {
+    "zero": "أضف ما تحتاجه الآن",
+    "one": "أضف ما تحتاجه خلال دقيقة",
+    "two": "أضف ما تحتاجه خلال دقيقتين",
+    "few": "أضف ما تحتاجه خلال {minutes} دقائق",
+    "many": "أضف ما تحتاجه خلال {minutes} دقيقة",
+    "other": "أضف ما تحتاجه خلال {minutes} دقيقة"
+  },
+  "addAnything": "أضف ما تحتاجه",
+  "tripArrivedTitle": "{name} في {store}",
+  "tripArrivedTitleNoStore": "{name} في المتجر",
+  "itemMissingTitle": "لم يُعثر على {item}",
+  "itemMissingBody": "سيبقى في القائمة",
+  "liveStartTitle": "في {store}",
+  "liveStartBody": {
+    "zero": "لا أصناف في قائمتك",
+    "one": "صنف واحد في قائمتك",
+    "two": "صنفان في قائمتك",
+    "few": "{count} أصناف في قائمتك",
+    "many": "{count} صنفاً في قائمتك",
+    "other": "{count} صنف في قائمتك"
+  }
 }

@@ -52,6 +52,7 @@ async function seedAuth(): Promise<void> {
   if (real.length > 0) throw new Error(`auth import failed: ${real.map((e) => e.error.message).join("; ")}`);
 }
 
+/** `lang`, `canonicalId`, `names` and `category` document what onItemCreated is expected to fill; they are not written. */
 type Item = {
   id: string;
   list: string;
@@ -114,15 +115,17 @@ async function seedHousehold(): Promise<void> {
   }
   batch.set(h.collection("lists").doc("groceries"), { name: "البقالة", type: "grocery", order: 0, archived: false, createdAt: now });
   batch.set(h.collection("lists").doc("pharmacy"), { name: "الصيدلية", type: "pharmacy", order: 1, archived: false, createdAt: now });
+  await batch.commit();
+
+  // Items are written exactly as the apps write them (no lang, names, canonicalId or category), so
+  // onItemCreated (B4) enriches them like any real item. Re-seeding deletes them first: overwriting
+  // would be an update, the trigger wouldn't run, and the translations would be lost.
+  for (const list of ["groceries", "pharmacy"]) await db.recursiveDelete(h.collection("lists").doc(list).collection("items"));
+  const items = db.batch();
   for (const item of ITEMS) {
     const status = item.status ?? "open";
-    batch.set(h.collection("lists").doc(item.list).collection("items").doc(item.id), {
+    items.set(h.collection("lists").doc(item.list).collection("items").doc(item.id), {
       name: item.name,
-      lang: item.lang,
-      ...(item.names ? { names: item.names } : {}),
-      ...(item.canonicalId ? { canonicalId: item.canonicalId } : {}),
-      category: item.category,
-      categorySource: "auto",
       ...(item.qty !== undefined ? { qty: item.qty } : {}),
       ...(item.unit ? { unit: item.unit } : {}),
       urgent: item.urgent ?? false,
@@ -135,7 +138,7 @@ async function seedHousehold(): Promise<void> {
       updatedAt: now,
     });
   }
-  await batch.commit();
+  await items.commit();
 }
 
 type Store = [chainId: string, name: string, dLat: number, dLng: number];

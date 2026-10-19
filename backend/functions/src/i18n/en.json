@@ -1,3 +1,20 @@
 {
-  "defaultListName": "Groceries"
+  "defaultListName": "Groceries",
+  "unknownStore": "the store",
+  "tripHeadingTitle": "{name} is heading to {store}",
+  "tripHeadingTitleNoStore": "{name} is heading to the store",
+  "tripHeadingBody": {
+    "one": "Add anything in the next minute",
+    "other": "Add anything in the next {minutes} min"
+  },
+  "addAnything": "Add anything you need",
+  "tripArrivedTitle": "{name} is at {store}",
+  "tripArrivedTitleNoStore": "{name} is at the store",
+  "itemMissingTitle": "{name} couldn't find {item}",
+  "itemMissingBody": "It stays on the list",
+  "liveStartTitle": "At {store}",
+  "liveStartBody": {
+    "one": "1 item on your list",
+    "other": "{count} items on your list"
+  }
 }

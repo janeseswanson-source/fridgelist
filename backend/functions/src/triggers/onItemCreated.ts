@@ -134,7 +134,7 @@ export async function onItemCreatedCore(
     return "enriched";
   });
 
-  // B6 hook: live fan-out (list_changed pushes, trip_update for an active trip) goes here.
+  // Live fan-out (trip updates, list_changed) runs in onItemWritten for every item change.
   log.info("item_created", { householdId: ref.householdId, outcome, source: resolved.source });
   return outcome;
 }

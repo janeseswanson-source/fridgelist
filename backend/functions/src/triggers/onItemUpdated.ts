@@ -8,9 +8,11 @@ import {
 import { onDocumentUpdated } from "firebase-functions/v2/firestore";
 import { memberName, writeEvent } from "../lib/events.js";
 import { log } from "../lib/log.js";
+import { defaultSender } from "../push/sender.js";
+import { PushMissingNotifier } from "../trips/alerts.js";
 import type { ItemRef } from "./onItemCreated.js";
 
-/** Sends the `item_missing` push (CONTRACT §5.1). B6 replaces the stub with FCM. */
+/** Sends the `item_missing` push (CONTRACT §5.1); B6: `PushMissingNotifier`. */
 export interface MissingNotifier {
   itemMissing(input: {
     householdId: string;
@@ -144,6 +146,7 @@ export const onItemUpdated = onDocumentUpdated(
     const before = event.data?.before.data();
     const after = event.data?.after.data();
     if (!before || !after) return;
-    await onItemUpdatedCore(getFirestore(), event.params, before, after, PENDING_MISSING_NOTIFIER);
+    const db = getFirestore();
+    await onItemUpdatedCore(db, event.params, before, after, new PushMissingNotifier(db, defaultSender(db)));
   },
 );

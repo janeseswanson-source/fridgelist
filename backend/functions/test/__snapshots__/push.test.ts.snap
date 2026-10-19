@@ -1,0 +1,998 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > item_missing ar android 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "سيبقى في القائمة",
+    "householdId": "h1",
+    "itemId": "i1",
+    "listId": "l1",
+    "title": "لم يُعثر على لبنة",
+    "tripId": "t1",
+    "type": "item_missing",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > item_missing ar ios 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "سيبقى في القائمة",
+          "title": "لم يُعثر على لبنة",
+        },
+        "category": "ITEM_MISSING",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "itemId": "i1",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "item_missing",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > item_missing en android 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "It stays on the list",
+    "householdId": "h1",
+    "itemId": "i1",
+    "listId": "l1",
+    "title": "Ali couldn't find labneh",
+    "tripId": "t1",
+    "type": "item_missing",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > item_missing en ios 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "It stays on the list",
+          "title": "Ali couldn't find labneh",
+        },
+        "category": "ITEM_MISSING",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "itemId": "i1",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "item_missing",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > item_missing tr android 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "Listede kalıyor",
+    "householdId": "h1",
+    "itemId": "i1",
+    "listId": "l1",
+    "title": "labne bulunamadı",
+    "tripId": "t1",
+    "type": "item_missing",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > item_missing tr ios 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "Listede kalıyor",
+          "title": "labne bulunamadı",
+        },
+        "category": "ITEM_MISSING",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "itemId": "i1",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "item_missing",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_arrived ar android 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "أضف ما تحتاجه",
+    "householdId": "h1",
+    "listId": "l1",
+    "title": "أمي في المتجر",
+    "tripId": "t1",
+    "type": "trip_arrived",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_arrived ar ios 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "أضف ما تحتاجه",
+          "title": "أمي في المتجر",
+        },
+        "category": "TRIP_ARRIVED",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "trip_arrived",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_arrived en android 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "Add anything you need",
+    "householdId": "h1",
+    "listId": "l1",
+    "title": "Ali is at the store",
+    "tripId": "t1",
+    "type": "trip_arrived",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_arrived en ios 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "Add anything you need",
+          "title": "Ali is at the store",
+        },
+        "category": "TRIP_ARRIVED",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "trip_arrived",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_arrived tr android 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "İhtiyacın olanı ekle",
+    "householdId": "h1",
+    "listId": "l1",
+    "title": "Ayşe markette",
+    "tripId": "t1",
+    "type": "trip_arrived",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_arrived tr ios 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "İhtiyacın olanı ekle",
+          "title": "Ayşe markette",
+        },
+        "category": "TRIP_ARRIVED",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "trip_arrived",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading ar android > 0 min 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "أضف ما تحتاجه",
+    "householdId": "h1",
+    "listId": "l1",
+    "title": "أمي في الطريق إلى Migros",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading ar android > 5 min 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "أضف ما تحتاجه خلال 5 دقائق",
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "title": "أمي في الطريق إلى Migros",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading ar android > 10 min 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "أضف ما تحتاجه خلال 10 دقائق",
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "title": "أمي في الطريق إلى Migros",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading ar android > 15 min 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "أضف ما تحتاجه خلال 15 دقيقة",
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "title": "أمي في الطريق إلى Migros",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading ar ios > 0 min 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "أضف ما تحتاجه",
+          "title": "أمي في الطريق إلى Migros",
+        },
+        "category": "TRIP_HEADING",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading ar ios > 5 min 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "أضف ما تحتاجه خلال 5 دقائق",
+          "title": "أمي في الطريق إلى Migros",
+        },
+        "category": "TRIP_HEADING",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading ar ios > 10 min 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "أضف ما تحتاجه خلال 10 دقائق",
+          "title": "أمي في الطريق إلى Migros",
+        },
+        "category": "TRIP_HEADING",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading ar ios > 15 min 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "أضف ما تحتاجه خلال 15 دقيقة",
+          "title": "أمي في الطريق إلى Migros",
+        },
+        "category": "TRIP_HEADING",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading en android > 0 min 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "Add anything you need",
+    "householdId": "h1",
+    "listId": "l1",
+    "title": "Ali is heading to Migros",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading en android > 5 min 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "Add anything in the next 5 min",
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "title": "Ali is heading to Migros",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading en android > 10 min 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "Add anything in the next 10 min",
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "title": "Ali is heading to Migros",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading en android > 15 min 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "Add anything in the next 15 min",
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "title": "Ali is heading to Migros",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading en ios > 0 min 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "Add anything you need",
+          "title": "Ali is heading to Migros",
+        },
+        "category": "TRIP_HEADING",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading en ios > 5 min 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "Add anything in the next 5 min",
+          "title": "Ali is heading to Migros",
+        },
+        "category": "TRIP_HEADING",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading en ios > 10 min 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "Add anything in the next 10 min",
+          "title": "Ali is heading to Migros",
+        },
+        "category": "TRIP_HEADING",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading en ios > 15 min 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "Add anything in the next 15 min",
+          "title": "Ali is heading to Migros",
+        },
+        "category": "TRIP_HEADING",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading tr android > 0 min 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "İhtiyacın olanı ekle",
+    "householdId": "h1",
+    "listId": "l1",
+    "title": "Ayşe alışverişe çıktı: Migros",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading tr android > 5 min 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "5 dakika içinde ekleyebilirsin",
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "title": "Ayşe alışverişe çıktı: Migros",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading tr android > 10 min 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "10 dakika içinde ekleyebilirsin",
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "title": "Ayşe alışverişe çıktı: Migros",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading tr android > 15 min 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "body": "15 dakika içinde ekleyebilirsin",
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "title": "Ayşe alışverişe çıktı: Migros",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading tr ios > 0 min 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "İhtiyacın olanı ekle",
+          "title": "Ayşe alışverişe çıktı: Migros",
+        },
+        "category": "TRIP_HEADING",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading tr ios > 5 min 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "5 dakika içinde ekleyebilirsin",
+          "title": "Ayşe alışverişe çıktı: Migros",
+        },
+        "category": "TRIP_HEADING",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading tr ios > 10 min 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "10 dakika içinde ekleyebilirsin",
+          "title": "Ayşe alışverişe çıktı: Migros",
+        },
+        "category": "TRIP_HEADING",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`CONTRACT §5.1 alerts, snapshot per language and platform > trip_heading tr ios > 15 min 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "alert",
+    },
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "15 dakika içinde ekleyebilirsin",
+          "title": "Ayşe alışverişe çıktı: Migros",
+        },
+        "category": "TRIP_HEADING",
+        "sound": "default",
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "listId": "l1",
+    "tripId": "t1",
+    "type": "trip_heading",
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`live surfaces and list_changed > Android trip_update: every value a string, nextItems JSON (CONTRACT §5.3) 1`] = `
+{
+  "android": {
+    "priority": "high",
+  },
+  "data": {
+    "done": "5",
+    "householdId": "h1",
+    "lastCallUntil": "1760780600",
+    "latestAddBy": "أمي",
+    "latestAddName": "لبنة",
+    "nextItems": "["حليب","خبز عربي","بيض"]",
+    "remaining": "7",
+    "status": "shopping",
+    "storeName": "Migros",
+    "tripId": "t1",
+    "type": "trip_update",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`live surfaces and list_changed > iOS Live Activity end (CONTRACT §5.2) 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "liveactivity",
+    },
+    "liveActivityToken": "abc123",
+    "payload": {
+      "aps": {
+        "content-state": {
+          "done": 5,
+          "lastCallUntil": 1760780600,
+          "latestAddBy": "أمي",
+          "latestAddName": "لبنة",
+          "nextItems": [
+            "حليب",
+            "خبز عربي",
+            "بيض",
+          ],
+          "remaining": 7,
+          "status": "shopping",
+        },
+        "dismissal-date": 1760780900,
+        "event": "end",
+        "timestamp": 1760780000,
+      },
+    },
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`live surfaces and list_changed > iOS Live Activity start (CONTRACT §5.2) 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "10",
+      "apns-push-type": "liveactivity",
+    },
+    "liveActivityToken": "abc123",
+    "payload": {
+      "aps": {
+        "alert": {
+          "body": "7 items on your list",
+          "title": "At Migros",
+        },
+        "attributes": {
+          "chainId": "migros",
+          "householdId": "h1",
+          "storeName": "Migros",
+          "tripId": "t1",
+        },
+        "attributes-type": "ShoppingAttributes",
+        "content-state": {
+          "done": 5,
+          "lastCallUntil": 1760780600,
+          "latestAddBy": "أمي",
+          "latestAddName": "لبنة",
+          "nextItems": [
+            "حليب",
+            "خبز عربي",
+            "بيض",
+          ],
+          "remaining": 7,
+          "status": "shopping",
+        },
+        "event": "start",
+        "timestamp": 1760780000,
+      },
+    },
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`live surfaces and list_changed > iOS Live Activity update (CONTRACT §5.2) 1`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "5",
+      "apns-push-type": "liveactivity",
+    },
+    "liveActivityToken": "abc123",
+    "payload": {
+      "aps": {
+        "content-state": {
+          "done": 5,
+          "lastCallUntil": 1760780600,
+          "latestAddBy": "أمي",
+          "latestAddName": "لبنة",
+          "nextItems": [
+            "حليب",
+            "خبز عربي",
+            "بيض",
+          ],
+          "remaining": 7,
+          "status": "shopping",
+        },
+        "event": "update",
+        "timestamp": 1760780000,
+      },
+    },
+  },
+  "token": "fcm-ios",
+}
+`;
+
+exports[`live surfaces and list_changed > list_changed: data-only on Android, silent background push on iOS 1`] = `
+{
+  "data": {
+    "householdId": "h1",
+    "listId": "l1",
+    "type": "list_changed",
+  },
+  "token": "fcm-android",
+}
+`;
+
+exports[`live surfaces and list_changed > list_changed: data-only on Android, silent background push on iOS 2`] = `
+{
+  "apns": {
+    "headers": {
+      "apns-priority": "5",
+      "apns-push-type": "background",
+    },
+    "payload": {
+      "aps": {
+        "content-available": 1,
+      },
+    },
+  },
+  "data": {
+    "householdId": "h1",
+    "listId": "l1",
+    "type": "list_changed",
+  },
+  "token": "fcm-ios",
+}
+`;

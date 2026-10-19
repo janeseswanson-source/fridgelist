@@ -7,8 +7,8 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | Date | Version | Change | Backend | Android | iOS |
 | --- | --- | --- | --- | --- | --- |
 | 2026-10-18 | 1 | Initial contract | — | — | — |
-| 2026-10-19 | 2 | §5.1: `trip_heading`, `trip_arrived`, `item_missing` reach **Android** as data-only messages with `title` + `body` data keys (server-localized). Needed for the inline reply. | **to do (B6)** | done (A6) | no change |
-| 2026-10-19 | 3 | §4 `startTrip` refuses `kid` (`permission-denied`); §3.2 a user may delete their own device docs (sign-out). | device delete: done (B2); `startTrip`: to do (B6) | done (QA pass) | to do |
+| 2026-10-19 | 2 | §5.1: `trip_heading`, `trip_arrived`, `item_missing` reach **Android** as data-only messages with `title` + `body` data keys (server-localized). Needed for the inline reply. | done (B6) | done (A6) | no change |
+| 2026-10-19 | 3 | §4 `startTrip` refuses `kid` (`permission-denied`); §3.2 a user may delete their own device docs (sign-out). | done (B2 device delete, B6 `startTrip`) | done (QA pass) | to do |
 
 ## Milestones
 
@@ -17,17 +17,62 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | Backend | B1 Scaffold | done | 2026-10-19 | `npm run emulators` builds, starts Auth/Firestore/Functions/Hosting/Storage/Pub/Sub and seeds |
 | Backend | B2 Security rules | done | 2026-10-19 | 144 rules tests (full §3.6 matrix); Android offline flow passes the real rules |
 | Backend | B3 Households, invites, devices | done | 2026-10-19 | callables + `onMemberWritten`; Android two-user join passes against it |
+| Backend | B6 Trips, notifications, live surfaces | done, real delivery needs the dev project | 2026-10-19 | every push type snapshot-tested in ar/tr/en; throttle, stale job; Android trip E2E |
 | Backend | B5 Stores | done, real import awaits owner OK | 2026-10-19 | UAE and Saudi dry runs on live OSM data; `nearbyStores`/`addStore` |
 | Backend | B4 Item pipeline | done, LLM/STT recordings pending a key | 2026-10-19 | golden 30/30 on catalog + dialect alone; LLM and STT behind interfaces, untested against the real services |
 | Android | A1 Scaffold | done | 2026-10-18 | core:i18n passes 28/28 fixture cases (18/18 split required) |
 | Android | A2 Sign-in, onboarding, household | done | 2026-10-18 | two-user join E2E passes against backend B3 (2026-10-19) |
 | Android | A3 Lists and items, offline-first | done | 2026-10-19 | server categories/translations now run (B4); | offline add/tick/undo/delete → sync verified (instrumented test + device); categories/translations wait for B4 |
 | Android | A4 Voice add | done, real-speech run pending | 2026-10-19 | fallback chain verified on emulator (no mic audio there); `docs/test-voice.md` to run on real phones |
-| Android | A5 Shopping Mode | done, server trip pending B6 | 2026-10-19 | tick/undo/missing/finish UI-tested online and offline; local mode verified on device |
-| Android | A6 "I'm going", notifications, inline reply, Live Updates | done, cross-phone run pending B6 | 2026-10-19 | contract v2; reply + Live Update verified on emulators via the dev push simulator |
+| Android | A5 Shopping Mode | done | 2026-10-19 | real `startTrip`/`updateTrip(done)` verified with backend B6 on the emulator; | tick/undo/missing/finish UI-tested online and offline; local mode verified on device |
+| Android | A6 "I'm going", notifications, inline reply, Live Updates | done, cross-phone run needs real FCM | 2026-10-19 | contract v2; reply + Live Update verified on emulators via the dev push simulator |
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Backend B6 Trips, notifications, live surfaces
+- Shipped:
+  - `startTrip`:
+    - member, **not a kid** (contract v3); `listIds` default to every unarchived list and are validated;
+    - `storeId` resolves name and chain;
+    - one active trip per shopper: the previous trip is ended first (missing items reopened, live surfaces ended);
+    - `lastCallUntil` = now + minutes (heading); shopper `presence`; a `trip_heading`/`trip_arrived` event and alerts;
+    - an **auto** trip on iOS starts the Live Activity by push-to-start (`apnsPushToStartToken`, localized alert).
+  - `updateTrip`:
+    - shopper only; heading → shopping (`arrivedAt`, presence, `trip_arrived`, a live update); repeated taps are no-ops;
+    - done/cancelled → `{ok, summary: {done, missing}}`, then `failed-precondition`, which Android's worker treats as success.
+  - `registerLiveActivityToken`: shopper, active trip, hex token (stored lowercase).
+  - `endTrip`: summary and counts → missing items back to `open` → presence removed → `trip_done` → final Android `trip_update` (status done, clears the ongoing notification) and iOS Live Activity `end` with `dismissal-date` + 15 min.
+  - **Pushes** (`push/messages.ts`, pure):
+    - `trip_heading`, `trip_arrived`, `item_missing`: Android data-only with `title`/`body` (contract v2, priority high); iOS `aps.alert` + category.
+    - `trip_update` (all strings, JSON `nextItems`); Live Activity start/update/end through `apns.liveActivityToken` (supported natively by firebase-admin 14, so no REST fallback); `list_changed` (iOS background push).
+  - **Templates** `i18n/{ar,tr,en}.json`:
+    - CLDR plurals (Arabic: 5 دقائق, 15 دقيقة, صنفان, 11 صنفاً); numbers in Western digits, as the Android app shows them;
+    - store-less titles ("Ayşe markette", not "…: market");
+    - Turkish avoids case suffixes on names ("Ayşe alışverişe çıktı: Migros", "labne bulunamadı"); Arabic avoids gendered verbs ("لم يُعثر على لبنة").
+  - Recipients: members minus the shopper, filtered by `notify` with the CONTRACT defaults; text in each user's `uiLanguage`; item names via the display rule in the reader's item language.
+  - **Trip state** (`trips/state.ts`):
+    - remaining = open + the shopper's own claims; done = ticked on this trip;
+    - `nextItems` = 4 in aisle order in the shopper's language, never others' claims;
+    - during last call, the newest item someone else added → `latestAddBy`/`latestAddName`.
+  - **Throttle:** at most one live update per trip per 5 s using the contract's `lastLiveUpdateAt`. A later change waits out the window, then claims it in a transaction; only the first claimer sends, and it reads the state after claiming, so bursts collapse and the newest state always goes out.
+  - `onItemWritten` (new trigger, the B4 "hook"): live updates for active trips on the list, plus `list_changed` at most once per device per minute (`pushThrottle/`, functions only), never to the adder of a new item.
+  - `item_missing` now really sends (`PushMissingNotifier` replaces the B4 stub).
+  - `closeStaleTrips`: every 30 min, trips older than 4 h end like `updateTrip(done)`. The collection-group index (status, startedAt) is in `firestore.indexes.json`.
+  - `FcmSender`: `sendEach` in chunks of 500; a token FCM reports unregistered deletes that device doc. In the Functions emulator, `EmulatorLogSender` logs kinds and counts only.
+- Seed fix (found in the end-to-end run):
+  - The B1 seed pre-filled `lang`, so `onItemCreated` skipped the items and Turkish/Filipino ones never got translated.
+  - Seed items are now written exactly as the apps write them, and re-seeding deletes them first (an overwrite is an update, not a create). The trigger now enriches all of them (e.g. "beyaz peynir" → جبنة بيضاء).
+- Tests: **242 unit** (incl. 29 push tests: **42 snapshots** covering every push type × ar/tr/en × Android/iOS, plus the Live Activity events and `list_changed`; template key/placeholder parity; plural forms; trip state) + **204 emulator** (incl. 16 trip tests: heading/arrived recipients and languages, notify preferences, ending the old trip, store lookup, kid refusal, iOS push-to-start, arrive/done/summary/presence/final update, shopper-only, the token flow and end, **throttle** (wait-then-send, burst → one push, inactive), fan-out and per-device throttle, `item_missing` text, **stale-trip job**, dead-token cleanup).
+- End to end with the Android app (API 36.1 emulator, signed in as seeded Mama):
+  - a new-phone sign-in restored the household;
+  - the list showed server translations through the display rule ("süt" → حليب with the original underneath);
+  - Shopping Mode started a real server trip; ticks drove the throttled live update (counts done 2 / missing 1);
+  - Done → summary ("اشتريت صنفين", one not found) → WorkManager `updateTrip(done)` → trip `done`, "Dish soap" back to `open`, presence cleared, 2 purchases.
+  - No pushes went out because the emulator phone has no FCM token; the logs show `devices: 0`, as expected.
+- Contract changes: none (implements v2 for the backend and v3 `startTrip`).
+- Not verifiable without the real dev project: FCM delivery, the 5-second cross-phone inline-reply check (`docs/test-notifications.md`), and iOS Live Activities (they also need the iOS app).
+- Next: B7 (share links, guest page, link hosting). It needs the SHA-256 signing fingerprints and the real link domain for `.well-known`; I'll ask when I get there.
 
 ### 2026-10-19 — Backend B5 Stores
 - Shipped:
