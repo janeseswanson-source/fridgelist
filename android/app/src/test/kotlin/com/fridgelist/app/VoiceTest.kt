@@ -142,6 +142,21 @@ class VoiceTest {
     }
 
     @Test
+    fun unexpectedTranscribeFailureIsAMessageNotACrash() = runTest(main.dispatcher) {
+        val voice = voice(emptyList(), transcriber = FakeTranscriber { throw IllegalStateException("boom") })
+        voice.stop()
+        runCurrent()
+        assertEquals(VoiceState.Failed(R.string.error_generic), voice.state.value)
+    }
+
+    @Test
+    fun micPermissionDeniedSaysSo() = runTest(main.dispatcher) {
+        val voice = voice(emptyList())
+        voice.permissionDenied()
+        assertEquals(VoiceState.Failed(R.string.voice_permission_denied), voice.state.value)
+    }
+
+    @Test
     fun recorderUnavailable() = runTest(main.dispatcher) {
         val voice = voice(emptyList(), FakeRecorder(canStart = false))
         assertEquals(VoiceState.Failed(R.string.voice_unavailable), voice.state.value)

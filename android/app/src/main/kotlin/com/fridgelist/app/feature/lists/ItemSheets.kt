@@ -69,6 +69,7 @@ import com.fridgelist.core.i18n.CategoryOrder
 import com.fridgelist.core.i18n.Normalize
 import com.fridgelist.core.model.ItemUnit
 import com.fridgelist.core.model.Limits
+import com.fridgelist.core.model.clip
 import java.util.Locale
 
 // --- Add sheet
@@ -122,7 +123,8 @@ fun AddItemsContent(
         }
         state.chips.filter { it.choices.isNotEmpty() }.forEach { chip ->
             Text(chip.name + " — " + stringResource(R.string.add_which_meaning), style = MaterialTheme.typography.bodyMedium)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            // Wraps: three meanings (لبن) at a large font size must all stay reachable.
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 chip.choices.forEach { choice -> AssistChip(onClick = { onChoose(chip, choice) }, label = { Text(choice.label) }) }
             }
         }
@@ -189,7 +191,8 @@ fun AddItemsRoute(onDone: () -> Unit, startWithVoice: Boolean = false, vm: AddIt
     val focus = remember { FocusRequester() }
     var askMic by remember { mutableStateOf(false) }
     val micPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) vm.startVoice()
+        // Denied (or "don't ask again", where Android no longer shows the prompt): say so, typing still works.
+        if (granted) vm.startVoice() else vm.onMicDenied()
     }
     val onMic = {
         vm.dismissVoiceError()
@@ -256,7 +259,7 @@ fun EditItemContent(row: ItemRowUi, canRename: Boolean, onSave: (ItemEdit) -> Un
         Text(stringResource(R.string.edit_title), style = MaterialTheme.typography.titleLarge)
         OutlinedTextField(
             value = name,
-            onValueChange = { name = it.take(Limits.ITEM_NAME_MAX) },
+            onValueChange = { name = it.clip(Limits.ITEM_NAME_MAX) },
             enabled = canRename,
             label = { Text(stringResource(R.string.edit_name)) },
             singleLine = true,
@@ -298,7 +301,7 @@ fun EditItemContent(row: ItemRowUi, canRename: Boolean, onSave: (ItemEdit) -> Un
         )
         OutlinedTextField(
             value = notes,
-            onValueChange = { notes = it.take(Limits.ITEM_NOTES_MAX) },
+            onValueChange = { notes = it.clip(Limits.ITEM_NOTES_MAX) },
             label = { Text(stringResource(R.string.edit_notes)) },
             modifier = Modifier.fillMaxWidth(),
         )

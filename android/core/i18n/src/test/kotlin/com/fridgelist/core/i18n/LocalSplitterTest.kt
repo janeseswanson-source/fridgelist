@@ -151,4 +151,55 @@ class LocalSplitterTest {
         assertEquals(emptyList(), names("   "))
         assertEquals(emptyList(), names(" , ، و and "))
     }
+
+    // --- QA edge cases (2026-10-19)
+
+    @Test
+    fun invisibleMarksAndNoBreakSpacesAreIgnored() {
+        val rtl = splitter.split("‏حليب‏", listOf("ar")).single()
+        assertEquals("حليب", rtl.name, "no bidi mark left in the name")
+        assertEquals("milk", rtl.canonicalId)
+        assertEquals("milk", splitter.split("milk​", listOf("en")).single().name)
+        val nbsp = splitter.split("2 süt", listOf("tr")).single()
+        assertEquals("süt", nbsp.name)
+        assertEquals(2.0, nbsp.qty)
+    }
+
+    @Test
+    fun numbersAloneOrOnlyFillerGiveNothing() {
+        assertEquals(emptyList(), names("2"))
+        assertEquals(emptyList(), names("2 kg"))
+        assertEquals(emptyList(), names("x2"))
+        assertEquals(emptyList(), names("we need", "en"))
+        assertEquals(emptyList(), names("جيب", "ar"))
+    }
+
+    @Test
+    fun oddNumbersStayInTheNameOrAreLeftToValidation() {
+        assertEquals(listOf("-2 milk"), names("-2 milk", "en"))
+        assertEquals(listOf("1.5.2 milk"), names("1.5.2 milk", "en"))
+        // Out-of-range quantities are parsed; ItemPatches.validQty drops them before display and write.
+        assertEquals(0.0, splitter.split("0 milk").single().qty)
+    }
+
+    @Test
+    fun hugeInputDoesNotBlowUp() {
+        assertEquals(1, splitter.split("a".repeat(5_000)).size)
+        assertEquals(listOf("milk", "bread"), names("milk " + "and ".repeat(200) + "bread", "en"))
+        assertEquals(listOf("🍎🍎"), names("🍎🍎"))
+    }
+
+    @Test
+    fun arabicDecimalAndPersianDigits() {
+        val rice = splitter.split("٢٫٥ كيلو رز", listOf("ar")).single()
+        assertEquals(2.5, rice.qty)
+        assertEquals(ItemUnit.KG, rice.unit)
+        assertEquals(3.0, splitter.split("۳ نان", listOf("ar")).single().qty)
+    }
+
+    @Test
+    fun commaWithSpaceIsASeparatorNotADecimal() {
+        assertEquals(1.5, splitter.split("1,5 kg peynir", listOf("tr")).single().qty)
+        assertEquals(listOf("süt", "ekmek"), names("süt,ekmek", "tr"))
+    }
 }

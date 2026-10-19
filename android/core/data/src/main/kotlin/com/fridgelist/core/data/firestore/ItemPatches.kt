@@ -7,6 +7,7 @@ import com.fridgelist.core.model.ItemDoc
 import com.fridgelist.core.model.ItemStatus
 import com.fridgelist.core.model.ItemUnit
 import com.fridgelist.core.model.Limits
+import com.fridgelist.core.model.clip
 
 /** A field write, independent of the Firestore SDK so the rules below are plain unit tests. */
 sealed interface FieldPatch {
@@ -44,7 +45,7 @@ data class ItemEdit(
 object ItemPatches {
 
     fun create(draft: ItemDraft, status: ItemStatus, addedBy: String, via: AddedVia): Patch = buildMap {
-        put("name", FieldPatch.Set(draft.name.trim().take(Limits.ITEM_NAME_MAX)))
+        put("name", FieldPatch.Set(draft.name.trim().clip(Limits.ITEM_NAME_MAX)))
         validQty(draft.qty)?.let { put("qty", FieldPatch.Set(it)) }
         draft.unit?.let { put("unit", FieldPatch.Set(it.wire)) }
         cleanNotes(draft.notes)?.let { put("notes", FieldPatch.Set(it)) }
@@ -80,7 +81,7 @@ object ItemPatches {
 
     /** Only changed fields; `name` only when [canRename] (creator only, CONTRACT §3.6). */
     fun edit(item: ItemDoc, edit: ItemEdit, canRename: Boolean): Patch = buildMap {
-        val name = edit.name.trim().take(Limits.ITEM_NAME_MAX)
+        val name = edit.name.trim().clip(Limits.ITEM_NAME_MAX)
         if (canRename && name.isNotEmpty() && name != item.name) put("name", FieldPatch.Set(name))
         val qty = validQty(edit.qty)
         if (qty != item.qty) put("qty", qty?.let { FieldPatch.Set(it) } ?: FieldPatch.Delete)
@@ -99,5 +100,5 @@ object ItemPatches {
     /** 0 < qty ≤ 999 (CONTRACT §3.6); anything else is dropped. */
     fun validQty(qty: Double?): Double? = qty?.takeIf { it > 0 && it <= Limits.QTY_MAX }
 
-    private fun cleanNotes(notes: String?): String? = notes?.trim()?.take(Limits.ITEM_NOTES_MAX)?.ifEmpty { null }
+    private fun cleanNotes(notes: String?): String? = notes?.trim()?.clip(Limits.ITEM_NOTES_MAX)?.ifEmpty { null }
 }

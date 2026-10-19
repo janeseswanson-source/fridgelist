@@ -69,9 +69,13 @@ class SignInViewModel @Inject constructor(
         signIn { auth.signInEmulatorTestUser(name) }
     }
 
+    private var signingIn = false
+
     fun onNavigated() = _state.update { it.copy(next = null) }
 
     private fun signIn(block: suspend () -> AuthUser) {
+        if (signingIn) return // the Google flow sets busy first, so guard on the call itself
+        signingIn = true
         _state.update { it.copy(busy = true, error = null) }
         viewModelScope.launch {
             try {
@@ -81,6 +85,8 @@ class SignInViewModel @Inject constructor(
                 _state.update { it.copy(busy = false, next = steps.next()) }
             } catch (e: Exception) {
                 fail(ErrorMessages.general(e))
+            } finally {
+                signingIn = false
             }
         }
     }

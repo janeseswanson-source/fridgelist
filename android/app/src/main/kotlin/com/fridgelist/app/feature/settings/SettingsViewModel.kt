@@ -2,9 +2,7 @@ package com.fridgelist.app.feature.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fridgelist.core.data.auth.AuthRepository
 import com.fridgelist.core.data.firebase.AppEnvironment
-import com.fridgelist.core.data.session.SessionStore
 import com.fridgelist.core.data.firebase.FirebaseBootstrap
 import com.fridgelist.core.data.settings.DevSettings
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,8 +25,7 @@ class SettingsViewModel @Inject constructor(
     environment: AppEnvironment,
     private val devSettings: DevSettings,
     firebase: FirebaseBootstrap,
-    private val auth: AuthRepository,
-    private val session: SessionStore,
+    private val signOutAction: SignOut,
 ) : ViewModel() {
 
     /** Developer options exist only in the dev flavor. */
@@ -56,8 +53,7 @@ class SettingsViewModel @Inject constructor(
     /** Signs out and forgets this member's session; the device ID stays. */
     fun signOut() {
         viewModelScope.launch {
-            auth.signOut()
-            session.clear()
+            signOutAction()
             _signedOut.value = true
         }
     }

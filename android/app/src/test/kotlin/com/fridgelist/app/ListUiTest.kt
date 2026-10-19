@@ -51,4 +51,26 @@ class ListUiTest {
         compose.onNodeWithText("Fruit & vegetables").assertIsDisplayed()
         compose.onNodeWithText("Approve").assertHasClickAction()
     }
+
+    @Test
+    fun kidsGetNoShoppingOrImGoing() {
+        val res = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>().resources
+        compose.setContent {
+            FridgeListTheme {
+                ListDetailScreen(Samples.detail.copy(role = com.fridgelist.core.model.Role.KID), Samples.adultActions, remember { SnackbarHostState() }, {}, {})
+            }
+        }
+        compose.onNodeWithText(res.getString(R.string.going_title)).assertDoesNotExist()
+        compose.onNode(hasContentDescription(res.getString(R.string.shop_start))).assertDoesNotExist()
+    }
+
+    @Test
+    fun adultsGetBoth() {
+        val res = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>().resources
+        compose.setContent {
+            FridgeListTheme { ListDetailScreen(Samples.detail.copy(role = com.fridgelist.core.model.Role.ADULT), Samples.adultActions, remember { SnackbarHostState() }, {}, {}) }
+        }
+        compose.onNodeWithText(res.getString(R.string.going_title)).assertIsDisplayed()
+        compose.onNode(hasContentDescription(res.getString(R.string.shop_start))).assertIsDisplayed()
+    }
 }

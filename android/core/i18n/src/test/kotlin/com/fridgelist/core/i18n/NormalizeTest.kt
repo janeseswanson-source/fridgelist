@@ -95,4 +95,12 @@ class NormalizeTest {
         assertTrue(Normalize.isTurkish(listOf("en", "tr-TR")))
         assertFalse(Normalize.isTurkish(listOf("ar-SA", "en")))
     }
+
+    @Test
+    fun invisibleCharactersAreRemovedAndSpacesUnified() {
+        assertEquals("حليب", Normalize.invisible("‏‫حليب‬﻿"))
+        assertEquals("2 süt", Normalize.invisible("2 süt"))
+        assertEquals("نان", Normalize.matchKey("‌نان"), "match keys also drop ZWNJ")
+        assertEquals("a b", Normalize.matchKey(" a  b "))
+    }
 }

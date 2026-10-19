@@ -172,6 +172,7 @@ sequenceDiagram
 
 ### 4.1 Normalization (one implementation per language: TypeScript, Kotlin, Swift, tested against the same fixtures)
 
+- **All languages:** remove invisible marks (bidi marks `U+200E/200F`, embeddings and isolates `U+202A-202E`, `U+2066-2069`, zero-width space `U+200B`, BOM, soft hyphen) from the text; treat no-break and narrow spaces (`U+00A0`, `U+2007`, `U+202F`) as spaces. Match keys also drop every other format character (`ZWJ`, `ZWNJ`).
 - **Arabic:** strip tashkeel and tatweel; unify `أ إ آ` → `ا`, `ى` → `ي`; treat final `ة`/`ه` as equal when matching; Eastern digits `٠-٩` and `۰-۹` → `0-9`; Arabic comma `،` and `و` as separators (only when `و` starts a word followed by an item, not inside words like `ورق`).
 - **Turkish:** locale-aware lowercasing (`İ` → `i`, `I` → `ı`); decimal comma `1,5`; separators `ve`, `ile`, `,`.
 - **English:** separators `and`, `,`, `&`; strip filler ("we need", "get", "buy", "don't forget").

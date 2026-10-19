@@ -37,7 +37,8 @@ class LocalSplitter(private val catalog: Catalog = Catalog.bundled) {
     }
 
     // --- 1. Hard separators: commas (not decimal commas), Arabic comma, semicolons, &, +, new lines.
-    private fun chunks(text: String): List<String> = HARD_SEPARATORS.split(text).filter { it.isNotBlank() }
+    private fun chunks(text: String): List<String> =
+        HARD_SEPARATORS.split(Normalize.invisible(text)).filter { it.isNotBlank() }
 
     // --- 2. Tokens, with glued forms split: "1kg" → "1" "kg", "x2" → "×" "2".
     private fun tokens(chunk: String, turkish: Boolean): List<Token> =

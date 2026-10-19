@@ -199,4 +199,59 @@ class ShoppingTest {
         assertTrue(EndTripWorker.decide(ApiError.NOT_FOUND, 0) is ListenableWorker.Result.Success)
         assertTrue(EndTripWorker.decide(ApiError.NETWORK, 8) is ListenableWorker.Result.Failure, "gives up eventually")
     }
+
+    // --- QA edge cases (2026-10-19): process death
+
+    @Test
+    fun restoredAfterFinishingNeverStartsANewTrip() = runTest(main.dispatcher) {
+        val s = setup(args = mapOf("listId" to "l1", "finished" to true))
+        assertTrue(s.trips.started.isEmpty(), "no second trip")
+        assertTrue(s.notifier.shown.isEmpty(), "no ongoing notification")
+        assertTrue(s.vm.tripGone.value)
+    }
+
+    @Test
+    fun localModeCartSurvivesProcessDeath() = runTest(main.dispatcher) {
+        val handle = SavedStateHandle(mapOf("listId" to "l1"))
+        val items = items()
+        val session = FakeSession(Session("Ayşe", "tr", "h1", true))
+        val offline = FakeTrips(failWith = ApiException(ApiError.NETWORK))
+        fun vm() = ShoppingViewModel(handle, householdContext(Role.HELPER, session), items, items, offline, session, FakeTripEnder(), FakeTripNotifier())
+            .also { it.state.launchIn(backgroundScope); advanceUntilIdle() }
+        val first = vm()
+        first.tick(first.state.value.toBuy.flatMap { it.second }.first { it.item.id == "milk" })
+        advanceUntilIdle()
+        assertEquals(listOf("milk"), first.state.value.inCart.map { it.item.id })
+
+        // The system restores the same SavedStateHandle into a new ViewModel.
+        val restored = vm()
+        assertTrue(restored.state.value.localMode)
+        assertEquals(listOf("milk"), restored.state.value.inCart.map { it.item.id })
+    }
+
+    @Test
+    fun doneFromTheNotificationStopsTheOpenScreenFromRepostingIt() = runTest(main.dispatcher) {
+        val s = setup()
+        val shownBefore = s.notifier.shown.size
+        // TripActionReceiver: Done tapped on the lock screen while Shopping Mode is open.
+        s.session.endShopping()
+        s.items.setItems(ItemDoc(id = "jam", name = "reçel", addedBy = "mom", createdAt = 9))
+        advanceUntilIdle()
+        assertEquals(shownBefore, s.notifier.shown.size, "not posted again")
+        assertTrue(s.vm.tripGone.value)
+    }
+
+    @Test
+    fun kidsNeverStartATrip() = runTest(main.dispatcher) {
+        val items = items()
+        // A trip saved before the role guard existed: resuming it must clear it, not start one.
+        val session = FakeSession(Session("Ali", "ar", "h1", true, ActiveShopping("l1", "t-old")))
+        val trips = FakeTrips()
+        val vm = ShoppingViewModel(SavedStateHandle(mapOf("listId" to "l1")), householdContext(Role.KID, session), items, items, trips, session, FakeTripEnder(), FakeTripNotifier())
+        vm.state.launchIn(backgroundScope)
+        advanceUntilIdle()
+        assertTrue(trips.started.isEmpty())
+        assertNull(session.state.value.shopping)
+        assertTrue(vm.tripGone.value)
+    }
 }

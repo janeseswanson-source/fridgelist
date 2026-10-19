@@ -132,4 +132,17 @@ class GoingAndReplyTest {
         assertTrue(notifier.shown.isEmpty())
         assertNull(session.state.value.shopping)
     }
+
+    @Test
+    fun doubleTapOnSendStartsOneTrip() = runTest(main.dispatcher) {
+        val trips = FakeTrips(tripId = "t-go")
+        val vm = going(trips, FakeTripNotifier(), FakeSession(Session("Ayşe", "tr", "h1", true)))
+        vm.onStoreText("Migros")
+        vm.send()
+        vm.send()
+        advanceUntilIdle()
+        vm.send() // and never again once sent
+        advanceUntilIdle()
+        assertEquals(1, trips.started.size)
+    }
 }

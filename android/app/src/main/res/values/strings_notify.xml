@@ -12,6 +12,9 @@
     <string name="notif_reply_label">Add to the list</string>
     <string name="notif_reply_hint">e.g. milk, bread</string>
     <string name="notif_added">Added ✓</string>
+    <string name="notif_not_added">Not added. Open the app to add it.</string>
+    <string name="notif_trip_fallback">Someone is going shopping</string>
+    <string name="notif_missing_fallback">An item wasn’t found</string>
     <string name="trip_heading_to">Heading to %1$s</string>
     <string name="trip_at">At %1$s</string>
     <string name="trip_store_unknown">the store</string>

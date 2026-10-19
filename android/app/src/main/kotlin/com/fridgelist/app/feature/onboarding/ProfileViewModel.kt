@@ -8,6 +8,7 @@ import com.fridgelist.core.data.session.OnboardingStep
 import com.fridgelist.core.data.session.SessionStore
 import com.fridgelist.core.data.user.UserRepository
 import com.fridgelist.core.model.Limits
+import com.fridgelist.core.model.clip
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -44,21 +45,29 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun onNameChange(value: String) = _state.update { it.copy(name = value.take(Limits.DISPLAY_NAME_MAX + 10), nameInvalid = false) }
+    fun onNameChange(value: String) = _state.update { it.copy(name = value.clip(Limits.DISPLAY_NAME_MAX + 10), nameInvalid = false) }
 
     fun onLanguageChange(tag: String) = _state.update { it.copy(itemLanguage = tag) }
 
+    private var saving = false
+
     fun save() {
+        if (saving) return
         val name = _state.value.name.trim()
         if (!isValidName(name, Limits.DISPLAY_NAME_MAX)) {
             _state.update { it.copy(nameInvalid = true) }
             return
         }
         val language = _state.value.itemLanguage
+        saving = true
         viewModelScope.launch {
-            session.saveProfile(name, language)
-            auth.currentUser()?.let { users.saveProfile(it.uid, name, language, uiLanguage.current()) }
-            _state.update { it.copy(next = steps.next()) }
+            try {
+                session.saveProfile(name, language)
+                auth.currentUser()?.let { users.saveProfile(it.uid, name, language, uiLanguage.current()) }
+                _state.update { it.copy(next = steps.next()) }
+            } finally {
+                saving = false
+            }
         }
     }
 

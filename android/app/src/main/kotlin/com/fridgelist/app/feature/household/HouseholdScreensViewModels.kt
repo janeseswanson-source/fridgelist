@@ -79,6 +79,7 @@ class MembersViewModel @Inject constructor(
 
     fun createInvite() {
         val current = _invite.value ?: return
+        if (current.busy) return
         _invite.value = current.copy(busy = true, error = null)
         viewModelScope.launch {
             val householdId = session.current().householdId ?: return@launch

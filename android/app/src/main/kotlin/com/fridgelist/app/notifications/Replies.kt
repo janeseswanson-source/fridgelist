@@ -68,9 +68,12 @@ class AddFromNotificationReceiver : BroadcastReceiver() {
         val pending = goAsync()
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             try {
-                val count = handler.add(householdId, listId, reply.toString())
+                // A failure here must not crash the process (no handler on this scope): report it as "not added".
+                val count = runCatching { handler.add(householdId, listId, reply.toString()) }
+                    .onFailure { Log.w(TAG, "reply failed: ${it.javaClass.simpleName}") }
+                    .getOrDefault(0)
                 Log.i(TAG, "reply added $count item(s)") // a count only, never the text
-                NotificationManagerCompat.from(context).notify(notificationId, HouseholdNotifier.added(context, channel, title, reply))
+                NotificationManagerCompat.from(context).notify(notificationId, HouseholdNotifier.added(context, channel, title, reply, ok = count > 0))
             } finally {
                 pending.finish()
             }

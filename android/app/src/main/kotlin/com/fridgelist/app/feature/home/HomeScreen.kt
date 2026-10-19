@@ -55,6 +55,7 @@ import com.fridgelist.app.ui.common.PrimaryButton
 import com.fridgelist.app.ui.common.SectionLabel
 import com.fridgelist.core.model.Limits
 import com.fridgelist.core.model.ListType
+import com.fridgelist.core.model.clip
 
 /** Home: the household's lists with what is left to buy (PRODUCT_SPEC F2). */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -211,7 +212,7 @@ fun NewListContent(onCreate: (name: String, type: ListType, emoji: String) -> Un
         Text(stringResource(R.string.lists_new), style = MaterialTheme.typography.titleLarge)
         OutlinedTextField(
             value = name,
-            onValueChange = { name = it.take(Limits.LIST_NAME_MAX) },
+            onValueChange = { name = it.clip(Limits.LIST_NAME_MAX) },
             label = { Text(stringResource(R.string.new_list_name)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),

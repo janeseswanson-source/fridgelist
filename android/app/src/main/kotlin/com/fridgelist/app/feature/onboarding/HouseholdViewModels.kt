@@ -50,6 +50,7 @@ class CreateHouseholdViewModel @Inject constructor(
 
     fun create() {
         val s = _state.value
+        if (s.busy) return // a double tap must not create two households
         val name = s.name.trim()
         if (!isValidName(name, Limits.HOUSEHOLD_NAME_MAX)) {
             _state.update { it.copy(nameInvalid = true) }
@@ -116,6 +117,7 @@ class JoinHouseholdViewModel @Inject constructor(
     }
 
     fun join() {
+        if (_state.value.busy) return
         val code = _state.value.code
         if (!InviteCode.isValid(code)) {
             _state.update { it.copy(codeInvalid = true) }

@@ -41,7 +41,7 @@ class FixtureCasesTest {
 
     @Test
     fun fixturesAreLoaded() {
-        assertEquals(28, fixtures.cases.size)
+        assertEquals(30, fixtures.cases.size)
         assertTrue(fixtures.cases.count { "split" in it.tags } >= 18)
     }
 

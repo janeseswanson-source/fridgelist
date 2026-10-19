@@ -72,8 +72,8 @@ sealed interface PushMessage {
                         tripId = tripId,
                         status = TripStatus.fromWire(data["status"]),
                         storeName = data["storeName"].orEmpty(),
-                        remaining = data["remaining"]?.toIntOrNull() ?: 0,
-                        done = data["done"]?.toIntOrNull() ?: 0,
+                        remaining = count(data["remaining"]),
+                        done = count(data["done"]),
                         nextItems = parseNextItems(data["nextItems"]),
                         lastCallUntil = data["lastCallUntil"]?.toLongOrNull(),
                         latestAddBy = data["latestAddBy"],
@@ -84,6 +84,11 @@ sealed interface PushMessage {
                 else -> Unknown(hid, data["type"])
             }
         }
+
+        /** Item counts: never negative, and small enough that `done + remaining` cannot overflow. */
+        private fun count(value: String?): Int = value?.toIntOrNull()?.coerceIn(0, MAX_COUNT) ?: 0
+
+        private const val MAX_COUNT = 9_999
 
         /** `nextItems` is a JSON-encoded array of strings (§5.3). */
         private fun parseNextItems(json: String?): List<String> =

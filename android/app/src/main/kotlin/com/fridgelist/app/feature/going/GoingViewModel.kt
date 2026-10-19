@@ -119,6 +119,7 @@ class GoingViewModel @Inject constructor(
     /** `startTrip(status: heading)`; the household is notified by the server (CONTRACT §5.1 trip_heading). */
     fun send() {
         val s = _state.value
+        if (s.sending || s.sent) return // one trip, one push to the household
         _state.update { it.copy(sending = true, message = null) }
         viewModelScope.launch {
             try {

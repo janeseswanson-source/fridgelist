@@ -12,6 +12,9 @@
     <string name="notif_reply_label">أضف إلى القائمة</string>
     <string name="notif_reply_hint">مثلاً: حليب، خبز</string>
     <string name="notif_added">تمت الإضافة ✓</string>
+    <string name="notif_not_added">لم تتم الإضافة. افتح التطبيق لإضافتها.</string>
+    <string name="notif_trip_fallback">أحد أفراد البيت ذاهب للتسوّق</string>
+    <string name="notif_missing_fallback">لم يُعثر على أحد الأغراض</string>
     <string name="trip_heading_to">في الطريق إلى %1$s</string>
     <string name="trip_at">في %1$s</string>
     <string name="trip_store_unknown">المتجر</string>

@@ -84,6 +84,12 @@
       { "canonicalId": "olive_oil" } ] },
     { "id": "mix-03", "tags": ["split"], "text": "2 süt ve labne", "localeHints": ["tr"], "expect": [
       { "canonicalId": "milk", "qty": 2 },
-      { "canonicalId": "labneh" } ] }
+      { "canonicalId": "labneh" } ] },
+    { "id": "inv-01", "tags": ["split"], "text": "‏حليب‏، خبز​", "localeHints": ["ar"], "expect": [
+      { "canonicalId": "milk" },
+      { "canonicalId": "bread" } ] },
+    { "id": "inv-02", "tags": ["split"], "text": "2 süt ve ekmek", "localeHints": ["tr"], "expect": [
+      { "canonicalId": "milk", "qty": 2 },
+      { "canonicalId": "bread" } ] }
   ]
 }

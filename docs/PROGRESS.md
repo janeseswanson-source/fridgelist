@@ -15,7 +15,7 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | --- | --- | --- | --- | --- |
 | Backend | B1 Scaffold | not started | | |
 | Android | A1 Scaffold | done | 2026-10-18 | core:i18n passes 28/28 fixture cases (18/18 split required) |
-| Android | A2 Sign-in, onboarding, household | done, E2E pending B3 | 2026-10-18 | two-user join test written; skips until backend B3 callables run on the emulator |
+| Android | A2 Sign-in, onboarding, household | done, E2E pending B3 | 2026-10-18 | two-user join test passes against a QA stand-in of the callables (2026-10-19); re-run on B3 |
 | Android | A3 Lists and items, offline-first | done, server part pending B4 | 2026-10-19 | offline add/tick/undo/delete → sync verified (instrumented test + device); categories/translations wait for B4 |
 | Android | A4 Voice add | done, real-speech run pending | 2026-10-19 | fallback chain verified on emulator (no mic audio there); `docs/test-voice.md` to run on real phones |
 | Android | A5 Shopping Mode | done, server trip pending B6 | 2026-10-19 | tick/undo/missing/finish UI-tested online and offline; local mode verified on device |
@@ -23,6 +23,43 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 | iOS | I1 Scaffold | not started | | |
 
 ## Entries
+
+### 2026-10-19 — Android QA pass A1–A6
+- Scope: code review of all modules, edge-case and fuzz tests, full suite, and a device run (API 36.1 emulator) in Arabic, Turkish and English, light and dark, against the Auth/Firestore emulators plus a **throwaway stand-in** for the CONTRACT §4 callables. That stand-in lived in the session scratchpad and is not in the repo; it is not B3/B6.
+- Fixed (each with a test):
+  - **Shared normalization (rule 6):** invisible marks (RLM/LRM, bidi embeddings and isolates, ZWSP, BOM, soft hyphen) are removed and no-break spaces become spaces, so `‏حليب` matches milk and `2 süt` splits. ARCHITECTURE §4.1 has a new "All languages" line; `fixtures/parse_cases.json` gains `inv-01` and `inv-02` (30 cases). **Backend and iOS must implement the same rule.**
+  - Local chips no longer show out-of-range quantities (`0 milk`, `99999999999 milk`); `validQty` applies before display, as it already did before writes.
+  - Length limits cut with `clip()`, which never splits an emoji (surrogate pair).
+  - Pushes for a household other than the current one (or while signed out) are not shown (privacy).
+  - `trip_update` counts are clamped (no negative or overflowing progress).
+  - A last-call countdown shows only for a sane future time.
+  - Blank push titles get a localized fallback.
+  - Inline reply: says "Not added" when nothing could be written (wrong household, signed out, only a number), and a failure can no longer crash the process.
+  - Double taps: create household, join, profile save, sign-in, invite and "I'm going" send once (a second household or a second household-wide push was possible).
+  - Shopping Mode:
+    - after process death on the summary, no new trip is started;
+    - the local-mode cart survives process death;
+    - "Done" on the notification while the screen is open stops it re-posting the notification.
+  - Kids: no "I'm going" or Shopping Mode (PRODUCT_SPEC roles); a stale saved trip is cleared instead of resumed.
+  - Sign-out: deletes this install's `devices` doc (while still signed in) and clears every notification the app posted.
+  - The shop link and the join link navigate single-top (no stacked copy of Shopping Mode).
+  - The dialect choice chips wrap (three meanings of `لبن` at large font).
+  - Denying the microphone now explains how to turn it on, or to type instead. After "don't ask again" it used to do nothing.
+  - Voice never crashes on an unexpected transcribe error.
+- Verified on device with the stand-in callables:
+  - `TwoUsersJoinHouseholdTest` passes (first end-to-end A2 run).
+  - Real create household; the offline message and the double tap.
+  - Invite link held through sign-in and profile, then prefilled.
+  - Kid request lands as `pending` in Requests.
+  - Server trip → tick / missing → process death → restore (one trip) → Done → `updateTrip(done)` via WorkManager → missing back to `open`.
+  - Inline reply writes `notification_reply` items.
+- Tests: 347 unit (model 25, i18n 75, data 23, app 224) + 2 instrumented, 0 failures; lint clean; 132 screenshots verified.
+- Open questions:
+  - **Backend:** should `startTrip` refuse `kid` (the app now never sends it)?
+  - **Backend:** Firestore rules must let a user delete their own `users/{uid}/devices/{deviceId}`.
+  - Polish: "12 pieces eggs" reads awkwardly for dozens.
+  - The dev test sign-in button does nothing, with no message, when the name is empty.
+- Not covered (needs real hardware or the backend): real speech, real FCM delivery and the cross-phone 5 s reply, server categories and translations.
 
 ### 2026-10-19 — Android A6 "I'm going", notifications, inline reply, Live Updates
 - **Contract v2** (see the table at the top): `trip_heading`, `trip_arrived` and `item_missing` reach Android as data-only messages with server-localized `title`/`body` data keys. Android can only attach the inline reply when the app builds the notification itself. **Backend B6 must send them this way**; iOS is unchanged.

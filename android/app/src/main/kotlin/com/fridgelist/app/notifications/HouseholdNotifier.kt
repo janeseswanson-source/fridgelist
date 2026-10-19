@@ -41,22 +41,26 @@ class HouseholdNotifier @Inject constructor(
         fun build(context: Context, message: PushMessage): Pair<Int, Notification>? = when (message) {
             is PushMessage.TripHeading -> {
                 val id = notificationId("trip", message.tripId)
-                id to tripNotification(context, Channels.LAST_CALL, id, message.householdId, message.listId, message.title, message.body)
+                val title = message.title.ifBlank { context.getString(R.string.notif_trip_fallback) }
+                id to tripNotification(context, Channels.LAST_CALL, id, message.householdId, message.listId, title, message.body)
                     .apply {
                         // Last call: the countdown is the point of this notification.
-                        message.lastCallUntil?.let { setWhen(it * 1000).setShowWhen(true).setUsesChronometer(true).setChronometerCountDown(true) }
+                        TripNotifications.liveCountdown(message.lastCallUntil, nowSeconds())?.let {
+                            setWhen(it * 1000).setShowWhen(true).setUsesChronometer(true).setChronometerCountDown(true)
+                        }
                         setPriority(NotificationCompat.PRIORITY_HIGH)
                     }.build()
             }
             is PushMessage.TripArrived -> {
                 val id = notificationId("trip", message.tripId)
-                id to tripNotification(context, Channels.HOUSEHOLD, id, message.householdId, message.listId, message.title, message.body).build()
+                val title = message.title.ifBlank { context.getString(R.string.notif_trip_fallback) }
+                id to tripNotification(context, Channels.HOUSEHOLD, id, message.householdId, message.listId, title, message.body).build()
             }
             is PushMessage.ItemMissing -> {
                 val id = notificationId("missing", message.itemId)
                 id to NotificationCompat.Builder(context, Channels.HOUSEHOLD)
                     .setSmallIcon(R.drawable.ic_cart)
-                    .setContentTitle(message.title)
+                    .setContentTitle(message.title.ifBlank { context.getString(R.string.notif_missing_fallback) })
                     .setContentText(message.body)
                     .setAutoCancel(true)
                     .setContentIntent(openApp(context, id))
@@ -113,12 +117,14 @@ class HouseholdNotifier @Inject constructor(
                 .build()
         }
 
-        /** Shown after a reply: "Added ✓", with the reply in the history, no new sound. */
-        fun added(context: Context, channel: String, title: String, reply: CharSequence): Notification =
+        private fun nowSeconds() = System.currentTimeMillis() / 1000
+
+        /** Shown after a reply: "Added ✓" or, when nothing could be written, "Not added", with the reply in the history. */
+        fun added(context: Context, channel: String, title: String, reply: CharSequence, ok: Boolean = true): Notification =
             NotificationCompat.Builder(context, channel)
                 .setSmallIcon(R.drawable.ic_cart)
                 .setContentTitle(title)
-                .setContentText(context.getString(R.string.notif_added))
+                .setContentText(context.getString(if (ok) R.string.notif_added else R.string.notif_not_added))
                 .setRemoteInputHistory(arrayOf(reply))
                 .setOnlyAlertOnce(true)
                 .setSilent(true)

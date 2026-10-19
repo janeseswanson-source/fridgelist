@@ -23,6 +23,7 @@ import com.fridgelist.core.data.trips.TripRepository
 import com.fridgelist.core.model.Category
 import com.fridgelist.core.model.ItemStatus
 import com.fridgelist.core.model.Platform
+import com.fridgelist.core.model.Role
 import com.fridgelist.core.model.StartTripRequest
 import com.fridgelist.core.model.StatusRules
 import com.fridgelist.core.model.TripStatus
@@ -86,7 +87,8 @@ class ShoppingViewModel @Inject constructor(
     private val context = contextSource.context.stateIn(viewModelScope, SharingStarted.Eagerly, null)
     private val listId = MutableStateFlow(savedState.get<String>("listId"))
     private val tripId = MutableStateFlow<String?>(savedState.get<String>("tripId"))
-    private val tickedHere = MutableStateFlow<Set<String>>(emptySet())
+    /** Ticked in this session; saved so local mode keeps its cart across process death. */
+    private val tickedHere = MutableStateFlow(savedState.get<Array<String>>(KEY_TICKED).orEmpty().toSet())
     private val summary = MutableStateFlow<ShoppingSummary?>(null)
     private val undoQueue = UndoQueue()
     val undo: StateFlow<UndoUi?> = undoQueue.undo
@@ -111,11 +113,23 @@ class ShoppingViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ShoppingUiState())
 
     init {
+        viewModelScope.launch { tickedHere.collect { savedState[KEY_TICKED] = it.toTypedArray() } }
         viewModelScope.launch { start() }
     }
 
     private suspend fun start() {
+        // Restored after process death on the summary: the trip is over; never start a new one.
+        if (savedState.get<Boolean>(KEY_FINISHED) == true) {
+            _tripGone.value = true
+            return
+        }
         val ctx = context.filterNotNull().first()
+        // Kids don't shop (PRODUCT_SPEC roles): an old link or a resumed session must not start a trip.
+        if (ctx.role == Role.KID) {
+            session.endShopping() // a stale saved trip would keep "Continue shopping" on Home forever
+            _tripGone.value = true
+            return
+        }
         val saved = session.current().shopping
         // Opened from fridgelist://shop?tripId=… : find its list.
         if (listId.value == null) {
@@ -147,9 +161,15 @@ class ShoppingViewModel @Inject constructor(
         }
     }
 
-    private fun syncNotification(ctx: HouseholdContext, s: ShoppingUiState) {
+    private suspend fun syncNotification(ctx: HouseholdContext, s: ShoppingUiState) {
         val trip = tripId.value ?: return
-        if (!s.loaded || s.summary != null) return
+        if (!s.loaded || s.summary != null || _tripGone.value) return
+        // Ended elsewhere ("Done" on the notification, or the server): never post it again.
+        if (session.current().shopping?.tripId != trip) {
+            tripNotifications.cancel()
+            _tripGone.value = true
+            return
+        }
         val toBuy = s.toBuy.flatMap { it.second }
         tripNotifications.show(
             TripNotice(
@@ -252,6 +272,7 @@ class ShoppingViewModel @Inject constructor(
         val ctx = context.value ?: return
         val lid = listId.value ?: return
         undoQueue.settle(undone = false)
+        savedState[KEY_FINISHED] = true
         val s = state.value
         val rest = s.toBuy.flatMap { it.second } + s.claimedByOthers + s.missing
         summary.value = ShoppingSummary(bought = s.inCart, missing = s.missing, rest = rest)
@@ -268,5 +289,7 @@ class ShoppingViewModel @Inject constructor(
 
     private companion object {
         const val START_TIMEOUT_MS = 8_000L
+        const val KEY_TICKED = "ticked"
+        const val KEY_FINISHED = "finished"
     }
 }

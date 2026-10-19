@@ -17,6 +17,16 @@ object Normalize {
     private val TASHKEEL = Regex("[\\u0610-\\u061A\\u064B-\\u065F\\u0670\\u06D6-\\u06ED]")
     private const val TATWEEL = 'ـ'
     private val WHITESPACE = Regex("\\s+")
+    private val INVISIBLE = Regex("[\\u00AD\\u200B\\u200E\\u200F\\u202A-\\u202E\\u2066-\\u2069\\uFEFF]")
+    private val UNICODE_SPACE = Regex("[\\u00A0\\u2007\\u202F]")
+    private val FORMAT = Regex("\\p{Cf}")
+
+    /**
+     * Display-safe cleanup for typed or dictated text: drops bidi marks, zero-width spaces, BOM and
+     * soft hyphens, and turns no-break spaces into plain spaces. Keyboards and speech engines insert
+     * these; left in, "‏حليب" would not match "حليب".
+     */
+    fun invisible(text: String): String = UNICODE_SPACE.replace(INVISIBLE.replace(text, ""), " ")
 
     /** Eastern Arabic (٠-٩) and Persian/Urdu (۰-۹) digits → ASCII; Arabic decimal separator ٫ → '.'. */
     fun digitsToAscii(text: String): String {
@@ -60,12 +70,13 @@ object Normalize {
     private val DECIMAL_COMMA = Regex("(\\d),(\\d)")
 
     /**
-     * Comparison key: digits to ASCII, Arabic folding, lowercase, decimal comma, collapsed
+     * Comparison key: invisible and format characters removed, digits to ASCII, Arabic folding,
+     * lowercase, decimal comma, collapsed
      * whitespace, and final ة treated as ه (ARCHITECTURE §4.1: "treat final ة/ه as equal when
      * matching").
      */
     fun matchKey(text: String, turkish: Boolean = false): String {
-        val base = decimalComma(lowercase(arabic(digitsToAscii(text)), turkish))
+        val base = decimalComma(lowercase(arabic(digitsToAscii(FORMAT.replace(invisible(text), ""))), turkish))
         return base.trim().split(WHITESPACE).joinToString(" ") { word ->
             if (word.endsWith('ة')) word.dropLast(1) + 'ه' else word
         }

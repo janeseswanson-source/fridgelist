@@ -15,6 +15,7 @@ import com.fridgelist.app.BuildConfig
 import com.fridgelist.app.MainActivity
 import com.fridgelist.app.R
 import com.fridgelist.app.feature.lists.Quantities
+import com.fridgelist.core.model.LAST_CALL_MINUTES
 import com.fridgelist.core.model.TripStatus
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Locale
@@ -119,8 +120,8 @@ class TripNotifications @Inject constructor(
                 builder.setStyle(style)
             }
 
-            val lastCall = notice.lastCallUntil
-            if (lastCall != null && lastCall > nowSeconds) {
+            val lastCall = liveCountdown(notice.lastCallUntil, nowSeconds)
+            if (lastCall != null) {
                 builder.setWhen(lastCall * 1000)
                     .setShowWhen(true)
                     .setUsesChronometer(true)
@@ -129,6 +130,13 @@ class TripNotifications @Inject constructor(
             }
             return builder.build()
         }
+
+        /**
+         * The last-call end worth a countdown: in the future and within the longest last call. A
+         * past value or a malformed one (milliseconds instead of seconds) shows no countdown.
+         */
+        fun liveCountdown(lastCallUntil: Long?, nowSeconds: Long): Long? =
+            lastCallUntil?.takeIf { it > nowSeconds && it - nowSeconds <= LAST_CALL_MINUTES.max() * 60L + 60 }
 
         fun segments(total: Int): List<NotificationCompat.ProgressStyle.Segment> =
             if (total <= MAX_SEGMENTS) List(total) { NotificationCompat.ProgressStyle.Segment(1) } else listOf(NotificationCompat.ProgressStyle.Segment(total))

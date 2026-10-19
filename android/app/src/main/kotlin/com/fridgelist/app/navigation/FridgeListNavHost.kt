@@ -75,7 +75,7 @@ fun FridgeListNavHost(start: OnboardingStep, app: AppViewModel) {
     val pendingJoinCode by app.pendingJoinCode.collectAsStateWithLifecycle()
     LaunchedEffect(pendingJoinCode) {
         if (pendingJoinCode != null && app.currentStep() >= OnboardingStep.HOUSEHOLD) {
-            app.consumeJoinCode()?.let { nav.navigate(JoinHousehold(it)) }
+            app.consumeJoinCode()?.let { nav.navigate(JoinHousehold(it)) { launchSingleTop = true } }
         }
     }
 
@@ -83,7 +83,8 @@ fun FridgeListNavHost(start: OnboardingStep, app: AppViewModel) {
     val pendingShopTrip by app.pendingShopTrip.collectAsStateWithLifecycle()
     LaunchedEffect(pendingShopTrip) {
         if (pendingShopTrip != null && app.currentStep() == OnboardingStep.DONE) {
-            app.consumeShopTrip()?.let { nav.navigate(Shopping(tripId = it)) }
+            // Single top: a tap on the trip notification while Shopping Mode is open must not stack a copy.
+            app.consumeShopTrip()?.let { nav.navigate(Shopping(tripId = it)) { launchSingleTop = true } }
         }
     }
 

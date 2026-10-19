@@ -101,6 +101,10 @@ class FakeDevices : DeviceRegistry {
         registered += uid
         return true
     }
+    val unregistered = mutableListOf<String>()
+    override suspend fun unregister(uid: String) {
+        unregistered += uid
+    }
 }
 
 fun steps(auth: FakeAuth, session: FakeSession) = StepResolver(auth, session)

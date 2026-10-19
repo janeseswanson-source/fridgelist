@@ -12,6 +12,9 @@
     <string name="notif_reply_label">Listeye ekle</string>
     <string name="notif_reply_hint">ör. süt, ekmek</string>
     <string name="notif_added">Eklendi ✓</string>
+    <string name="notif_not_added">Eklenemedi. Eklemek için uygulamayı aç.</string>
+    <string name="notif_trip_fallback">Biri alışverişe gidiyor</string>
+    <string name="notif_missing_fallback">Bir ürün bulunamadı</string>
     <string name="trip_heading_to">Gidiliyor: %1$s</string>
     <string name="trip_at">Şu an: %1$s</string>
     <string name="trip_store_unknown">market</string>

@@ -121,4 +121,13 @@ class ItemPatchesTest {
         assertEquals(1.0, list.order)
         assertFalse(list.archived)
     }
+
+    @Test
+    fun longNamesAreCutWithoutBreakingAnEmoji() {
+        val patch = ItemPatches.create(ItemDraft("x".repeat(79) + "🍎🍎"), ItemStatus.OPEN, "u1", AddedVia.APP_TEXT)
+        assertEquals(FieldPatch.Set("x".repeat(79)), patch["name"])
+        assertEquals(null, ItemPatches.create(ItemDraft("milk", qty = 0.0), ItemStatus.OPEN, "u1", AddedVia.APP_TEXT)["qty"])
+        assertEquals(null, ItemPatches.create(ItemDraft("milk", qty = 1000.0), ItemStatus.OPEN, "u1", AddedVia.APP_TEXT)["qty"])
+        assertEquals(null, ItemPatches.create(ItemDraft("milk", qty = Double.NaN), ItemStatus.OPEN, "u1", AddedVia.APP_TEXT)["qty"])
+    }
 }

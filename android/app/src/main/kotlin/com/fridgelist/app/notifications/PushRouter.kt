@@ -13,7 +13,14 @@ class PushRouter @Inject constructor(
     private val session: SessionStore,
 ) {
     suspend fun route(data: Map<String, String>) {
-        when (val message = PushMessage.parse(data)) {
+        val message = PushMessage.parse(data)
+        // Privacy: after sign-out or leaving a household the token may still get that household's
+        // pushes until the server drops it. Never show another household's names on this phone.
+        if (message != null && message.householdId != session.current().householdId) {
+            Log.i(TAG, "ignored push for another household")
+            return
+        }
+        when (message) {
             is PushMessage.TripHeading, is PushMessage.TripArrived, is PushMessage.ItemMissing -> household.show(message)
             is PushMessage.TripUpdate -> onTripUpdate(message)
             // A8 refreshes widgets on list_changed; nothing to show before that.

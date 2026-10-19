@@ -133,4 +133,65 @@ class NotificationsTest {
         router.route(mapOf("type" to "trip_heading"))
         assertEquals(1, shadowOf(manager).allNotifications.size, "unknown or broken pushes are ignored")
     }
+
+    // --- QA edge cases (2026-10-19)
+
+    @Test
+    fun pushesForAnotherHouseholdOrSignedOutAreNotShown() = runTest {
+        val trips = FakeTripNotifier()
+        val heading = mapOf("type" to "trip_heading", "householdId" to "h-old", "tripId" to "t9", "listId" to "l1", "title" to "Ali is heading to Migros")
+        PushRouter(HouseholdNotifier(context), trips, FakeSession(Session("Ayşe", "tr", "h1", true))).route(heading)
+        PushRouter(HouseholdNotifier(context), trips, FakeSession(Session())).route(heading + ("householdId" to "h1"))
+        PushRouter(HouseholdNotifier(context), trips, FakeSession(Session())).route(
+            mapOf("type" to "trip_update", "householdId" to "h1", "tripId" to "t1", "status" to "shopping"),
+        )
+        assertTrue(shadowOf(manager).allNotifications.isEmpty())
+        assertTrue(trips.shown.isEmpty())
+    }
+
+    @Test
+    fun malformedTripUpdateNumbersAreClamped() = runTest {
+        val trips = FakeTripNotifier()
+        val router = PushRouter(HouseholdNotifier(context), trips, FakeSession(Session("Ayşe", "tr", "h1", true)))
+        val base = mapOf("type" to "trip_update", "householdId" to "h1", "tripId" to "t1", "status" to "shopping")
+        router.route(base + mapOf("remaining" to "-4", "done" to "-9", "nextItems" to "not json"))
+        router.route(base + mapOf("remaining" to "2147483647", "done" to "2147483647", "lastCallUntil" to "soon"))
+        router.route(base + mapOf("status" to "teleporting", "remaining" to "1.5"))
+        assertEquals(listOf(0, 19_998, 0), trips.shown.map { it.total })
+        assertTrue(trips.shown.all { it.done >= 0 && it.nextItems.isEmpty() && it.lastCallUntil == null })
+        // Every one of them still builds a notification.
+        trips.shown.forEach { TripNotifications.build(context, it, nowSeconds = 1_000) }
+    }
+
+    @Test
+    fun countdownOnlyForASaneFutureLastCall() {
+        assertEquals(1_600L, TripNotifications.liveCountdown(1_600, 1_000))
+        assertNull(TripNotifications.liveCountdown(900, 1_000), "past")
+        assertNull(TripNotifications.liveCountdown(1_760_780_600_000, 1_760_780_000), "milliseconds by mistake")
+        val (_, n) = HouseholdNotifier.build(
+            context,
+            PushMessage.TripHeading("h1", "t1", "l1", lastCallUntil = 1, title = "", body = ""),
+        )!!
+        assertTrue(!n.extras.getBoolean(Notification.EXTRA_CHRONOMETER_COUNT_DOWN), "no countdown for a past last call")
+        assertEquals("Someone is going shopping", n.extras.getCharSequence(Notification.EXTRA_TITLE).toString(), "blank title falls back")
+    }
+
+    @Test
+    fun replyThatAddedNothingSaysSo() {
+        val n = HouseholdNotifier.added(context, "last_call", "Ali is heading to Migros", "2", ok = false)
+        assertEquals("Not added. Open the app to add it.", n.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
+    }
+
+    @Test
+    fun signOutClearsNotificationsAndTheDeviceDoc() = runTest {
+        val (id, n) = HouseholdNotifier.build(context, PushMessage.TripArrived("h1", "t1", "l1", "Ali is at Migros", ""))!!
+        manager.notify(id, n)
+        val auth = com.fridgelist.app.fakes.FakeAuth(com.fridgelist.core.data.auth.AuthUser("u1", "Ayşe"))
+        val session = FakeSession(Session("Ayşe", "tr", "h1", true, ActiveShopping("l1", "t1")))
+        val devices = com.fridgelist.app.fakes.FakeDevices()
+        com.fridgelist.app.feature.settings.SignOut(auth, session, devices, context)()
+        assertEquals(listOf("u1"), devices.unregistered)
+        assertNull(session.state.value.householdId)
+        assertTrue(shadowOf(manager).allNotifications.isEmpty())
+    }
 }

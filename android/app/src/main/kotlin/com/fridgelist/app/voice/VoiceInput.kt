@@ -7,6 +7,7 @@ import com.fridgelist.core.data.callable.ApiException
 import com.fridgelist.core.data.voice.TranscribeRepository
 import com.fridgelist.core.model.Limits
 import com.fridgelist.core.model.TranscribeAudioRequest
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -125,6 +126,11 @@ class VoiceInput(
                     else -> R.string.error_generic
                 },
             )
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // Never let voice take the app down; typing still works.
+            fail(R.string.error_generic)
         }
     }
 
@@ -146,6 +152,12 @@ class VoiceInput(
         if (_state.value == VoiceState.Recording) recorder.cancel()
         activeEngine = null
         _state.value = VoiceState.Idle
+    }
+
+    /** RECORD_AUDIO was refused: show why voice is off and that typing works. */
+    fun permissionDenied() {
+        cancel()
+        fail(R.string.voice_permission_denied)
     }
 
     fun dismissError() {

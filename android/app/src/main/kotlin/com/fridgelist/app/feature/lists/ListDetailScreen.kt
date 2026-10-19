@@ -51,6 +51,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.fridgelist.app.R
 import com.fridgelist.app.feature.going.GoingRoute
 import com.fridgelist.core.model.ItemStatus
+import com.fridgelist.core.model.Role
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,7 +75,8 @@ fun ListDetailScreen(
                     }
                 },
                 actions = {
-                    if (state.sections.toBuyCount > 0) {
+                    // Kids request and watch; shopping is for adults and helpers (PRODUCT_SPEC roles).
+                    if (state.sections.toBuyCount > 0 && state.role != Role.KID) {
                         TextButton(onClick = onGoing) { Text(stringResource(R.string.going_title)) }
                         IconButton(onClick = onStartShopping) {
                             Icon(painterResource(R.drawable.ic_cart), contentDescription = stringResource(R.string.shop_start))

@@ -25,6 +25,7 @@ import com.fridgelist.core.model.ParseItemsRequest
 import com.fridgelist.core.model.ParsedItem
 import com.fridgelist.core.model.Role
 import com.fridgelist.core.model.StatusRules
+import com.fridgelist.core.model.clip
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -111,7 +112,7 @@ class AddItemsViewModel @Inject constructor(
     }
 
     fun onTextChange(text: String) {
-        val limited = text.take(Limits.PARSE_TEXT_MAX)
+        val limited = text.clip(Limits.PARSE_TEXT_MAX)
         val ctx = context.value
         val chips = if (ctx == null) emptyList() else localChips(limited, ctx)
         _state.update { it.copy(text = limited, chips = chips, refining = false) }
@@ -129,7 +130,7 @@ class AddItemsViewModel @Inject constructor(
             Chip(
                 key = i,
                 name = item.name,
-                qty = item.qty,
+                qty = ItemPatches.validQty(item.qty),
                 unit = item.unit,
                 canonicalId = item.canonicalId,
                 choices = item.ambiguity?.candidates.orEmpty().map { Choice(it, label(it, ctx)) },
@@ -201,6 +202,8 @@ class AddItemsViewModel @Inject constructor(
     fun stopVoice() = voiceInput.stop()
 
     fun dismissVoiceError() = voiceInput.dismissError()
+
+    fun onMicDenied() = voiceInput.permissionDenied()
 
     /** The sheet closed: the mic must not keep listening (this ViewModel outlives the sheet). */
     fun cancelVoice() = voiceInput.cancel()

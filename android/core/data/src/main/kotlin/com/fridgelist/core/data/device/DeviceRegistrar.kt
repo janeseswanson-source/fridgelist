@@ -41,6 +41,9 @@ class FirebasePushTokenProvider @Inject constructor(
 interface DeviceRegistry {
     /** @param token a fresh token from `onNewToken`; fetched when null. Returns false when there is no token. */
     suspend fun register(uid: String, token: String? = null): Boolean
+
+    /** Sign-out: removes this install's device doc so the server stops pushing here. Call while still signed in. */
+    suspend fun unregister(uid: String)
 }
 
 /**
@@ -63,6 +66,12 @@ class DeviceRegistrar @Inject constructor(
             .set(data, SetOptions.merge())
             .addOnFailureListener { Log.w(TAG, "device write rejected: ${it.javaClass.simpleName}") }
         return true
+    }
+
+    override suspend fun unregister(uid: String) {
+        firestore.collection("users").document(uid).collection("devices").document(session.deviceId())
+            .delete()
+            .addOnFailureListener { Log.w(TAG, "device delete rejected: ${it.javaClass.simpleName}") }
     }
 
     companion object {
