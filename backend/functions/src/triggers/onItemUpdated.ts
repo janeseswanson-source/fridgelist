@@ -7,7 +7,6 @@ import {
 } from "firebase-admin/firestore";
 import { onDocumentUpdated } from "firebase-functions/v2/firestore";
 import { memberName, writeEvent } from "../lib/events.js";
-import { log } from "../lib/log.js";
 import { defaultSender } from "../push/sender.js";
 import { PushMissingNotifier } from "../trips/alerts.js";
 import type { ItemRef } from "./onItemCreated.js";
@@ -22,13 +21,6 @@ export interface MissingNotifier {
     recipientUid: string;
   }): Promise<void>;
 }
-
-export const PENDING_MISSING_NOTIFIER: MissingNotifier = {
-  itemMissing: (input) => {
-    log.info("item_missing_push_stub", { householdId: input.householdId, itemId: input.itemId });
-    return Promise.resolve();
-  },
-};
 
 /** An undo within this window removes the purchase record again. */
 export const UNDO_WINDOW_MS = 30 * 60 * 1000;

@@ -31,3 +31,9 @@ backend/functions/.secret.local
 backend/hosting/public/.well-known/
 backend/hosting/public/config.js
 backend/hosting/public/app.js
+
+# iOS secrets (I1+): Firebase config and APNs / signing keys
+GoogleService-Info.plist
+*.p8
+*.p12
+*.mobileprovision

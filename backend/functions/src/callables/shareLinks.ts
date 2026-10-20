@@ -15,7 +15,7 @@ import { writeEvent } from "../lib/events.js";
 import { LocalSplitter } from "../lib/localSplit.js";
 import { log } from "../lib/log.js";
 import { parse, requireMember, requireUid } from "../lib/requests.js";
-import { id } from "../lib/schemas.js";
+import { id, itemName } from "../lib/schemas.js";
 
 /** CONTRACT §3.11: 24 random URL-safe characters. */
 export const TOKEN = /^[A-Za-z0-9_-]{24}$/;
@@ -229,7 +229,7 @@ export async function guestAddItemCore(
     });
     for (const item of items) {
       tx.create(listRef.doc(), {
-        name: item.name,
+        name: itemName(item.name),
         ...(item.qty != null && item.qty > 0 && item.qty <= 999 ? { qty: item.qty } : {}),
         ...(item.unit ? { unit: item.unit } : {}),
         urgent: false,

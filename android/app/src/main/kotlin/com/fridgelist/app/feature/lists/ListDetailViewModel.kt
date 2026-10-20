@@ -53,17 +53,18 @@ class ListDetailViewModel @Inject constructor(
 
     val state: StateFlow<ListDetailUiState> = contextSource.context.flatMapLatest { ctx ->
         combine(
-            items.items(ctx.householdId, listId).onStart { emit(ListItems()) }.catch { emit(ListItems()) },
+            // null until Firestore answers (cache or server): never show "nothing to buy" before that.
+            items.items(ctx.householdId, listId).map<ListItems, ListItems?> { it }.onStart { emit(null) }.catch { emit(ListItems()) },
             lists.lists(ctx.householdId).map { all -> all.firstOrNull { it.id == listId }?.name.orEmpty() }
                 .onStart { emit("") }.catch { emit("") },
             hidden,
         ) { listItems, name, hiddenIds ->
             ListDetailUiState(
                 listName = name,
-                sections = ListSectionsBuilder.build(listItems, ctx, hiddenIds),
+                sections = ListSectionsBuilder.build(listItems ?: ListItems(), ctx, hiddenIds),
                 role = ctx.role,
                 uid = ctx.uid,
-                loaded = true,
+                loaded = listItems != null,
             )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ListDetailUiState())

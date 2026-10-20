@@ -155,6 +155,16 @@ describe("guestAddItem (public)", () => {
     expect(events[0]?.data()).toMatchObject({ actorName: "Ahmet", via: "guest_web" });
   });
 
+  it("long guest text is stored within the 80-character item name limit", async () => {
+    const { token } = await link({ scope: "add" });
+    await guestAddItemCore(db, { token, text: "very long guest request " + "x".repeat(150) }, NOW);
+    const names = (
+      await db.collection(`households/${hid}/lists/${lid}/items`).where("addedVia", "==", "guest_web").get()
+    ).docs.map((d) => d.get("name") as string);
+    expect(names).toHaveLength(1);
+    expect(names[0]?.length).toBeLessThanOrEqual(80);
+  });
+
   it("view-only links can't add; URLs are stripped; empty after stripping is invalid", async () => {
     const view = await link({ scope: "view" });
     await expectHttpsError(

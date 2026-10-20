@@ -5,6 +5,7 @@ import { displayTitle } from "../lib/display.js";
 import type { Flags } from "../lib/flags.js";
 import { LocalSplitter } from "../lib/localSplit.js";
 import { log } from "../lib/log.js";
+import { itemName } from "../lib/schemas.js";
 import { matchKey } from "../lib/normalize.js";
 import { consume } from "../lib/rateLimit.js";
 import type { SpeechToText } from "../stt/speechToText.js";
@@ -154,7 +155,7 @@ async function handle(deps: WebhookDeps, m: InboundMessage): Promise<string> {
   const batch = db.batch();
   for (const item of split) {
     batch.create(items.doc(), {
-      name: item.name,
+      name: itemName(item.name),
       ...(item.qty != null && item.qty > 0 && item.qty <= 999 ? { qty: item.qty } : {}),
       ...(item.unit ? { unit: item.unit } : {}),
       urgent: false,

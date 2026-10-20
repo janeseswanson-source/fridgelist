@@ -157,4 +157,14 @@ class WidgetTest {
         assertEquals("fridgelist://add?mode=voice", QuickAdd.intent(context, null, voice = true, via = null).dataString)
         assertNull(QuickAdd.intent(context, null, voice = true, via = null).getStringExtra(QuickAdd.EXTRA_VIA))
     }
+
+    /** QA: another app started the exported config screen with a foreign widget ID and the app crashed. */
+    @Test
+    fun onlyOurOwnWidgetsCanBeConfigured() {
+        val ours = android.content.ComponentName(context.packageName, com.fridgelist.app.widget.ListWidgetReceiver::class.java.name)
+        assertTrue(com.fridgelist.app.widget.isOurWidget(ours, context.packageName))
+        assertTrue(!com.fridgelist.app.widget.isOurWidget(null, context.packageName), "unknown ID")
+        assertTrue(!com.fridgelist.app.widget.isOurWidget(android.content.ComponentName("com.other.app", ours.className), context.packageName))
+        assertTrue(!com.fridgelist.app.widget.isOurWidget(android.content.ComponentName(context.packageName, "com.fridgelist.app.Other"), context.packageName))
+    }
 }

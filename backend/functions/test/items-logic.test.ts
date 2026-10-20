@@ -2,6 +2,7 @@ import { mkdtempSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { ITEM_NAME_MAX, itemName } from "../src/lib/schemas.js";
 import { ClassifyingLlm } from "../src/llm/provider.js";
 import {
   LlmUnavailableError,
@@ -249,5 +250,16 @@ describe("resolveItems: alias → dialect → catalog → cache → LLM", () => 
       lang: "tr",
       names: { tr: "kedi kumu" },
     });
+  });
+});
+
+describe("itemName (QA: server-written names over 80 left items nobody could tick)", () => {
+  it("trims and caps at 80 UTF-16 units without splitting an emoji", () => {
+    expect(itemName("  milk  ")).toBe("milk");
+    expect(itemName("x".repeat(174))).toHaveLength(ITEM_NAME_MAX);
+    const emoji = "y".repeat(79) + "🍎"; // the apple is 2 units: it would make 81
+    expect(itemName(emoji)).toBe("y".repeat(79));
+    expect(itemName("ب".repeat(100))).toHaveLength(80);
+    expect(itemName("a".repeat(79) + " b")).toBe("a".repeat(79));
   });
 });

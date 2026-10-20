@@ -41,6 +41,33 @@ Newest entries at the top. Each workstream adds an entry when it closes a milest
 
 ## Entries
 
+### 2026-10-20 — Full QA and security pass (A1–A11, B1–B10)
+- **Suites:** backend 287 unit + 242 emulator; Android app 347, core:model 29, i18n 76, data 24; both instrumented tests (two-user join, offline add/tick/sync); lint clean; debug, prod release (`.aab`) and minified builds.
+- **Security (no vulnerabilities found):**
+  - `backend/scripts/qa/authz.mjs`, 63/63: every callable × anonymous / stranger / kid / helper / adult / owner × hostile input (oversize, wrong types, path traversal, out-of-range numbers, escalation to owner, guest link abuse and rate limits, revoked links).
+  - `rules.mjs`, 45/45, and `rules-server-time.mjs`, 8/8: Firestore rules through REST as a phone (strangers, server-only collections, kids' requests, spoofed `addedBy` / `addedVia` / `doneBy`, role and owner changes, devices).
+  - No secrets in the git history (only the deliberate emulator demo key); `.gitignore` now also covers iOS secrets (`GoogleService-Info.plist`, `.p8`, `.p12`, provisioning profiles).
+  - Release manifest: HTTPS only, no backup, not debuggable; every exported component is system-required or permission-bound. 22 hostile intents (malformed deep links, NFC intents, foreign widget IDs) caused no crash.
+  - Logs and analytics carry IDs and counts only. The guest page sets user text with `textContent` only, under a strict CSP (`frame-ancestors 'none'`).
+- **Bugs found and fixed (each with a test):**
+  1. **Widget configuration crashed** when another app opened it with a widget ID that isn't ours (the screen must be exported for launchers). It now accepts only our own widgets (`isOurWidget`).
+  2. **Items no one could tick:** guest (and WhatsApp) adds stored names over the rules' 80-character limit, so every later update was refused. The server now caps names (`itemName()`); +1 unit, +2 emulator tests.
+  3. **"Nothing to buy" / "everything is in the cart" before data arrived:** the list and Shopping screens marked themselves loaded with an empty placeholder. They now wait for Firestore's first answer, and the list shows a spinner meanwhile (`LoadingStateTest`).
+- **Hardening:**
+  - The add sheet's text is now synchronous Compose state (Google's recommended pattern against lost keystrokes when the field reads from a lagging flow). The dropped letters seen during testing were Gboard's handwriting tutorial, which a stress run had opened, so this is preventive.
+  - Removed a dead push stub.
+- **Stress:** about 14,800 random UI events (`monkey`, six runs, some with rotations) found bug 1. Every freeze ("not responding") traced to the emulator's GPU bridge or a hung system server (stack traces from a bug report), not to app code.
+- **Checked and correct:**
+  - an existing member re-joining keeps their role;
+  - three simultaneous identical adds merge into one item listing all three requesters;
+  - Done then Back leaves no "resume shopping";
+  - "I'm going" and Shopping work with notifications denied;
+  - trip push with inline reply; other households' pushes ignored;
+  - 300 extra items with extreme names (80 characters, emoji only, bidi controls, markup, Turkish casing).
+- **Known limits (not bugs):**
+  - With no AI key, items outside the 63-entry catalog merge only when spelled the same ("paracetamol" vs "باراسيتامول", "plaster" vs "plasters"); the catalog has no pharmacy or cleaning items yet.
+  - The planner restarts at its first step after the OS kills the app.
+
 ### 2026-10-19 — Android A11 Release readiness
 - Shipped:
   - **Settings › Account:** "Download my data" (`exportMyData`, opens the 24 h link) and **"Delete my account"** (`deleteMyAccount`), as both stores require.

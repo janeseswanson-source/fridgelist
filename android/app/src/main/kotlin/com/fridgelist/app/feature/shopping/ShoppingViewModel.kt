@@ -103,12 +103,15 @@ class ShoppingViewModel @Inject constructor(
     val state: StateFlow<ShoppingUiState> = combine(contextSource.context, listId.filterNotNull()) { ctx, lid -> ctx to lid }
         .flatMapLatest { (ctx, lid) ->
             combine(
-                items.items(ctx.householdId, lid).onStart { emit(ListItems()) }.catch { emit(ListItems()) },
+                // null until Firestore answers: "everything is in the cart" must never flash at the start.
+                items.items(ctx.householdId, lid).map<ListItems, ListItems?> { it }.onStart { emit(null) }.catch { emit(ListItems()) },
                 lists.lists(ctx.householdId).map { all -> all.firstOrNull { it.id == lid }?.name.orEmpty() }.catch { emit("") },
                 tripId,
                 tickedHere,
                 combine(summary, started) { s, st -> s to st },
-            ) { listItems, name, trip, ticked, (sum, st) -> build(listItems, ctx, name, trip, ticked, sum, st) }
+            ) { listItems, name, trip, ticked, (sum, st) ->
+                build(listItems ?: ListItems(), ctx, name, trip, ticked, sum, st).copy(loaded = listItems != null)
+            }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ShoppingUiState())
 

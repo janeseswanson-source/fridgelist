@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -105,7 +106,12 @@ fun ListDetailScreen(
         snackbarHost = { SnackbarHost(snackbar) },
     ) { padding ->
         val sections = state.sections
-        if (state.loaded && sections.isEmpty) {
+        if (!state.loaded) {
+            // First snapshot not here yet (slow network or cold cache).
+            Box(Modifier.padding(padding).fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+            return@Scaffold
+        }
+        if (sections.isEmpty) {
             EmptyList(Modifier.padding(padding).fillMaxSize())
             return@Scaffold
         }

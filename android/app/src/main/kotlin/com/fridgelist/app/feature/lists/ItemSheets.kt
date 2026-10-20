@@ -213,7 +213,8 @@ fun AddItemsRoute(onDone: () -> Unit, startWithVoice: Boolean = false, vm: AddIt
             onDone()
         }
     }
-    AddItemsContent(state, vm::onTextChange, vm::choose, vm::remove, vm::confirm, voice, onMic, vm::stopVoice, focus)
+    // The field reads the synchronous text (vm.text); chips and the rest come from the flow.
+    AddItemsContent(state.copy(text = vm.text), vm::onTextChange, vm::choose, vm::remove, vm::confirm, voice, onMic, vm::stopVoice, focus)
     if (askMic) {
         AlertDialog(
             onDismissRequest = { askMic = false },

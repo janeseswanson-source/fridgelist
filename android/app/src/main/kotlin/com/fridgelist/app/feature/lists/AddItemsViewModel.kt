@@ -1,5 +1,8 @@
 package com.fridgelist.app.feature.lists
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -97,6 +100,13 @@ class AddItemsViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     private val _state = MutableStateFlow(AddItemsUiState())
+
+    /**
+     * The field's text as Compose snapshot state: updated synchronously on every key. Read through
+     * the StateFlow it lagged a frame, and fast typing (or a keyboard's batch commit) lost letters.
+     */
+    var text by mutableStateOf("")
+        private set
     val state: StateFlow<AddItemsUiState> = _state.asStateFlow()
 
     private var refineJob: Job? = null
@@ -118,6 +128,7 @@ class AddItemsViewModel @Inject constructor(
         val limited = text.clip(Limits.PARSE_TEXT_MAX)
         val ctx = context.value
         val chips = if (ctx == null) emptyList() else localChips(limited, ctx)
+        this.text = limited
         _state.update { it.copy(text = limited, chips = chips, refining = false) }
         refineJob?.cancel()
         if (ctx != null && limited.isNotBlank()) {
@@ -190,6 +201,7 @@ class AddItemsViewModel @Inject constructor(
         items.add(ctx.householdId, listId, patches)
         voiceInput.cancel()
         usedVoice = false
+        text = ""
         _state.value = AddItemsUiState(asRequest = _state.value.asRequest, added = true)
     }
 
@@ -214,7 +226,7 @@ class AddItemsViewModel @Inject constructor(
     /** A finished transcript is appended to what is already typed, then split like typing. */
     internal fun onTranscript(transcript: String) {
         usedVoice = true
-        val existing = _state.value.text.trim()
+        val existing = text.trim()
         val separator = if (isArabicScript(transcript)) "، " else ", "
         onTextChange(if (existing.isEmpty()) transcript else existing + separator + transcript)
     }

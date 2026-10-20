@@ -190,6 +190,10 @@ With no `ANTHROPIC_API_KEY` (or the placeholder `none`), `suggestMeals` plans fr
 
 The Ramadan planner shows in the apps only while `ramadan_planner_enabled` is `true` **and** it is Sha'ban or Ramadan (Umm al-Qura). Turn the flag on in January; for testing on dev builds, Settings › Developer › "Show the Ramadan planner".
 
+## 4c. Security probes
+
+`backend/scripts/qa/` holds three scripts that attack the dev emulators the way a hostile client would: every callable for every role and bad input, and the Firestore rules through REST. Run them after any change to callables or `firestore.rules` (see the README there); each exits non-zero on a failed check.
+
 ## 5. Deploy
 
 **Never deploy to prod from a session.** Deploy to dev only when the owner writes "deploy dev".

@@ -206,6 +206,17 @@ describe("whatsappWebhook", () => {
     expect((await say(MOM_PHONE, "اشتريت موز")).reply).toContain("موز");
   });
 
+  it("long WhatsApp messages are stored within the 80-character item name limit", async () => {
+    const { hid, lid } = await household();
+    await linkPhone(OWNER, hid, MOM_PHONE);
+    await say(MOM_PHONE, "z".repeat(150));
+    const names = (await db.collection(`households/${hid}/lists/${lid}/items`).get()).docs.map(
+      (d) => d.get("name") as string,
+    );
+    expect(names).toHaveLength(1);
+    expect(names[0]?.length).toBeLessThanOrEqual(80);
+  });
+
   it("voice notes go through speech-to-text; failures get a message", async () => {
     const { hid, lid } = await household();
     await linkPhone(OWNER, hid, MOM_PHONE);

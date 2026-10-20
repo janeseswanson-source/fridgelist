@@ -1,6 +1,7 @@
 package com.fridgelist.app.widget
 
 import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -50,7 +51,8 @@ class WidgetConfigActivity : AppCompatActivity() {
             ?: AppWidgetManager.INVALID_APPWIDGET_ID
         // Backing out leaves no half-set-up widget behind.
         setResult(RESULT_CANCELED, Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId))
-        if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) return finish()
+        // Exported for launchers, so any app can start it: only our own widgets may be configured.
+        if (!isOurWidget(AppWidgetManager.getInstance(this).getAppWidgetInfo(appWidgetId)?.provider, packageName)) return finish()
         lifecycleScope.launch { writer.refreshOnce() }
         setContent {
             FridgeListTheme {
@@ -69,7 +71,9 @@ class WidgetConfigActivity : AppCompatActivity() {
 
     private fun pick(appWidgetId: Int, listId: String) {
         lifecycleScope.launch {
-            val glanceId = GlanceAppWidgetManager(this@WidgetConfigActivity).getGlanceIdBy(appWidgetId)
+            // The widget may have been removed while this screen was open.
+            val glanceId = runCatching { GlanceAppWidgetManager(this@WidgetConfigActivity).getGlanceIdBy(appWidgetId) }
+                .getOrElse { return@launch finish() }
             updateAppWidgetState(this@WidgetConfigActivity, glanceId) { it[ListWidget.LIST_ID] = listId }
             ListWidget().update(this@WidgetConfigActivity, glanceId)
             setResult(RESULT_OK, Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId))
@@ -110,3 +114,7 @@ private fun ConfigScreen(lists: List<SnapshotList>?, onPick: (SnapshotList) -> U
         }
     }
 }
+
+/** A widget ID from the intent is ours only when the system says its provider is our receiver. */
+internal fun isOurWidget(provider: ComponentName?, packageName: String): Boolean =
+    provider != null && provider.packageName == packageName && provider.className == ListWidgetReceiver::class.java.name
